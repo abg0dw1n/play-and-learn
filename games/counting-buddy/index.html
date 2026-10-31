@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Counting Buddy</title>
+<link rel="stylesheet" href="../../css/style.css">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <div class="stars" id="stars"></div>
+  <main class="game">
+    <div class="game-head">
+      <h2>-counting buddy</h2>
+      <div class="score-pill">⭐ <span id="score">0</span></div>
+    </div>
+    <div class="progress"><i id="prog"></i></div>
+
+    <div class="game-stage">
+      <canvas id="cv" width="560" height="560"></canvas>
+    </div>
+
+    <p id="prompt" style="margin-top:18px;font-size:22px;font-weight:700"></p>
+    <div id="treats" style="display:flex;gap:10px;justify-content:center;flex-wrap:wrap;margin-top:14px;max-width:460px"></div>
+  </main>
+  <div class="toast" id="toast"></div>
+  <script src="../../js/characters.js"></script>
+  <script src="game.js"></script>
+</body>
+</html>

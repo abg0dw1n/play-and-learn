@@ -1,0 +1,3 @@
+.progress{width:480px}
+.bin{display:inline-block;cursor:pointer;transition:transform .12s}
+.bin:hover{transform:scale(1.1)}

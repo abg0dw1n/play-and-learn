@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Play & Learn</title>
+<link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+  <div class="stars" id="stars"></div>
+  <main class="home-wrap">
+    <h1>🎈 Play & Learn</h1>
+    <p>Pick a buddy and start learning!</p>
+    <div class="buddy-row" id="buddyRow"></div>
+  </main>
+  <script src="js/characters.js"></script>
+  <script>
+    const row=document.getElementById('buddyRow');
+    BUDDIES.forEach(b=>{
+      const card=document.createElement('div');
+      card.className='buddy-card';
+      card.innerHTML=`<canvas class="face" width="120" height="120"></canvas>
+                     <div class="name">${b.name}</div>
+                     <div class="tag">${b.animal}</div>`;
+      card.onclick=()=>location.href=`games/counting-buddy/index.html?buddy=${b.id}`;
+      const cv=card.querySelector('canvas');
+      const ctx=cv.getContext('2d');
+      let t=0;
+      function loop(){ t+=0.02; drawBuddy(ctx,b,'idle',t); requestAnimationFrame(loop); }
+      loop();
+      row.appendChild(card);
+    });
+    // twinkle stars
+    const stars=document.getElementById('stars');
+    for(let i=0;i<28;i++){
+      const s=document.createElement('span');
+      s.style.left=Math.random()*100+'%';
+      s.style.top=Math.random()*100+'%';
+      s.style.animationDelay=(Math.random()*2)+'s';
+      stars.appendChild(s);
+    }
+  </script>
+</body>
+</html>

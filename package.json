@@ -1,0 +1,9 @@
+{
+  "name": "play-and-learn",
+  "version": "1.0.0",
+  "description": "Game-based learning for kids",
+  "private": true,
+  "scripts": {
+    "start": "npx serve . -l 5173"
+  }
+}
