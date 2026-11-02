@@ -1,19 +1,17 @@
-// Letter Sounds — hear a letter's sound, tap the letter that makes it.
-// Consonants only for now (vowel sounds are hard for the device voice to say on their own).
-// First Steps: 8 common sounds, capitals, 2 choices. Growing Strong: all consonants, 3→4 choices,
-// lowercase from level 3. Super Star: 4→5 choices, lowercase from level 3.
+// Letter Sounds — listen for the first sound of a word, tap the letter that makes it.
+// Consonants only for now. Unlike Letter Hunt, the picture stays hidden: she has to listen.
+// (The picture appears as a clue after a wrong tap.)
+//
+// The voice only ever says real words. Device voices can't say bare sounds: they spell
+// "sss" or "zuh" out as letters ("Z U H"), so we never ask them to.
+//
+// First Steps: 8 common sounds, capitals, 2 choices. Growing Strong: all consonants, 3→4
+// choices, lowercase from level 3. Super Star: 4→5 choices, lowercase from level 3.
 import { el, pick, shuffle } from '../core/util.js';
 import { speak } from '../core/voice.js';
 import { WORDS, choiceCount } from '../data/words.js';
 
-// How the device voice says each sound. Every one is a consonant + "uh" syllable, because
-// device voices spell out letter-only strings ("sss" comes out as "S S S"), but always read
-// a syllable like "suh" as a sound. If one sounds wrong on her device, change it here.
-export const SOUNDS = {
-  B: 'buh', C: 'kuh', D: 'duh', F: 'fuh', G: 'guh', H: 'huh', J: 'juh', K: 'kuh', L: 'luh',
-  M: 'muh', N: 'nuh', P: 'puh', R: 'ruh', S: 'suh', T: 'tuh', V: 'vuh', W: 'wuh', Y: 'yuh', Z: 'zuh',
-};
-const ALL = Object.keys(SOUNDS);
+const ALL = ['B', 'C', 'D', 'F', 'G', 'H', 'J', 'K', 'L', 'M', 'N', 'P', 'R', 'S', 'T', 'V', 'W', 'Y', 'Z'];
 const FIRST_SOUNDS = ['M', 'S', 'T', 'B', 'P', 'F', 'N', 'D'];
 // C and K make the same sound, so never show both in one round.
 const SAME_SOUND = { C: 'K', K: 'C' };
@@ -30,7 +28,7 @@ export default {
   title: 'Letter Sounds',
   emoji: '👂',
   color: '#9b5de5',
-  blurb: 'Which letter makes that sound?',
+  blurb: 'Listen for the first sound',
   rounds: 8,
   maxLevels: [2, 4, 6],
 
@@ -42,24 +40,22 @@ export default {
     let target;
     do { target = pick(cfg.targets); } while (recent.includes(target));
 
-    const pool = (count <= cfg.targets.length ? cfg.targets : ALL)
-      .filter((l) => l !== target && l !== SAME_SOUND[target]);
+    const pool = cfg.targets.filter((l) => l !== target && l !== SAME_SOUND[target]);
     const others = shuffle(pool).slice(0, count - 1);
     const show = (l) => (lower ? l.toLowerCase() : l);
-    const sound = SOUNDS[target];
     const [word, emoji] = WORDS[target];
-    const say = `Which letter says, ${sound}? ${sound}.`;
+    const say = `Listen. ${word}. Which letter makes the first sound in ${word}?`;
 
     return {
       key: target,
-      text: lower ? 'Which little letter makes this sound?' : 'Which letter makes this sound?',
+      text: lower ? 'Which little letter makes the first sound?' : 'Which letter makes the first sound?',
       say,
-      retrySay: `Listen. ${sound}. Like ${word}.`,
+      retrySay: `Listen again. ${word}. ${word}.`,
       choices: shuffle([target, ...others]).map((l) => ({ label: show(l), correct: l === target, className: 'letter' })),
       render(v) {
         v.append(el('button', {
           class: 'listen-btn',
-          'aria-label': 'Hear the sound again',
+          'aria-label': 'Hear the word again',
           onclick: () => speak(say, { force: true }),
         }, '👂'));
       },
@@ -67,8 +63,8 @@ export default {
       onMiss(v) {
         if (!v.querySelector('.clue')) v.append(el('div', { class: 'clue' }, emoji));
       },
-      reveal: { emoji, caption: `${show(target)} says ${sound}, like ${word}` },
-      praise: `Yes! ${target} says ${sound}!`,
+      reveal: { emoji, caption: `${word} starts with ${show(target)}` },
+      praise: `Yes! ${word} starts with ${target}!`,
     };
   },
 };
