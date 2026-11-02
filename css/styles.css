@@ -108,7 +108,9 @@ button { font: inherit; color: inherit; cursor: pointer; touch-action: manipulat
 .reveal-caption { font-size: 2rem; font-weight: 700; margin-top: 6px; }
 
 .choices { display: grid; gap: 18px; grid-template-columns: repeat(3, 1fr); margin-top: auto; padding-bottom: 8px; }
+.choices[data-count="2"] { grid-template-columns: repeat(2, 1fr); justify-content: center; max-width: 500px; margin-left: auto; margin-right: auto; }
 .choices[data-count="4"] { grid-template-columns: repeat(4, 1fr); }
+.choices[data-count="5"] { grid-template-columns: repeat(5, 1fr); }
 .choice {
   border: 0; border-radius: var(--radius); background: var(--paper); aspect-ratio: 1 / 1;
   font-size: clamp(3.4rem, 14vw, 7rem); font-weight: 700; line-height: 1;
