@@ -25,6 +25,8 @@ import { sfx } from './sfx.js';
 import { burst, burstAt } from './confetti.js';
 import { store } from './store.js';
 
+const DIFFICULTY = ['first-steps', 'growing-strong', 'super-star'];
+
 const PRAISE = ['Great job!', 'You got it!', 'Awesome!', 'Way to go!', 'Super!', 'Yes!'];
 const RETRY = ['Oops, try again!', 'Not quite. Try again!', 'Hmm, try another one!'];
 const any = (a) => a[Math.floor(Math.random() * a.length)];
@@ -32,6 +34,7 @@ const any = (a) => a[Math.floor(Math.random() * a.length)];
 export function runChoiceGame(root, game, { onHome }) {
   const total = game.rounds || 8;
   const maxLevel = game.maxLevel || 1;
+  const difficulty = store.getDifficulty(); // 0, 1, 2
   let level = Math.min(store.game(game.id).level || 1, maxLevel);
   let index = 0;
   let streak = 0;
@@ -56,7 +59,7 @@ export function runChoiceGame(root, game, { onHome }) {
 
   function nextRound() {
     if (!alive) return;
-    current = game.makeRound(level, history);
+    current = game.makeRound(level, history, difficulty);
     history.push(current.key);
     let misses = 0;
 

@@ -6,6 +6,8 @@ import { sfx } from './core/sfx.js';
 import { runChoiceGame } from './core/choice-game.js';
 import { games, comingSoon } from './games/index.js';
 
+const DIFFICULTY_LABELS = ['First Steps 🐣', 'Growing Strong 🌱', 'Super Star ⭐'];
+
 const app = document.getElementById('app');
 let cleanup = null;
 
@@ -55,10 +57,25 @@ function renderHome() {
     el('header', { class: 'home-head' },
       el('h1', {}, name ? `Hi, ${name}!` : 'Play & Learn'),
       el('div', { class: 'star-count', 'aria-label': `${stars} stars` }, '⭐ ', stars),
-      soundToggle()),
+      soundToggle(),
+      difficultyPicker()),
     el('p', { class: 'home-sub' }, 'Pick a game!'),
     el('section', { class: 'tiles' }, tiles, soon),
     grownUpsButton());
+}
+
+// Difficulty picker (shown in header)
+function difficultyPicker() {
+  const current = store.getDifficulty();
+  const btn = el('button', { class: 'icon-btn difficulty-picker', 'aria-label': 'Change difficulty' }, DIFFICULTY_LABELS[current]);
+  btn.addEventListener('click', () => {
+    const next = (current + 1) % 3;
+    store.setDifficulty(next);
+    btn.textContent = DIFFICULTY_LABELS[next];
+    btn.setAttribute('aria-label', `Difficulty: ${DIFFICULTY_LABELS[next]}`);
+    speak(DIFFICULTY_LABELS[next], { force: true });
+  });
+  return btn;
 }
 
 // Press-and-hold so little fingers don't wander into settings.

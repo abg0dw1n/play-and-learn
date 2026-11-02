@@ -1,5 +1,5 @@
 // Count It! — tap each object to count out loud, then pick the number.
-// Levels: up to 5 (3 choices) → up to 10 (3 choices) → up to 10 (4 choices).
+// Difficulty: First Steps (up to 3, 2 choices), Growing Strong (up to 5→10, 3→4 choices), Super Star (up to 10→20, 4→5 choices)
 import { el, pick, rand, shuffle } from '../core/util.js';
 import { speak } from '../core/voice.js';
 import { sfx } from '../core/sfx.js';
@@ -18,6 +18,13 @@ function choicesFor(n, max, count) {
   return [...set].sort((a, b) => a - b);
 }
 
+// Difficulty configs: { levels, maxPerLevel, minChoices, maxChoices }
+const DIFF_CONFIG = {
+  0: { levels: 2, maxPerLevel: [3, 5], minChoices: 2, maxChoices: 3 },     // First Steps
+  1: { levels: 3, maxPerLevel: [5, 10, 10], minChoices: 3, maxChoices: 4 },  // Growing Strong (current)
+  2: { levels: 4, maxPerLevel: [10, 15, 20, 20], minChoices: 4, maxChoices: 5 }, // Super Star
+};
+
 export default {
   id: 'counting',
   title: 'Count It!',
@@ -25,11 +32,12 @@ export default {
   color: '#3fb950',
   blurb: 'Tap to count, then pick the number',
   rounds: 8,
-  maxLevel: 3,
+  maxLevel: 3, // will be overridden per difficulty
 
-  makeRound(level, history) {
-    const max = level === 1 ? 5 : 10;
-    const count = level === 3 ? 4 : 3;
+  makeRound(level, history, difficulty = 1) {
+    const cfg = DIFF_CONFIG[difficulty] || DIFF_CONFIG[1];
+    const max = cfg.maxPerLevel[Math.min(level - 1, cfg.maxPerLevel.length - 1)];
+    const count = Math.min(cfg.minChoices + Math.floor((level - 1) / 2), cfg.maxChoices);
     let n;
     do { n = 1 + rand(max); } while (history.slice(-2).includes(n));
     const [emoji, one, many] = pick(THINGS);

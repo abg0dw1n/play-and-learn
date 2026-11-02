@@ -1,4 +1,5 @@
-// Letter Hunt — hear the word, find its letter. Levels: 3 capitals → 4 capitals → 3 lowercase → 4 lowercase.
+// Letter Hunt — hear the word, find its letter.
+// Difficulty: First Steps (2 caps, 2 choices), Growing Strong (3→4 caps/lowers, 3→4 choices), Super Star (3→4 caps/lowers, 4→5 choices)
 import { el, pick, shuffle } from '../core/util.js';
 
 const WORDS = {
@@ -11,6 +12,13 @@ const WORDS = {
 };
 const LETTERS = Object.keys(WORDS);
 
+// Difficulty configs: { maxLevel, minChoices, maxChoices, startLowerAtLevel }
+const DIFF_CONFIG = {
+  0: { maxLevel: 2, minChoices: 2, maxChoices: 2, startLowerAtLevel: 3 },  // First Steps
+  1: { maxLevel: 4, minChoices: 3, maxChoices: 4, startLowerAtLevel: 3 },  // Growing Strong (current)
+  2: { maxLevel: 6, minChoices: 4, maxChoices: 5, startLowerAtLevel: 3 },  // Super Star
+};
+
 export default {
   id: 'letters',
   title: 'Letter Hunt',
@@ -18,11 +26,12 @@ export default {
   color: '#ff7a59',
   blurb: 'Find the letter you hear',
   rounds: 8,
-  maxLevel: 4,
+  maxLevel: 4, // will be overridden per difficulty
 
-  makeRound(level, history) {
-    const lower = level >= 3;
-    const count = level % 2 === 0 ? 4 : 3;
+  makeRound(level, history, difficulty = 1) {
+    const cfg = DIFF_CONFIG[difficulty] || DIFF_CONFIG[1];
+    const lower = level >= cfg.startLowerAtLevel;
+    const count = Math.min(cfg.minChoices + Math.floor((level - 1) / 2), cfg.maxChoices);
     const recent = history.slice(-4);
     let target;
     do { target = pick(LETTERS); } while (recent.includes(target));
