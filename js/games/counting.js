@@ -37,7 +37,8 @@ export default {
     return {
       key: n,
       text: `How many ${many}?`,
-      say: `How many ${many}? Tap them to count!`,
+      say: `How many ${many}?`,
+      sayOnStart: false,
       choices: choicesFor(n, max, count).map((x) => ({ label: String(x), correct: x === n, className: 'number' })),
       praise: `Yes! ${n} ${n === 1 ? one : many}!`,
       render(visual) {
