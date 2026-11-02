@@ -166,6 +166,41 @@ button { font: inherit; color: inherit; cursor: pointer; touch-action: manipulat
   animation: pop .25s;
 }
 
+/* Picture answers (Rhyme Time) */
+.choice.pic { font-size: clamp(3.4rem, 12vw, 6.5rem); }
+
+/* Letter Sounds: big ear to hear the sound again, picture clue after a miss */
+.listen-btn {
+  width: 150px; height: 150px; border: 0; border-radius: 50%; background: var(--paper);
+  font-size: 5.5rem; line-height: 1; box-shadow: 0 8px 0 color-mix(in srgb, var(--accent) 60%, #000 10%);
+  animation: pop .4s ease-out;
+}
+.listen-btn:active { transform: translateY(6px); box-shadow: 0 2px 0 color-mix(in srgb, var(--accent) 60%, #000 10%); }
+.clue { font-size: 4.5rem; margin-left: 24px; animation: pop .35s ease-out; }
+
+/* ---------- Sticker book ---------- */
+.book-title { margin: 0; font-size: clamp(1.6rem, 6vw, 2.4rem); color: #e08a00; }
+.stickers .star-count { font-size: 1.3rem; padding: 6px 14px; }
+.book-sub { text-align: center; }
+.sticker-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(96px, 1fr)); gap: 14px; }
+.sticker {
+  aspect-ratio: 1 / 1; border: 0; border-radius: 50%; background: var(--paper);
+  font-size: clamp(2.6rem, 9vw, 3.6rem); line-height: 1; box-shadow: 0 6px 0 rgba(0,0,0,.12);
+  border: 4px dashed transparent;
+}
+.sticker.locked { background: rgba(255,255,255,.45); border-color: rgba(43,45,66,.12); box-shadow: none; }
+.sticker.locked { color: transparent; text-shadow: 0 0 0 rgba(43,45,66,.18); }
+.sticker.newest { border: 4px solid #ffd93d; animation: pop .5s ease-out .2s both; }
+.sticker.wiggle { animation: wiggle .5s ease-in-out; }
+.new-sticker { display: flex; flex-direction: column; align-items: center; }
+.sticker-big {
+  width: 190px; height: 190px; border-radius: 50%; background: var(--paper); display: grid; place-items: center;
+  font-size: 7.5rem; line-height: 1; border: 6px solid #ffd93d; box-shadow: 0 10px 0 #f0b400;
+  animation: spin-in .8s cubic-bezier(.2,1.4,.4,1) both;
+}
+.sticker-label { margin-top: 14px; font-size: 1.6rem; font-weight: 700; color: #e08a00; }
+.big-btn.book { --accent: #f4a100; }
+
 /* ---------- Finish ---------- */
 .finish { margin: auto; text-align: center; display: flex; flex-direction: column; align-items: center; gap: 6px; }
 .trophy { font-size: 9rem; animation: bounce 1.2s ease-in-out infinite; }
@@ -196,6 +231,8 @@ button { font: inherit; color: inherit; cursor: pointer; touch-action: manipulat
 @keyframes pop { 0% { transform: scale(.6); } 70% { transform: scale(1.12); } 100% { transform: scale(1); } }
 @keyframes shake { 0%,100% { transform: translateX(0); } 25% { transform: translateX(-10px); } 75% { transform: translateX(10px); } }
 @keyframes pulse { 0%,100% { transform: scale(1); } 50% { transform: scale(1.08); box-shadow: 0 0 0 10px rgba(255,217,61,.7); } }
+@keyframes wiggle { 0%,100% { transform: rotate(0); } 25% { transform: rotate(-12deg) scale(1.1); } 75% { transform: rotate(12deg) scale(1.1); } }
+@keyframes spin-in { 0% { transform: scale(0) rotate(-180deg); } 100% { transform: scale(1) rotate(0); } }
 @keyframes nudge { 0%,100% { transform: translateX(0); } 50% { transform: translateX(8px); } }
 @keyframes bounce { 0%,100% { transform: translateY(0); } 50% { transform: translateY(-18px); } }
 @media (prefers-reduced-motion: reduce) { *, *::before, *::after { animation: none !important; transition: none !important; } }

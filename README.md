@@ -9,6 +9,14 @@ Live at https://play-and-learn-pi.vercel.app (every push to `main` deploys).
 - `js/games/` — one file per game, listed in `js/games/index.js`
 - `sw.js` + `manifest.webmanifest` — add to home screen, works offline
 
+## Games
+Letter Hunt, Letter Sounds (consonant sounds; voice spellings in `SOUNDS` at the top of `js/games/sounds.js`),
+Count It!, Rhyme Time. Shared picture words live in `js/data/words.js`.
+
+## Sticker book
+Every finished game awards one new sticker (40 in `js/core/stickers.js`) until all are found; then just a star.
+Page at `#/stickers`. Stars earned before the sticker book existed were turned into stickers once.
+
 ## Difficulty
 Three modes chosen on the home screen: First Steps, Growing Strong (default), Super Star.
 Each game keeps a separate level for each mode, and goes up a level after 3 right answers in a row,

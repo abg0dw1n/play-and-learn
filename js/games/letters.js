@@ -2,21 +2,10 @@
 // First Steps: capitals, 2 choices. Growing Strong: 3→4 choices, lowercase from level 3.
 // Super Star: 4→5 choices, lowercase from level 3.
 import { el, pick, shuffle } from '../core/util.js';
+import { WORDS, ALPHABET, choiceCount } from '../data/words.js';
 
-// One picture per letter. Each must clearly start with its letter when a child names it.
-// Q and X have no picture a 5-year-old would name that way (👸 reads as "princess",
-// 🦊 is "fox"), so they only appear as wrong-answer choices.
-const WORDS = {
-  A: ['apple', '🍎'], B: ['banana', '🍌'], C: ['cat', '🐱'], D: ['dog', '🐶'], E: ['egg', '🥚'],
-  F: ['fish', '🐟'], G: ['grapes', '🍇'], H: ['hat', '🎩'], I: ['ice cream', '🍦'], J: ['juice', '🧃'],
-  K: ['kite', '🪁'], L: ['lion', '🦁'], M: ['moon', '🌙'], N: ['nose', '👃'], O: ['octopus', '🐙'],
-  P: ['pig', '🐷'], R: ['rainbow', '🌈'], S: ['sun', '☀️'], T: ['tiger', '🐯'],
-  U: ['umbrella', '☂️'], V: ['volcano', '🌋'], W: ['whale', '🐳'], Y: ['yo-yo', '🪀'], Z: ['zebra', '🦓'],
-};
 const TARGETS = Object.keys(WORDS);
-const ALPHABET = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'.split('');
 
-// Per difficulty: answer choices grow by one every two levels, up to the max.
 const DIFF_CONFIG = [
   { minChoices: 2, maxChoices: 2 }, // First Steps (max level 2, so always capitals)
   { minChoices: 3, maxChoices: 4 }, // Growing Strong
@@ -36,7 +25,7 @@ export default {
   makeRound(level, history, difficulty = 1) {
     const cfg = DIFF_CONFIG[difficulty] || DIFF_CONFIG[1];
     const lower = level >= LOWERCASE_FROM_LEVEL;
-    const count = Math.min(cfg.minChoices + Math.floor((level - 1) / 2), cfg.maxChoices);
+    const count = choiceCount(level, cfg.minChoices, cfg.maxChoices);
     const recent = history.slice(-4);
     let target;
     do { target = pick(TARGETS); } while (recent.includes(target));

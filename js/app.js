@@ -1,9 +1,10 @@
-// Home screen + simple hash router:  #/  (home)   #/play/<gameId>
+// Home screen + simple hash router:  #/  (home)   #/play/<gameId>   #/stickers
 import { el } from './core/util.js';
 import { store, levelCap, DIFFICULTY_NAMES } from './core/store.js';
 import { speak, hush, soundToggle } from './core/voice.js';
 import { sfx } from './core/sfx.js';
 import { runChoiceGame } from './core/choice-game.js';
+import { owned, STICKERS, renderStickerBook } from './core/stickers.js';
 import { games, comingSoon } from './games/index.js';
 
 const app = document.getElementById('app');
@@ -23,7 +24,9 @@ function route() {
   if (game) {
     const run = game.run || runChoiceGame;
     // "Play again" goes back through route() so the old round is fully stopped first.
-    cleanup = run(app, game, { onHome: () => go('#/'), onRestart: route });
+    cleanup = run(app, game, { onHome: () => go('#/'), onRestart: route, onStickers: () => go('#/stickers') });
+  } else if (page === 'stickers') {
+    cleanup = renderStickerBook(app, { onHome: () => go('#/') });
   } else {
     renderHome();
   }
@@ -46,6 +49,15 @@ function renderHome() {
     el('span', { class: 'tile-title' }, g.title),
     el('span', { class: 'tile-blurb' }, g.blurb)));
 
+  const book = el('button', {
+    class: 'tile book-tile',
+    style: { '--accent': '#f4a100' },
+    onclick: () => { sfx.tap(); speak('My stickers'); go('#/stickers'); },
+  },
+  el('span', { class: 'tile-emoji' }, '📒'),
+  el('span', { class: 'tile-title' }, 'My Stickers'),
+  el('span', { class: 'tile-blurb' }, `${owned().length} of ${STICKERS.length} found`));
+
   const soon = comingSoon.map((g) =>
     el('div', { class: 'tile soon', 'aria-disabled': 'true' },
       el('span', { class: 'tile-emoji' }, g.emoji),
@@ -59,7 +71,7 @@ function renderHome() {
       soundToggle(),
       difficultyPicker()),
     el('p', { class: 'home-sub' }, 'Pick a game!'),
-    el('section', { class: 'tiles' }, tiles, soon),
+    el('section', { class: 'tiles' }, tiles, book, soon),
     grownUpsButton());
 }
 
@@ -110,10 +122,10 @@ function openSettings() {
       el('h2', {}, 'Grown-ups'),
       el('label', {}, 'Name (used in the greeting)', nameInput),
       el('h3', {}, `Progress on this device (${DIFFICULTY_NAMES[d]})`),
-      el('ul', {}, levels, el('li', {}, `⭐ ${s.stars} stars`)),
+      el('ul', {}, levels, el('li', {}, `⭐ ${s.stars} stars, 📒 ${owned().length} of ${STICKERS.length} stickers`)),
       el('div', { class: 'settings-actions' },
         el('button', { type: 'button', class: 'link-danger', onclick: () => {
-          if (confirm('Reset stars and levels on this device?')) { store.reset(); dialog.close(); renderHome(); }
+          if (confirm('Reset stars, stickers and levels on this device?')) { store.reset(); dialog.close(); renderHome(); }
         } }, 'Reset progress'),
         el('button', { value: 'save', class: 'big-btn' }, 'Done'))));
 
