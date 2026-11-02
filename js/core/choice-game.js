@@ -78,7 +78,8 @@ export function runChoiceGame(root, game, { onHome }) {
     }
     if (current.sayOnStart !== false) speak(current.say);
 
-    async function onPick(btn, choice) {
+    let autoAdvancing = true;
+  async function onPick(btn, choice) {
       if (!alive || btn.disabled || choicesEl.classList.contains('locked')) return;
       if (choice.correct) {
         choicesEl.classList.add('locked');
@@ -101,8 +102,20 @@ export function runChoiceGame(root, game, { onHome }) {
           streak = 0;
           store.setGame(game.id, { level });
         }
-        if (index >= total) finish();
-        else nextRound();
+        autoAdvancing = true;
+        function advance() {
+          if (!autoAdvancing) return;
+          if (index >= total) finish();
+          else nextRound();
+        }
+        sayBtn.onclick = () => {
+          if (alive && autoAdvancing) {
+            autoAdvancing = false;
+            speak(current.say);
+            advance();
+          }
+        };
+        advance();
       } else {
         misses++;
         streak = 0;
