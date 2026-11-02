@@ -38,7 +38,7 @@ export default {
       say: word,
       sayOnStart: false,
       choices: shuffle([target, ...others]).map((l) => ({ label: show(l), correct: l === target, className: 'letter' })),
-      render: (v) => v.append(el('div', { class: 'word-pic' }, el('span', { class: 'word-emoji' }, emoji), el('span', { class: 'word-label' }, word))),
+      render: (v) => v.append(el('div', { class: 'word-pic' }, el('span', { class: 'word-emoji' }, emoji))),
       reveal: { emoji, caption },
       praise: target === 'X' ? `Yes! X is in ${word}!` : `Yes! ${target} is for ${word}!`,
     };
