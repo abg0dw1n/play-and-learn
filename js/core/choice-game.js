@@ -45,7 +45,7 @@ export function runChoiceGame(root, game, { onHome }) {
 
   const stars = el('div', { class: 'progress', 'aria-label': 'Progress' },
     Array.from({ length: total }, () => el('span', { class: 'dot' })));
-  const sayBtn = el('button', { class: 'icon-btn', 'aria-label': 'Say it again', onclick: () => current && speak(current.say) }, '🔊');
+  const sayBtn = el('button', { class: 'icon-btn', 'aria-label': 'Say it again', onclick: () => current && speak(current.say, { force: true }) }, '🔊');
   const homeBtn = el('button', { class: 'icon-btn', 'aria-label': 'Home', onclick: onHome }, '🏠');
   const soundBtn = soundToggle();
   const promptEl = el('h2', { class: 'prompt' });

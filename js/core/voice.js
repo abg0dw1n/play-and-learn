@@ -21,9 +21,9 @@ if (supported) {
 }
 
 /** Speak text; resolves when finished (or after a safety timeout). */
-export function speak(text, { rate = 0.88, pitch = 1.1 } = {}) {
+export function speak(text, { rate = 0.88, pitch = 1.1, force = false } = {}) {
   return new Promise((resolve) => {
-    if (!supported || !store.get().sound || !text) return resolve();
+    if (!supported || (!force && !store.get().sound) || !text) return resolve();
     speechSynthesis.cancel();
     const u = new SpeechSynthesisUtterance(text);
     if (voice) u.voice = voice;
