@@ -2,16 +2,21 @@
   Shared "pick the right answer" engine.
 
   A game module only has to say what each round looks like; this file handles
-  the spoken prompt, the 🔊 repeat button, gentle retries, hints, star progress,
-  level-ups and the end-of-game celebration.
+  the spoken prompt, the 🔊 repeat button, gentle retries, hints, the Next
+  button, star progress, level-ups and the end-of-game celebration.
 
-  makeRound(level, history) returns:
+  A game exports:
+    { id, title, emoji, color, blurb, rounds,
+      maxLevels: [firstSteps, growingStrong, superStar],   // top level per difficulty
+      makeRound(level, history, difficulty) }
+
+  makeRound returns:
   {
     key:     anything used to avoid repeats (kept in `history`)
     text:    short on-screen prompt (for grown-ups / early readers)
-    say:     what the voice says
-    sayOnStart?: false   // if false, don't speak `say` when the round opens — 🔊 still says it
-    choices: [{ label, correct, say?, className? }]
+    say:     what the voice says when the round opens and when 🔊 is pressed
+    sayOnStart?: false   // if false, stay quiet when the round opens — 🔊 still says it
+    choices: [{ label, correct, className? }]
     render?: (visualEl) => void     draw a picture / objects above the choices
     praise?: spoken after a correct answer
     reveal?: { emoji, caption }     shown big after a correct answer
@@ -19,23 +24,21 @@
 
   Scanned worksheets will later be turned into these same round objects.
 */
-import { el, wait } from './util.js';
+import { el } from './util.js';
 import { speak, hush, soundToggle } from './voice.js';
 import { sfx } from './sfx.js';
 import { burst, burstAt } from './confetti.js';
-import { store } from './store.js';
-
-const DIFFICULTY = ['first-steps', 'growing-strong', 'super-star'];
+import { store, levelCap } from './store.js';
 
 const PRAISE = ['Great job!', 'You got it!', 'Awesome!', 'Way to go!', 'Super!', 'Yes!'];
 const RETRY = ['Oops, try again!', 'Not quite. Try again!', 'Hmm, try another one!'];
 const any = (a) => a[Math.floor(Math.random() * a.length)];
 
-export function runChoiceGame(root, game, { onHome }) {
+export function runChoiceGame(root, game, { onHome, onRestart }) {
   const total = game.rounds || 8;
-  const maxLevel = game.maxLevel || 1;
   const difficulty = store.getDifficulty(); // 0, 1, 2
-  let level = Math.min(store.game(game.id).level || 1, maxLevel);
+  const maxLevel = levelCap(game, difficulty);
+  let level = Math.min(store.level(game.id, difficulty), maxLevel);
   let index = 0;
   let streak = 0;
   let alive = true;
@@ -48,14 +51,20 @@ export function runChoiceGame(root, game, { onHome }) {
 
   const stars = el('div', { class: 'progress', 'aria-label': 'Progress' },
     Array.from({ length: total }, () => el('span', { class: 'dot' })));
-  const sayBtn = el('button', { class: 'icon-btn', 'aria-label': 'Say it again', onclick: () => current && speak(current.say, { force: true }) }, '🔊');
+  const sayBtn = el('button', {
+    class: 'icon-btn say-btn',
+    'aria-label': 'Say it again',
+    onclick: () => current && speak(current.say, { force: true }),
+  }, '🔊');
   const homeBtn = el('button', { class: 'icon-btn', 'aria-label': 'Home', onclick: onHome }, '🏠');
-  const soundBtn = soundToggle();
   const promptEl = el('h2', { class: 'prompt' });
   const visual = el('div', { class: 'visual' });
+  const nextRow = el('div', { class: 'next-row' });
   const choicesEl = el('div', { class: 'choices' });
 
-  root.append(el('header', { class: 'topbar' }, homeBtn, stars, sayBtn, soundBtn), promptEl, visual, choicesEl);
+  root.append(
+    el('header', { class: 'topbar' }, homeBtn, stars, el('div', { class: 'topbar-right' }, sayBtn, soundToggle())),
+    promptEl, visual, nextRow, choicesEl);
 
   function nextRound() {
     if (!alive) return;
@@ -66,6 +75,7 @@ export function runChoiceGame(root, game, { onHome }) {
     promptEl.textContent = current.text;
     visual.innerHTML = '';
     visual.className = 'visual';
+    nextRow.innerHTML = '';
     current.render?.(visual);
 
     choicesEl.innerHTML = '';
@@ -78,8 +88,7 @@ export function runChoiceGame(root, game, { onHome }) {
     }
     if (current.sayOnStart !== false) speak(current.say);
 
-    let autoAdvancing = true;
-  async function onPick(btn, choice) {
+    async function onPick(btn, choice) {
       if (!alive || btn.disabled || choicesEl.classList.contains('locked')) return;
       if (choice.correct) {
         choicesEl.classList.add('locked');
@@ -93,29 +102,26 @@ export function runChoiceGame(root, game, { onHome }) {
             el('div', { class: 'reveal-caption' }, current.reveal.caption));
         }
         stars.children[index].classList.add('on');
-        streak = misses === 0 ? streak + 1 : 0;
-        await speak(current.praise || any(PRAISE));
-        await wait(350);
         index++;
+        streak = misses === 0 ? streak + 1 : 0;
         if (streak >= 3 && level < maxLevel) {
           level++;
           streak = 0;
-          store.setGame(game.id, { level });
+          store.setLevel(game.id, difficulty, level);
         }
-        autoAdvancing = true;
-        function advance() {
-          if (!autoAdvancing) return;
-          if (index >= total) finish();
-          else nextRound();
-        }
-        sayBtn.onclick = () => {
-          if (alive && autoAdvancing) {
-            autoAdvancing = false;
-            speak(current.say);
-            advance();
-          }
-        };
-        advance();
+
+        // Wait for a press before moving on.
+        const last = index >= total;
+        nextRow.append(el('button', {
+          class: 'big-btn next-btn',
+          onclick: () => {
+            if (!alive) return;
+            hush();
+            if (last) finish();
+            else nextRound();
+          },
+        }, last ? 'Finish 🏆' : 'Next ➜'));
+        speak(current.praise || any(PRAISE));
       } else {
         misses++;
         streak = 0;
@@ -129,7 +135,7 @@ export function runChoiceGame(root, game, { onHome }) {
     }
   }
 
-  async function finish() {
+  function finish() {
     const s = store.get();
     store.setGame(game.id, { plays: (store.game(game.id).plays || 0) + 1 });
     const totalStars = store.addStar();
@@ -139,7 +145,7 @@ export function runChoiceGame(root, game, { onHome }) {
       el('h2', {}, s.name ? `Great job, ${s.name}!` : 'Great job!'),
       el('p', { class: 'earned' }, '+1 ⭐  ', el('span', {}, `You have ${totalStars} ${totalStars === 1 ? 'star' : 'stars'}!`)),
       el('div', { class: 'finish-actions' },
-        el('button', { class: 'big-btn again', onclick: () => runChoiceGame(root, game, { onHome }) }, '🔁 Play again'),
+        el('button', { class: 'big-btn again', onclick: () => (onRestart ? onRestart() : runChoiceGame(root, game, { onHome })) }, '🔁 Play again'),
         el('button', { class: 'big-btn home', onclick: onHome }, '🏠 Home'))));
     sfx.fanfare();
     burst({ count: 140 });

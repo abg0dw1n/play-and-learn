@@ -3,9 +3,8 @@
 const KEY = 'playlearn:v1';
 const defaults = () => ({ name: '', sound: true, stars: 0, games: {} });
 
-// Difficulty modes: 0 = First Steps (Beginner), 1 = Growing Strong (Medium), 2 = Super Star (Advanced)
-const DIFFICULTY_LABELS = ['First Steps 🐣', 'Growing Strong 🌱', 'Super Star ⭐'];
-const DIFFICULTY_KEY = 'difficulty';
+// Difficulty modes: 0 = First Steps, 1 = Growing Strong (default), 2 = Super Star
+export const DIFFICULTY_NAMES = ['First Steps', 'Growing Strong', 'Super Star'];
 
 function load() {
   try {
@@ -24,16 +23,34 @@ function save() {
 export const store = {
   get: () => state,
   set(patch) { state = { ...state, ...patch }; save(); },
-  game(id) { return state.games[id] || { level: 1, plays: 0 }; },
+  game(id) { return state.games[id] || { plays: 0 }; },
   setGame(id, patch) {
     state.games = { ...state.games, [id]: { ...store.game(id), ...patch } };
     save();
   },
   addStar(n = 1) { state.stars += n; save(); return state.stars; },
-  reset() { state = { ...defaults(), name: state.name }; save(); },
+  // Clears stars and levels; keeps name, sound and difficulty.
+  reset() {
+    state = { ...defaults(), name: state.name, sound: state.sound, difficulty: state.difficulty };
+    save();
+  },
 
-  // Difficulty helpers
-  getDifficulty() { return state[DIFFICULTY_KEY] ?? 1; }, // default to Medium (1)
-  setDifficulty(d) { state[DIFFICULTY_KEY] = Math.max(0, Math.min(2, d)); save(); },
-  getDifficultyLabel(d) { return DIFFICULTY_LABELS[store.getDifficulty()]; },
+  // Difficulty
+  getDifficulty() { return state.difficulty ?? 1; },
+  setDifficulty(d) { state.difficulty = Math.max(0, Math.min(2, d)); save(); },
+
+  // Each difficulty keeps its own level per game.
+  // (Older saves had a single `level`, which was Growing Strong.)
+  level(id, d) {
+    const g = state.games[id] || {};
+    return g.levels?.[d] ?? (d === 1 ? g.level : undefined) ?? 1;
+  },
+  setLevel(id, d, level) {
+    store.setGame(id, { levels: { ...(store.game(id).levels || {}), [d]: level } });
+  },
 };
+
+/** Highest level a game goes to on a given difficulty. */
+export function levelCap(game, d) {
+  return game.maxLevels?.[d] ?? game.maxLevel ?? 1;
+}

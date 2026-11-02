@@ -1,13 +1,10 @@
 // Home screen + simple hash router:  #/  (home)   #/play/<gameId>
 import { el } from './core/util.js';
-import { store } from './core/store.js';
+import { store, levelCap, DIFFICULTY_NAMES } from './core/store.js';
 import { speak, hush, soundToggle } from './core/voice.js';
 import { sfx } from './core/sfx.js';
 import { runChoiceGame } from './core/choice-game.js';
 import { games, comingSoon } from './games/index.js';
-
-const DIFFICULTY_LABELS = ['First Steps 🐣', 'Growing Strong 🌱', 'Super Star ⭐'];
-const DIFFICULTY_TEXT = ['First Steps', 'Growing Strong', 'Super Star'];
 
 const app = document.getElementById('app');
 let cleanup = null;
@@ -25,7 +22,8 @@ function route() {
   const game = page === 'play' && games.find((g) => g.id === id);
   if (game) {
     const run = game.run || runChoiceGame;
-    cleanup = run(app, game, { onHome: () => go('#/') });
+    // "Play again" goes back through route() so the old round is fully stopped first.
+    cleanup = run(app, game, { onHome: () => go('#/'), onRestart: route });
   } else {
     renderHome();
   }
@@ -65,21 +63,22 @@ function renderHome() {
     grownUpsButton());
 }
 
-// Difficulty picker (shown in header) — three small buttons instead of one pill
+// Difficulty picker (shown in header) — three segment buttons
 function difficultyPicker() {
   const wrap = el('div', { class: 'difficulty-picker' });
-  DIFFICULTY_TEXT.forEach((label, i) => {
+  const current = store.getDifficulty();
+  DIFFICULTY_NAMES.forEach((label, i) => {
     const btn = el('button', {
-      class: 'diff-btn',
+      class: `diff-btn${i === current ? ' on' : ''}`,
       'aria-label': `Difficulty: ${label}`,
-      'aria-pressed': i === store.getDifficulty(),
+      'aria-pressed': String(i === current),
       onclick: () => {
         store.setDifficulty(i);
         wrap.querySelectorAll('.diff-btn').forEach((b) => {
           b.classList.toggle('on', b === btn);
-          b.setAttribute('aria-pressed', b === btn);
+          b.setAttribute('aria-pressed', String(b === btn));
         });
-        if (store.get().sound) speak(label);
+        speak(label);
       },
     }, label);
     wrap.append(btn);
@@ -101,14 +100,16 @@ function grownUpsButton() {
 
 function openSettings() {
   const s = store.get();
+  const d = store.getDifficulty();
   const nameInput = el('input', { type: 'text', value: s.name, maxlength: 20, placeholder: "Child's first name", autocomplete: 'off' });
-  const levels = games.map((g) => el('li', {}, `${g.emoji} ${g.title}: level ${store.game(g.id).level || 1} of ${g.maxLevel || 1}, played ${store.game(g.id).plays || 0}×`));
+  const levels = games.map((g) => el('li', {},
+    `${g.emoji} ${g.title}: level ${Math.min(store.level(g.id, d), levelCap(g, d))} of ${levelCap(g, d)}, played ${store.game(g.id).plays || 0}×`));
 
   const dialog = el('dialog', { class: 'settings' },
     el('form', { method: 'dialog' },
       el('h2', {}, 'Grown-ups'),
       el('label', {}, 'Name (used in the greeting)', nameInput),
-      el('h3', {}, 'Progress on this device'),
+      el('h3', {}, `Progress on this device (${DIFFICULTY_NAMES[d]})`),
       el('ul', {}, levels, el('li', {}, `⭐ ${s.stars} stars`)),
       el('div', { class: 'settings-actions' },
         el('button', { type: 'button', class: 'link-danger', onclick: () => {

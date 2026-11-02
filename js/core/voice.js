@@ -42,16 +42,21 @@ export function hush() {
   if (supported) speechSynthesis.cancel();
 }
 
-/** A small button that toggles voice + sound effects on/off. */
+/** A small bell button that turns voice + sound effects on/off.
+    (A bell, so it can't be mistaken for the 🔊 "say it again" button.) */
 export function soundToggle() {
   const on = () => store.get().sound;
-  const btn = el('button', { class: 'icon-btn', 'aria-label': 'Toggle sounds' }, on() ? '🔊' : '🔇');
+  const label = (v) => (v ? 'Sounds on' : 'Sounds off');
+  const btn = el('button', { class: 'sound-btn', 'aria-label': label(on()), 'aria-pressed': String(on()) }, on() ? '🔔' : '🔕');
   btn.addEventListener('click', () => {
     const next = !on();
     store.set({ sound: next });
-    btn.textContent = next ? '🔊' : '🔇';
-    btn.setAttribute('aria-label', next ? 'Sounds on' : 'Sounds off');
+    btn.textContent = next ? '🔔' : '🔕';
+    btn.setAttribute('aria-label', label(next));
+    btn.setAttribute('aria-pressed', String(next));
+    btn.classList.toggle('off', !next);
     if (!next) hush();
   });
+  if (!on()) btn.classList.add('off');
   return btn;
 }
