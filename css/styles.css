@@ -120,26 +120,20 @@ button { font: inherit; color: inherit; cursor: pointer; touch-action: manipulat
 .reveal-emoji { font-size: 7rem; line-height: 1; }
 .reveal-caption { font-size: 2rem; font-weight: 700; margin-top: 6px; }
 
-.choices { display: grid; gap: 18px; grid-template-columns: repeat(3, 1fr); margin-top: auto; padding-bottom: 8px; }
-.choices[data-count="2"] {
-  grid-template-columns: repeat(2, 1fr);
-  justify-content: center;
-  max-width: 500px;
-  margin-left: auto;
-  margin-right: auto;
-  margin-top: 6px;
-  margin-bottom: 8px;
+/* Answer choices sit right under the picture, centered, same big buttons for every count
+   (each about 240px wide; 4–5 choices shrink only when the screen runs out of room). */
+.choices {
+  display: grid; gap: 18px; grid-template-columns: repeat(3, 1fr);
+  width: 100%; max-width: 760px; margin: 6px auto 8px;
 }
-.choices[data-count="4"] { grid-template-columns: repeat(4, 1fr); }
-.choices[data-count="5"] { grid-template-columns: repeat(5, 1fr); }
+.choices[data-count="2"] { grid-template-columns: repeat(2, 1fr); max-width: 500px; }
+.choices[data-count="4"] { grid-template-columns: repeat(4, 1fr); max-width: 1000px; }
+.choices[data-count="5"] { grid-template-columns: repeat(5, 1fr); max-width: 1000px; }
+.choices[data-count="5"] .choice.number { font-size: clamp(3rem, 10vw, 6.2rem); }
 
-.choices[data-count="2"] .choice {
-  font-size: clamp(3.8rem, 16vw, 8rem);
-  min-height: 140px;
-}
 .choice {
-  border: 0; border-radius: var(--radius); background: var(--paper); aspect-ratio: 1 / 1;
-  font-size: clamp(3.4rem, 14vw, 7rem); font-weight: 700; line-height: 1;
+  border: 0; border-radius: var(--radius); background: var(--paper); aspect-ratio: 1 / 1; min-height: 140px;
+  font-size: clamp(3.8rem, 16vw, 8rem); font-weight: 700; line-height: 1;
   box-shadow: 0 10px 0 color-mix(in srgb, var(--accent) 75%, #000 5%);
   color: var(--accent); transition: transform .1s ease, opacity .2s;
 }
@@ -209,6 +203,7 @@ button { font: inherit; color: inherit; cursor: pointer; touch-action: manipulat
 /* Phones: keep 4–5 choices fitting */
 @media (max-width: 480px) {
   .choices { gap: 12px; }
+  .choice { min-height: 0; }
   .choices[data-count="4"] { grid-template-columns: repeat(2, 1fr); }
   .choices[data-count="5"] { grid-template-columns: repeat(3, 1fr); }
   .choices[data-count="4"] .choice,
