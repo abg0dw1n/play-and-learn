@@ -6,11 +6,12 @@ import { el, pick, shuffle } from '../core/util.js';
 import { speak } from '../core/voice.js';
 import { WORDS, choiceCount } from '../data/words.js';
 
-// How the device voice says each sound. Spelled so text-to-speech reads it as a sound, not a
-// letter name. If one sounds wrong on her tablet, change it here.
+// How the device voice says each sound. Every one is a consonant + "uh" syllable, because
+// device voices spell out letter-only strings ("sss" comes out as "S S S"), but always read
+// a syllable like "suh" as a sound. If one sounds wrong on her device, change it here.
 export const SOUNDS = {
-  B: 'buh', C: 'kuh', D: 'duh', F: 'fff', G: 'guh', H: 'huh', J: 'juh', K: 'kuh', L: 'lll',
-  M: 'mmm', N: 'nnn', P: 'puh', R: 'rrr', S: 'sss', T: 'tuh', V: 'vvv', W: 'wuh', Y: 'yuh', Z: 'zzz',
+  B: 'buh', C: 'kuh', D: 'duh', F: 'fuh', G: 'guh', H: 'huh', J: 'juh', K: 'kuh', L: 'luh',
+  M: 'muh', N: 'nuh', P: 'puh', R: 'ruh', S: 'suh', T: 'tuh', V: 'vuh', W: 'wuh', Y: 'yuh', Z: 'zuh',
 };
 const ALL = Object.keys(SOUNDS);
 const FIRST_SOUNDS = ['M', 'S', 'T', 'B', 'P', 'F', 'N', 'D'];
