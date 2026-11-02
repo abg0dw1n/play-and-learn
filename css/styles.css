@@ -201,6 +201,31 @@ button { font: inherit; color: inherit; cursor: pointer; touch-action: manipulat
 .sticker-label { margin-top: 14px; font-size: 1.6rem; font-weight: 700; color: #e08a00; }
 .big-btn.book { --accent: #f4a100; }
 
+/* ---------- Sound Check (grown-ups) ---------- */
+.sc-title { color: #7b3fc4; }
+.sc-spacer { width: 64px; flex: none; }
+.sc-card {
+  background: var(--paper); border-radius: 20px; padding: 16px 18px; margin: 14px 0; box-shadow: 0 4px 0 rgba(0,0,0,.08);
+  font-size: 1.05rem; color: var(--soft-ink); user-select: text; -webkit-user-select: text;
+}
+.sc-card p { margin: 0 0 12px; }
+.sc-voice { display: flex; align-items: center; gap: 10px; font-weight: 700; color: var(--ink); margin-bottom: 12px; flex-wrap: wrap; }
+.voice-select { font: inherit; font-size: 1rem; padding: 8px 10px; border-radius: 12px; border: 2px solid #d6d9e8; max-width: 100%; flex: 1; min-width: 0; }
+.sc-play { font-size: 1.2rem; padding: 10px 24px; }
+.sc-list { display: flex; flex-direction: column; gap: 10px; padding-bottom: 20px; }
+.sc-row { display: flex; align-items: center; gap: 12px; background: rgba(255,255,255,.75); border-radius: 18px; padding: 8px 12px; }
+.sc-row.playing { outline: 4px solid #ffd93d; }
+.sc-letter { font-size: 2.2rem; font-weight: 700; width: 48px; text-align: center; color: var(--accent); flex: none; }
+.sc-opts { display: flex; flex-wrap: wrap; gap: 8px; }
+.sc-opt {
+  border: 2px solid #d6d9e8; background: #fff; border-radius: 999px; padding: 8px 14px; font-size: 1.1rem; font-weight: 600;
+}
+.sc-opt.on { background: var(--accent); border-color: var(--accent); color: #fff; }
+.sc-link {
+  display: block; width: 100%; margin: 4px 0 6px; padding: 10px 12px; border-radius: 12px; border: 2px solid #d6d9e8;
+  background: #f6f2ff; font-size: 1.05rem; font-weight: 600; text-align: left;
+}
+
 /* ---------- Finish ---------- */
 .finish { margin: auto; text-align: center; display: flex; flex-direction: column; align-items: center; gap: 6px; }
 .trophy { font-size: 9rem; animation: bounce 1.2s ease-in-out infinite; }

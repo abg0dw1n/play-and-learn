@@ -10,7 +10,7 @@ Live at https://play-and-learn-pi.vercel.app (every push to `main` deploys).
 - `sw.js` + `manifest.webmanifest` — add to home screen, works offline
 
 ## Games
-Letter Hunt, Letter Sounds (hear a word, pick the letter of its first sound; the voice only says real words — device voices spell out bare sounds like "sss"),
+Letter Hunt, Letter Sounds (hear "buh", tap B; spelling options per letter in `SOUND_OPTIONS`, picked per device on the Grown-ups Sound Check page `#/sound-check`, which also picks the voice),
 Count It!, Rhyme Time. Shared picture words live in `js/data/words.js`.
 
 ## Sticker book

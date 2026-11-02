@@ -29,9 +29,10 @@ export const store = {
     save();
   },
   addStar(n = 1) { state.stars += n; save(); return state.stars; },
-  // Clears stars and levels; keeps name, sound and difficulty.
+  // Clears stars, stickers and levels; keeps name, sound, difficulty, voice and Sound Check picks.
   reset() {
-    state = { ...defaults(), name: state.name, sound: state.sound, difficulty: state.difficulty };
+    const { name, sound, difficulty, voiceName, soundSpellings } = state;
+    state = { ...defaults(), name, sound, difficulty, voiceName, soundSpellings };
     save();
   },
 

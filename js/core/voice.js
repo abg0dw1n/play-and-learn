@@ -6,8 +6,34 @@ const supported = typeof window !== 'undefined' && 'speechSynthesis' in window;
 const PREFERRED = ['Samantha', 'Google US English', 'Microsoft Aria', 'Microsoft Jenny', 'Ava', 'Allison', 'Karen'];
 let voice = null;
 
+/** English voices installed on this device (for the Grown-ups voice picker). */
+export function englishVoices() {
+  if (!supported) return [];
+  return speechSynthesis.getVoices().filter((v) => v.lang?.toLowerCase().startsWith('en'));
+}
+
+/** Use a specific voice by name ('' = automatic). Saved on this device. */
+export function setVoice(name) {
+  store.set({ voiceName: name || '' });
+  voice = chooseVoice();
+}
+
+export function currentVoiceName() { return voice?.name || ''; }
+
+/** Run fn now and again whenever the device finishes loading its voices. */
+export function onVoicesReady(fn) {
+  if (!supported) return;
+  fn();
+  speechSynthesis.addEventListener?.('voiceschanged', fn);
+}
+
 function chooseVoice() {
   const voices = speechSynthesis.getVoices();
+  const picked = store.get().voiceName;
+  if (picked) {
+    const v = voices.find((x) => x.name === picked);
+    if (v) return v;
+  }
   for (const name of PREFERRED) {
     const v = voices.find((x) => x.name.includes(name));
     if (v) return v;

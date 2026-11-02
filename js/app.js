@@ -5,6 +5,7 @@ import { speak, hush, soundToggle } from './core/voice.js';
 import { sfx } from './core/sfx.js';
 import { runChoiceGame } from './core/choice-game.js';
 import { owned, STICKERS, renderStickerBook } from './core/stickers.js';
+import { renderSoundCheck } from './core/sound-check.js';
 import { games, comingSoon } from './games/index.js';
 
 const app = document.getElementById('app');
@@ -27,6 +28,8 @@ function route() {
     cleanup = run(app, game, { onHome: () => go('#/'), onRestart: route, onStickers: () => go('#/stickers') });
   } else if (page === 'stickers') {
     cleanup = renderStickerBook(app, { onHome: () => go('#/') });
+  } else if (page === 'sound-check') {
+    cleanup = renderSoundCheck(app, { onHome: () => go('#/') });
   } else {
     renderHome();
   }
@@ -121,6 +124,7 @@ function openSettings() {
     el('form', { method: 'dialog' },
       el('h2', {}, 'Grown-ups'),
       el('label', {}, 'Name (used in the greeting)', nameInput),
+      el('button', { value: 'soundcheck', class: 'sc-link' }, '🔊 Sound Check: voice and letter sounds'),
       el('h3', {}, `Progress on this device (${DIFFICULTY_NAMES[d]})`),
       el('ul', {}, levels, el('li', {}, `⭐ ${s.stars} stars, 📒 ${owned().length} of ${STICKERS.length} stickers`)),
       el('div', { class: 'settings-actions' },
@@ -130,9 +134,10 @@ function openSettings() {
         el('button', { value: 'save', class: 'big-btn' }, 'Done'))));
 
   dialog.addEventListener('close', () => {
-    if (dialog.returnValue === 'save') store.set({ name: nameInput.value.trim() });
+    if (dialog.returnValue === 'save' || dialog.returnValue === 'soundcheck') store.set({ name: nameInput.value.trim() });
     dialog.remove();
-    renderHome();
+    if (dialog.returnValue === 'soundcheck') go('#/sound-check');
+    else renderHome();
   });
   document.body.append(dialog);
   dialog.showModal();
