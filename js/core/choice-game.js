@@ -10,6 +10,7 @@
     key:     anything used to avoid repeats (kept in `history`)
     text:    short on-screen prompt (for grown-ups / early readers)
     say:     what the voice says
+    sayOnStart?: false   // if false, don't speak `say` when the round opens — 🔊 still says it
     choices: [{ label, correct, say?, className? }]
     render?: (visualEl) => void     draw a picture / objects above the choices
     praise?: spoken after a correct answer
@@ -71,7 +72,7 @@ export function runChoiceGame(root, game, { onHome }) {
       btn.addEventListener('click', () => onPick(btn, choice));
       choicesEl.append(btn);
     }
-    speak(current.say);
+    if (current.sayOnStart !== false) speak(current.say);
 
     async function onPick(btn, choice) {
       if (!alive || btn.disabled || choicesEl.classList.contains('locked')) return;

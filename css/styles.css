@@ -87,7 +87,9 @@ button { font: inherit; color: inherit; cursor: pointer; touch-action: manipulat
 .prompt { text-align: center; font-size: clamp(1.8rem, 6vw, 2.8rem); margin: 18px 0 6px; }
 
 .visual { min-height: 180px; display: flex; align-items: center; justify-content: center; margin: 6px 0 14px; }
-.ear { font-size: 6rem; animation: wiggle 1.6s ease-in-out infinite; }
+.word-pic { display: flex; flex-direction: column; align-items: center; gap: 4px; animation: pop .4s ease-out; }
+.word-emoji { font-size: 6rem; line-height: 1; }
+.word-label { font-size: 1.6rem; font-weight: 700; color: var(--soft-ink); text-transform: capitalize; }
 .reveal { flex-direction: column; animation: pop .35s ease-out; }
 .reveal-emoji { font-size: 7rem; line-height: 1; }
 .reveal-caption { font-size: 2rem; font-weight: 700; margin-top: 6px; }

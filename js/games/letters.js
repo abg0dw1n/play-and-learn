@@ -1,4 +1,4 @@
-// Letter Hunt — hear a letter, tap it. Levels: 3 capitals → 4 capitals → 3 lowercase → 4 lowercase.
+// Letter Hunt — hear the word, find its letter. Levels: 3 capitals → 4 capitals → 3 lowercase → 4 lowercase.
 import { el, pick, shuffle } from '../core/util.js';
 
 const WORDS = {
@@ -35,9 +35,10 @@ export default {
     return {
       key: target,
       text: lower ? 'Find the little letter!' : 'Find the letter!',
-      say: lower ? `Find the little letter ${target}.` : `Find the letter ${target}.`,
+      say: word,
+      sayOnStart: false,
       choices: shuffle([target, ...others]).map((l) => ({ label: show(l), correct: l === target, className: 'letter' })),
-      render: (v) => v.append(el('div', { class: 'ear' }, '👂')),
+      render: (v) => v.append(el('div', { class: 'word-pic' }, el('span', { class: 'word-emoji' }, emoji), el('span', { class: 'word-label' }, word))),
       reveal: { emoji, caption },
       praise: target === 'X' ? `Yes! X is in ${word}!` : `Yes! ${target} is for ${word}!`,
     };
