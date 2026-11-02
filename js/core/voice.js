@@ -1,4 +1,5 @@
 // Spoken prompts using the browser's built-in voice (free, works offline on most tablets).
+import { el } from './util.js';
 import { store } from './store.js';
 
 const supported = typeof window !== 'undefined' && 'speechSynthesis' in window;
@@ -39,4 +40,18 @@ export function speak(text, { rate = 0.88, pitch = 1.1 } = {}) {
 
 export function hush() {
   if (supported) speechSynthesis.cancel();
+}
+
+/** A small button that toggles voice + sound effects on/off. */
+export function soundToggle() {
+  const on = () => store.get().sound;
+  const btn = el('button', { class: 'icon-btn', 'aria-label': 'Toggle sounds' }, on() ? '🔊' : '🔇');
+  btn.addEventListener('click', () => {
+    const next = !on();
+    store.set({ sound: next });
+    btn.textContent = next ? '🔊' : '🔇';
+    btn.setAttribute('aria-label', next ? 'Sounds on' : 'Sounds off');
+    if (!next) hush();
+  });
+  return btn;
 }

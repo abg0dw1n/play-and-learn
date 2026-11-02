@@ -1,7 +1,7 @@
 // Home screen + simple hash router:  #/  (home)   #/play/<gameId>
 import { el } from './core/util.js';
 import { store } from './core/store.js';
-import { speak, hush } from './core/voice.js';
+import { speak, hush, soundToggle } from './core/voice.js';
 import { sfx } from './core/sfx.js';
 import { runChoiceGame } from './core/choice-game.js';
 import { games, comingSoon } from './games/index.js';
@@ -54,7 +54,8 @@ function renderHome() {
   app.append(
     el('header', { class: 'home-head' },
       el('h1', {}, name ? `Hi, ${name}!` : 'Play & Learn'),
-      el('div', { class: 'star-count', 'aria-label': `${stars} stars` }, '⭐ ', stars)),
+      el('div', { class: 'star-count', 'aria-label': `${stars} stars` }, '⭐ ', stars),
+      soundToggle()),
     el('p', { class: 'home-sub' }, 'Pick a game!'),
     el('section', { class: 'tiles' }, tiles, soon),
     grownUpsButton());
@@ -75,14 +76,12 @@ function grownUpsButton() {
 function openSettings() {
   const s = store.get();
   const nameInput = el('input', { type: 'text', value: s.name, maxlength: 20, placeholder: "Child's first name", autocomplete: 'off' });
-  const soundInput = el('input', { type: 'checkbox', ...(s.sound ? { checked: true } : {}) });
   const levels = games.map((g) => el('li', {}, `${g.emoji} ${g.title}: level ${store.game(g.id).level || 1} of ${g.maxLevel || 1}, played ${store.game(g.id).plays || 0}×`));
 
   const dialog = el('dialog', { class: 'settings' },
     el('form', { method: 'dialog' },
       el('h2', {}, 'Grown-ups'),
       el('label', {}, 'Name (used in the greeting)', nameInput),
-      el('label', { class: 'row' }, soundInput, 'Voice and sounds on'),
       el('h3', {}, 'Progress on this device'),
       el('ul', {}, levels, el('li', {}, `⭐ ${s.stars} stars`)),
       el('div', { class: 'settings-actions' },
@@ -92,7 +91,7 @@ function openSettings() {
         el('button', { value: 'save', class: 'big-btn' }, 'Done'))));
 
   dialog.addEventListener('close', () => {
-    if (dialog.returnValue === 'save') store.set({ name: nameInput.value.trim(), sound: soundInput.checked });
+    if (dialog.returnValue === 'save') store.set({ name: nameInput.value.trim() });
     dialog.remove();
     renderHome();
   });

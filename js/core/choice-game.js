@@ -20,7 +20,7 @@
   Scanned worksheets will later be turned into these same round objects.
 */
 import { el, wait } from './util.js';
-import { speak, hush } from './voice.js';
+import { speak, hush, soundToggle } from './voice.js';
 import { sfx } from './sfx.js';
 import { burst, burstAt } from './confetti.js';
 import { store } from './store.js';
@@ -47,11 +47,12 @@ export function runChoiceGame(root, game, { onHome }) {
     Array.from({ length: total }, () => el('span', { class: 'dot' })));
   const sayBtn = el('button', { class: 'icon-btn', 'aria-label': 'Say it again', onclick: () => current && speak(current.say) }, '🔊');
   const homeBtn = el('button', { class: 'icon-btn', 'aria-label': 'Home', onclick: onHome }, '🏠');
+  const soundBtn = soundToggle();
   const promptEl = el('h2', { class: 'prompt' });
   const visual = el('div', { class: 'visual' });
   const choicesEl = el('div', { class: 'choices' });
 
-  root.append(el('header', { class: 'topbar' }, homeBtn, stars, sayBtn), promptEl, visual, choicesEl);
+  root.append(el('header', { class: 'topbar' }, homeBtn, stars, sayBtn, soundBtn), promptEl, visual, choicesEl);
 
   function nextRound() {
     if (!alive) return;
