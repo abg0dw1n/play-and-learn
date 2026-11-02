@@ -1,4 +1,4 @@
-// Home screen + simple hash router:  #/  (home)   #/play/<gameId>   #/stickers
+// Home screen + simple hash router:  #/  (home)   #/play/<gameId>   #/stickers   #/sound-check
 import { el } from './core/util.js';
 import { store, levelCap, DIFFICULTY_NAMES } from './core/store.js';
 import { speak, hush, soundToggle } from './core/voice.js';
@@ -46,7 +46,7 @@ function renderHome() {
     el('button', {
       class: 'tile',
       style: { '--accent': g.color },
-      onclick: () => { sfx.tap(); speak(g.title); go(`#/play/${g.id}`); },
+      onclick: () => { sfx.tap(); go(`#/play/${g.id}`); },
     },
     el('span', { class: 'tile-emoji' }, g.emoji),
     el('span', { class: 'tile-title' }, g.title),
@@ -55,7 +55,7 @@ function renderHome() {
   const book = el('button', {
     class: 'tile book-tile',
     style: { '--accent': '#f4a100' },
-    onclick: () => { sfx.tap(); speak('My stickers'); go('#/stickers'); },
+    onclick: () => { sfx.tap(); go('#/stickers'); },
   },
   el('span', { class: 'tile-emoji' }, '📒'),
   el('span', { class: 'tile-title' }, 'My Stickers'),
@@ -124,12 +124,13 @@ function openSettings() {
     el('form', { method: 'dialog' },
       el('h2', {}, 'Grown-ups'),
       el('label', {}, 'Name (used in the greeting)', nameInput),
-      el('button', { value: 'soundcheck', class: 'sc-link' }, '🔊 Sound Check: voice and letter sounds'),
+      // type=button so pressing Enter in the name box saves (Done) instead of opening Sound Check
+      el('button', { type: 'button', class: 'sc-link', onclick: () => dialog.close('soundcheck') }, '🔊 Sound Check: voice and letter sounds'),
       el('h3', {}, `Progress on this device (${DIFFICULTY_NAMES[d]})`),
       el('ul', {}, levels, el('li', {}, `⭐ ${s.stars} stars, 📒 ${owned().length} of ${STICKERS.length} stickers`)),
       el('div', { class: 'settings-actions' },
         el('button', { type: 'button', class: 'link-danger', onclick: () => {
-          if (confirm('Reset stars, stickers and levels on this device?')) { store.reset(); dialog.close(); renderHome(); }
+          if (confirm('Reset stars, stickers and levels on this device?')) { store.reset(); dialog.close(); }
         } }, 'Reset progress'),
         el('button', { value: 'save', class: 'big-btn' }, 'Done'))));
 

@@ -8,9 +8,10 @@ let running = false;
 function canvas() {
   const c = document.getElementById('confetti');
   const dpr = window.devicePixelRatio || 1;
-  if (c.width !== innerWidth * dpr) {
-    c.width = innerWidth * dpr;
-    c.height = innerHeight * dpr;
+  // Resize when either side changes (rotating a tablet, a phone's address bar hiding).
+  if (c.width !== Math.round(innerWidth * dpr) || c.height !== Math.round(innerHeight * dpr)) {
+    c.width = Math.round(innerWidth * dpr);
+    c.height = Math.round(innerHeight * dpr);
   }
   const g = c.getContext('2d');
   g.setTransform(dpr, 0, 0, dpr, 0, 0);

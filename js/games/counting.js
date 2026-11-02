@@ -3,6 +3,7 @@
 import { el, pick, rand, shuffle } from '../core/util.js';
 import { speak } from '../core/voice.js';
 import { sfx } from '../core/sfx.js';
+import { choiceCount } from '../data/words.js';
 
 const THINGS = [
   ['🍎', 'apple', 'apples'], ['🐞', 'ladybug', 'ladybugs'], ['⭐', 'star', 'stars'],
@@ -20,7 +21,7 @@ function choicesFor(n, max, count) {
 
 // Per difficulty: the biggest number at each level, and answer choices (grow by one every two levels).
 const DIFF_CONFIG = [
-  { maxPerLevel: [3, 5], minChoices: 2, maxChoices: 3 },             // First Steps
+  { maxPerLevel: [3, 5], minChoices: 2, maxChoices: 2 },             // First Steps
   { maxPerLevel: [5, 10, 10], minChoices: 3, maxChoices: 4 },        // Growing Strong
   { maxPerLevel: [10, 15, 20, 20], minChoices: 4, maxChoices: 5 },   // Super Star
 ];
@@ -37,7 +38,7 @@ export default {
   makeRound(level, history, difficulty = 1) {
     const cfg = DIFF_CONFIG[difficulty] || DIFF_CONFIG[1];
     const max = cfg.maxPerLevel[Math.min(level - 1, cfg.maxPerLevel.length - 1)];
-    const count = Math.min(cfg.minChoices + Math.floor((level - 1) / 2), cfg.maxChoices);
+    const count = choiceCount(level, cfg.minChoices, cfg.maxChoices);
     let n;
     do { n = 1 + rand(max); } while (history.slice(-2).includes(n));
     const [emoji, one, many] = pick(THINGS);

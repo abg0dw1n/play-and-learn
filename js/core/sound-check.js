@@ -1,12 +1,11 @@
 // Grown-ups "Sound Check": hear every Letter Sounds sound on this device, pick a different
 // spelling for any the voice reads wrong (e.g. spells "zuh" out as "Z U H"), and choose a voice.
-import { el } from './util.js';
+import { el, wait } from './util.js';
 import { store } from './store.js';
 import { speak, hush, englishVoices, setVoice, currentVoiceName, onVoicesReady } from './voice.js';
 import { SOUND_OPTIONS, soundFor, soundPrompt } from '../games/sounds.js';
 
 export function renderSoundCheck(root, { onHome }) {
-  let alive = true;
   root.innerHTML = '';
   root.className = 'screen sound-check';
   root.style.setProperty('--accent', '#9b5de5');
@@ -23,7 +22,7 @@ export function renderSoundCheck(root, { onHome }) {
       select.append(opt);
     }
   };
-  onVoicesReady(() => alive && fillVoices());
+  const stopVoices = onVoicesReady(fillVoices);
   select.addEventListener('change', () => {
     setVoice(select.value);
     fillVoices();
@@ -52,21 +51,29 @@ export function renderSoundCheck(root, { onHome }) {
   });
 
   // Play every letter's chosen sound in a row, to find the ones that come out wrong.
+  // Each run gets a number; Stop (or leaving the page) bumps it, so an older run that is
+  // still waiting on the voice quits instead of carrying on alongside a new one.
   const playAll = el('button', { class: 'big-btn sc-play' }, '▶ Play all');
+  let run = 0;
   let playing = false;
+  const stopPlaying = () => {
+    run++;
+    playing = false;
+    rows.forEach((r) => r.classList.remove('playing'));
+    playAll.textContent = '▶ Play all';
+  };
   playAll.addEventListener('click', async () => {
-    if (playing) { playing = false; hush(); playAll.textContent = '▶ Play all'; return; }
+    if (playing) { stopPlaying(); hush(); return; }
+    const me = ++run;
     playing = true;
     playAll.textContent = '■ Stop';
     for (const [i, L] of Object.keys(SOUND_OPTIONS).entries()) {
-      if (!playing || !alive) break;
+      if (me !== run) return;
       rows.forEach((r, j) => r.classList.toggle('playing', j === i));
       await speak(`${L}. ${soundFor(L)}.`, { force: true });
-      await new Promise((r) => setTimeout(r, 250));
+      await wait(250);
     }
-    rows.forEach((r) => r.classList.remove('playing'));
-    playing = false;
-    playAll.textContent = '▶ Play all';
+    if (me === run) stopPlaying();
   });
 
   root.append(
@@ -82,5 +89,5 @@ export function renderSoundCheck(root, { onHome }) {
       playAll),
     el('div', { class: 'sc-list' }, rows));
 
-  return () => { alive = false; playing = false; hush(); };
+  return () => { run++; stopVoices(); hush(); };
 }

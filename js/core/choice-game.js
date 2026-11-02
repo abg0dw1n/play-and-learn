@@ -71,25 +71,26 @@ export function runChoiceGame(root, game, { onHome, onRestart, onStickers }) {
 
   function nextRound() {
     if (!alive) return;
-    current = game.makeRound(level, history, difficulty);
-    history.push(current.key);
+    const round = game.makeRound(level, history, difficulty);
+    current = round;
+    history.push(round.key);
     let misses = 0;
 
-    promptEl.textContent = current.text;
+    promptEl.textContent = round.text;
     visual.innerHTML = '';
     visual.className = 'visual';
     nextRow.innerHTML = '';
-    current.render?.(visual);
+    round.render?.(visual);
 
     choicesEl.innerHTML = '';
     choicesEl.classList.remove('locked');
-    choicesEl.dataset.count = current.choices.length;
-    for (const choice of current.choices) {
+    choicesEl.dataset.count = round.choices.length;
+    for (const choice of round.choices) {
       const btn = el('button', { class: `choice ${choice.className || ''}`, 'data-correct': choice.correct ? '1' : null }, choice.label);
       btn.addEventListener('click', () => onPick(btn, choice));
       choicesEl.append(btn);
     }
-    if (current.sayOnStart !== false) speak(current.say);
+    if (round.sayOnStart !== false) speak(round.say);
 
     async function onPick(btn, choice) {
       if (!alive || btn.disabled || choicesEl.classList.contains('locked')) return;
@@ -98,11 +99,11 @@ export function runChoiceGame(root, game, { onHome, onRestart, onStickers }) {
         btn.classList.add('right');
         sfx.yes();
         burstAt(btn);
-        if (current.reveal) {
+        if (round.reveal) {
           visual.innerHTML = '';
           visual.className = 'visual reveal';
-          visual.append(el('div', { class: 'reveal-emoji' }, current.reveal.emoji),
-            el('div', { class: 'reveal-caption' }, current.reveal.caption));
+          visual.append(el('div', { class: 'reveal-emoji' }, round.reveal.emoji),
+            el('div', { class: 'reveal-caption' }, round.reveal.caption));
         }
         stars.children[index].classList.add('on');
         index++;
@@ -124,7 +125,7 @@ export function runChoiceGame(root, game, { onHome, onRestart, onStickers }) {
             else nextRound();
           },
         }, last ? 'Finish 🏆' : 'Next ➜'));
-        speak(current.praise || any(PRAISE));
+        speak(round.praise || any(PRAISE));
       } else {
         misses++;
         streak = 0;
@@ -132,9 +133,10 @@ export function runChoiceGame(root, game, { onHome, onRestart, onStickers }) {
         btn.classList.add('wrong');
         sfx.oops();
         if (misses >= 2) choicesEl.querySelector('[data-correct]')?.classList.add('hint');
-        current.onMiss?.(visual, misses);
+        round.onMiss?.(visual, misses);
         await speak(any(RETRY));
-        if (alive && !choicesEl.classList.contains('locked')) speak(current.retrySay || current.say);
+        // Only if she's still on this same question and hasn't answered it yet.
+        if (alive && current === round && !choicesEl.classList.contains('locked')) speak(round.retrySay || round.say);
       }
     }
   }

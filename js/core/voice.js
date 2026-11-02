@@ -20,11 +20,13 @@ export function setVoice(name) {
 
 export function currentVoiceName() { return voice?.name || ''; }
 
-/** Run fn now and again whenever the device finishes loading its voices. */
+/** Run fn now and again whenever the device finishes loading its voices.
+    Returns a function that stops listening. */
 export function onVoicesReady(fn) {
-  if (!supported) return;
+  if (!supported) return () => {};
   fn();
   speechSynthesis.addEventListener?.('voiceschanged', fn);
+  return () => speechSynthesis.removeEventListener?.('voiceschanged', fn);
 }
 
 function chooseVoice() {

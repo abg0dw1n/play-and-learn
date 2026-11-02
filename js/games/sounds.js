@@ -77,8 +77,13 @@ export default {
     let target;
     do { target = pick(cfg.targets); } while (recent.includes(target));
 
-    const pool = cfg.targets.filter((l) => l !== target && l !== SAME_SOUND[target]);
-    const others = shuffle(pool).slice(0, count - 1);
+    // Wrong choices: never C and K together (same sound), whether or not one is the answer.
+    const others = [];
+    for (const l of shuffle(cfg.targets)) {
+      if (others.length === count - 1) break;
+      const taken = [target, ...others];
+      if (!taken.includes(l) && !taken.includes(SAME_SOUND[l])) others.push(l);
+    }
     const show = (l) => (lower ? l.toLowerCase() : l);
     const sound = soundFor(target);
     const [word, emoji] = WORDS[target];

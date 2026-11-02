@@ -6,12 +6,19 @@ const defaults = () => ({ name: '', sound: true, stars: 0, games: {} });
 // Difficulty modes: 0 = First Steps, 1 = Growing Strong (default), 2 = Super Star
 export const DIFFICULTY_NAMES = ['First Steps', 'Growing Strong', 'Super Star'];
 
+// Read saved progress, repairing anything missing or damaged so the app always starts.
 function load() {
-  try {
-    return { ...defaults(), ...JSON.parse(localStorage.getItem(KEY) || '{}') };
-  } catch {
-    return defaults();
-  }
+  let saved = {};
+  try { saved = JSON.parse(localStorage.getItem(KEY) || '{}'); } catch { /* damaged or blocked */ }
+  if (!saved || typeof saved !== 'object' || Array.isArray(saved)) saved = {};
+  const s = { ...defaults(), ...saved };
+  if (!s.games || typeof s.games !== 'object' || Array.isArray(s.games)) s.games = {};
+  if (!Number.isFinite(s.stars) || s.stars < 0) s.stars = 0;
+  if (typeof s.name !== 'string') s.name = '';
+  if (typeof s.sound !== 'boolean') s.sound = true;
+  if (![0, 1, 2].includes(s.difficulty)) delete s.difficulty;
+  if (s.stickers != null && !Array.isArray(s.stickers)) delete s.stickers;
+  return s;
 }
 
 let state = load();
