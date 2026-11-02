@@ -65,21 +65,26 @@ function renderHome() {
     grownUpsButton());
 }
 
-// Difficulty picker (shown in header)
+// Difficulty picker (shown in header) — three small buttons instead of one pill
 function difficultyPicker() {
-  const btn = el('button', { class: 'icon-btn difficulty-picker', 'aria-label': 'Change difficulty' }, DIFFICULTY_LABELS[store.getDifficulty()]);
-  function refresh() {
-    const d = store.getDifficulty();
-    btn.textContent = DIFFICULTY_LABELS[d];
-    btn.setAttribute('aria-label', `Difficulty: ${DIFFICULTY_TEXT[d]}`);
-  }
-  btn.addEventListener('click', () => {
-    const next = (store.getDifficulty() + 1) % 3;
-    store.setDifficulty(next);
-    refresh();
-    if (store.get().sound) speak(DIFFICULTY_TEXT[next]);
+  const wrap = el('div', { class: 'difficulty-picker' });
+  DIFFICULTY_TEXT.forEach((label, i) => {
+    const btn = el('button', {
+      class: 'diff-btn',
+      'aria-label': `Difficulty: ${label}`,
+      'aria-pressed': i === store.getDifficulty(),
+      onclick: () => {
+        store.setDifficulty(i);
+        wrap.querySelectorAll('.diff-btn').forEach((b) => {
+          b.classList.toggle('on', b === btn);
+          b.setAttribute('aria-pressed', b === btn);
+        });
+        if (store.get().sound) speak(label);
+      },
+    }, label);
+    wrap.append(btn);
   });
-  return btn;
+  return wrap;
 }
 
 // Press-and-hold so little fingers don't wander into settings.

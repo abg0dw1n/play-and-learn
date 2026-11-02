@@ -47,13 +47,17 @@ button { font: inherit; color: inherit; cursor: pointer; touch-action: manipulat
   box-shadow: 0 5px 0 #f0c94d;
 }
 .difficulty-picker {
-  width: auto; min-width: 0; height: 64px; flex: none; border: 0; border-radius: 999px; background: var(--paper);
-  font-size: 1.15rem; font-weight: 700; padding: 0 14px; box-shadow: 0 5px 0 rgba(0,0,0,.15);
-  white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 42vw;
+  display: flex; gap: 8px; align-items: center; flex: none;
 }
-.difficulty-picker:active { transform: translateY(4px); box-shadow: 0 1px 0 rgba(0,0,0,.15); }
+.diff-btn {
+  border: 0; border-radius: 999px; background: var(--paper); color: var(--soft-ink);
+  font-size: 1.05rem; font-weight: 700; padding: 8px 14px; box-shadow: 0 4px 0 rgba(0,0,0,.12);
+  white-space: nowrap;
+}
+.diff-btn.on { background: var(--accent); color: #fff; box-shadow: 0 4px 0 color-mix(in srgb, var(--accent) 70%, #000 25%); }
+.diff-btn:active { transform: translateY(3px); box-shadow: 0 1px 0 rgba(0,0,0,.15); }
 @media (max-width: 480px) {
-  .difficulty-picker { font-size: 1rem; padding: 0 10px; max-width: 46vw; }
+  .diff-btn { font-size: .95rem; padding: 7px 10px; }
 }
 .home-sub { font-size: 1.5rem; margin: 6px 0 20px; color: var(--soft-ink); font-weight: 600; }
 
