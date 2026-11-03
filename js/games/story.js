@@ -1,6 +1,7 @@
 // Story Time — a short story is read aloud (and shown), then a question about it.
 // Early levels: short stories, the answer is stated. Later: longer stories, "why" and "how many".
 import { el, pick, shuffle } from '../core/util.js';
+import { speak } from '../core/voice.js';
 
 // { s: sentences, q: question, a: answer, w: wrong answers, e: picture, hard?: true }
 const STORIES = [
@@ -55,7 +56,11 @@ export default {
       say: [...st.s, st.q],
       retrySay: [st.q],
       choices: shuffle([st.a, ...wrong]).map((w) => ({ label: w, correct: w === st.a, className: 'word' })),
-      render(v) { v.append(el('div', { class: 'story' }, st.s.map((x) => el('p', {}, x)))); },
+      render(v) {
+        v.append(el('div', { class: 'story-wrap' },
+          el('div', { class: 'story' }, st.s.map((x) => el('p', {}, x))),
+          el('button', { class: 'hear-btn', type: 'button', 'aria-label': 'Hear the story again', onclick: () => speak(st.s, { force: true }) }, '🔊 Read the story again')));
+      },
       reveal: { emoji: st.e, caption: st.a },
       praise: ['Yes!', `${st.a}.`],
     };

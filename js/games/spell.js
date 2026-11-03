@@ -1,6 +1,7 @@
 // Build a Word — hear a word, see its picture, and tap the letters in order to spell it.
 // Short sounded-out words first (cat), then longer ones (frog, apple).
 import { el, pick, shuffle } from '../core/util.js';
+import { speak } from '../core/voice.js';
 import { BY_LENGTH, LOWER, VOWELS } from '../data/reading.js';
 
 // Per difficulty, one entry per level: word length and how many letters to choose from.
@@ -54,7 +55,10 @@ export default {
       get retrySay() { return [`${word}.`, pos === 0 ? 'What is the first letter?' : 'What letter comes next?']; },
       choices: lettersFor(word[0], cfg.n),
       render(v) {
-        v.append(el('div', { class: 'spell-box' }, el('div', { class: 'word-emoji' }, emoji), slots));
+        v.append(el('div', { class: 'spell-box' },
+          el('div', { class: 'word-emoji' }, emoji),
+          el('button', { class: 'hear-btn', type: 'button', 'aria-label': 'Hear the word again', onclick: () => speak(`${word}.`, { force: true }) }, '🔊 Say the word'),
+          slots));
       },
       advance() {
         pos++;

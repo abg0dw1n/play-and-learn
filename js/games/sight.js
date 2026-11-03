@@ -94,7 +94,11 @@ export default {
       say: spoken,
       retrySay: spoken,
       choices: shuffle([answer, ...wrong]).map((w) => ({ label: w, correct: w === answer, className: 'word' })),
-      render(v) { v.append(el('div', { class: 'sentence' }, sentence.replace('___', '＿＿＿'))); },
+      render(v) {
+        v.append(el('div', { class: 'sentence-wrap' },
+          el('div', { class: 'sentence' }, sentence.replace('___', '＿＿＿')),
+          el('button', { class: 'hear-btn', type: 'button', 'aria-label': 'Hear the sentence again', onclick: () => speak(spoken.slice(1), { force: true }) }, '🔊 Read it again')));
+      },
       reveal: { emoji: '📝', caption: sentenceWith(sentence, answer) },
       praise: ['Yes!', sentenceWith(sentence, answer)],
     };
