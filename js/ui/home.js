@@ -8,6 +8,17 @@ import { owned, STICKERS } from '../core/stickers.js';
 import { games, worlds } from '../games/index.js';
 
 export const PIP_GREETING = "Hi! I'm Pip. What do you want to play?";
+const PIP_INTRO = "I'm Pip. What do you want to play?"; // recorded separately so a name can go between "Hi" and this
+
+/** The greeting text shown in the bubble: personal if a grown-up has set her name. */
+export function greetingText(name) {
+  return name ? `Hi, ${name}! ${PIP_INTRO}` : PIP_GREETING;
+}
+
+/** What to pass to speak(): the recorded "Hi" and intro clips, with her name (device voice) between them. */
+function greetingSpeech(name) {
+  return name ? ['Hi', name, PIP_INTRO] : PIP_GREETING;
+}
 
 /** Pip you can tap: waves, winks and says something. */
 function tappablePip(size, line) {
@@ -29,7 +40,8 @@ export function renderHome(root, { go, onGrownUps }) {
   root.className = 'screen home';
   root.style.removeProperty('--accent');
   root.innerHTML = '';
-  const { stars } = store.get();
+  const { stars, name } = store.get();
+  const greetText = greetingText(name);
 
   const tile = (emoji, title, color, hash, extra = '') => el('button', {
     class: 'tile world-tile', style: { '--accent': color }, 'aria-label': title,
@@ -38,8 +50,8 @@ export function renderHome(root, { go, onGrownUps }) {
 
   root.append(
     el('header', { class: 'home-head' },
-      tappablePip(120, PIP_GREETING),
-      el('div', { class: 'bubble' }, PIP_GREETING),
+      tappablePip(120, greetingSpeech(name)),
+      el('div', { class: 'bubble' }, greetText),
       el('div', { class: 'home-right' },
         el('div', { class: 'star-count', 'aria-label': `${stars} stars` }, '⭐ ', stars),
         soundToggle({ label: true }))),
