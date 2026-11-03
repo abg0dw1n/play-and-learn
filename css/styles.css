@@ -491,7 +491,7 @@ body:not([data-page='home'])::before { opacity: .4; }
   .world-games { grid-template-columns: repeat(3, 1fr); }
   .scene { max-width: 900px; aspect-ratio: 16 / 10; }
 }
-@media (min-width: 600px) and (orientation: portrait) { .world-games { grid-template-columns: repeat(2, 1fr); } }
+
 @media (max-width: 520px) {
   .home-head { gap: 8px; }
   .home-head .guide { width: 96px !important; height: 114px !important; }
@@ -505,7 +505,7 @@ body:not([data-page='home'])::before { opacity: .4; }
   .world-tile { min-height: 300px; }
   .world-tile .tile-emoji { font-size: 7.5rem; }
   .world-tile .tile-title { font-size: 2.2rem; }
-  .world-games .tile { min-height: 260px; }
+
   .word-emoji { font-size: 9rem; }
 }
 .finish { padding-bottom: 24px; }
@@ -582,3 +582,12 @@ body:not([data-page='home'])::before { opacity: .4; }
   .home-right { margin-left: auto; flex-direction: row; align-items: center; gap: 24px; flex: none; }
   .home-right .sound-btn.wide { white-space: nowrap; max-width: none; padding: 10px 18px; font-size: 1.05rem; }
 }
+
+/* Game cards inside each world (and Print & Color pages) are a grid, even on phones */
+.world-games, .pr-screen .tiles { grid-template-columns: repeat(2, 1fr); gap: 14px; margin-top: 14px; }
+.world-games .tile, .pr-screen .tiles .tile { min-height: 190px; padding: 18px 10px 16px; justify-content: center; text-align: center; }
+.world-games .tile-emoji, .pr-screen .tiles .tile-emoji { font-size: clamp(3rem, 13vw, 4.4rem); }
+.world-games .tile-title, .pr-screen .tiles .tile-title { font-size: clamp(1.15rem, 5vw, 1.6rem); line-height: 1.1; }
+.world-games .tile-blurb, .pr-screen .tiles .tile-blurb { font-size: clamp(.85rem, 3.4vw, 1rem); }
+@media (min-width: 700px) { .world-games, .pr-screen .tiles { grid-template-columns: repeat(3, 1fr); gap: 20px; } .world-games .tile, .pr-screen .tiles .tile { min-height: 240px; } }
+@media (min-width: 1100px) { .world-games { grid-template-columns: repeat(3, 1fr); max-width: 980px; margin-inline: auto; } .pr-screen .tiles { grid-template-columns: repeat(4, 1fr); } }
