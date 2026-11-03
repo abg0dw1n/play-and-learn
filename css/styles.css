@@ -511,3 +511,17 @@ body:not([data-page='home'])::before { opacity: .4; }
 .finish { padding-bottom: 24px; }
 .new-sticker { margin-bottom: 10px; }
 .sticker-big { width: 150px; height: 150px; font-size: 6rem; }
+
+/* Add & Take Away */
+.eq-row { display: flex; align-items: center; justify-content: center; gap: 14px; flex-wrap: wrap; }
+.eq-group { display: flex; flex-wrap: wrap; justify-content: center; gap: 4px; max-width: 280px; padding: 10px 12px; background: rgba(255,255,255,.75); border-radius: 22px; box-shadow: 0 4px 0 rgba(0,0,0,.08); }
+.eq-item { font-size: clamp(1.9rem, 7vw, 3rem); line-height: 1.1; position: relative; }
+.eq-item.gone { opacity: .3; filter: grayscale(1); }
+.eq-item.gone::after { content: '✖'; position: absolute; inset: 0; display: grid; place-items: center; font-size: .85em; color: #e63946; opacity: 1; filter: none; }
+.eq-sign { font-size: 3rem; font-weight: 700; color: var(--bg-ink, var(--ink)); }
+.eq-big { font-size: clamp(3.4rem, 15vw, 6.5rem); font-weight: 700; color: var(--bg-ink, var(--ink)); letter-spacing: 2px; }
+.eq-clue { margin-top: 10px; transform: scale(.8); animation: pop .35s ease-out; }
+.visual:has(.eq-big) { flex-direction: column; }
+/* Keep Pip from standing on top of counting pictures */
+.pip-pop { top: -34px; }
+.visual:has(.eq-row), .visual:has(.compare.groups) { padding-top: 50px; }

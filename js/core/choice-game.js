@@ -80,7 +80,7 @@ export function runChoiceGame(root, game, { onHome, onBack, onRestart, onSticker
   // Pip pops into the corner of the picture area: cheering after a right answer, "oops" after a wrong one.
   function pipSays(pose) {
     visual.querySelector('.pip-pop')?.remove();
-    const p = el('div', { class: `pip-pop ${pose}` }, guide(pose, 86));
+    const p = el('div', { class: `pip-pop ${pose}` }, guide(pose, 72));
     visual.append(p);
     if (pose !== 'cheer') setTimeout(() => p.remove(), 1600);
   }
