@@ -1,5 +1,5 @@
 // Add & Take Away — adding and subtracting, starting with pictures you can count and moving to numbers only.
-// Spoken as short re-usable pieces ("What is" / 3 / "plus" / 2), so only a handful of voice clips are needed.
+// Every question and answer is a whole recorded sentence ("What is 3 plus 2?"), which sounds far more natural than stitched words.
 import { el, pick, rand, shuffle } from '../core/util.js';
 
 // Every step mixes adding and taking away (they alternate). pics: show objects (otherwise just the number sentence).
@@ -64,7 +64,7 @@ export default {
     const pool = shuffle([c + 1, c - 1, c + 2, c - 2, swapped, a, b]).filter((n, i, arr) => n !== c && n >= 0 && n <= cap && arr.indexOf(n) === i);
     const near = pool.sort((x, y) => Math.abs(x - c) - Math.abs(y - c));
     const wrong = [near[0], near[1] ?? (c + 3)];
-    const say = [['What is', `${a}`, WORD[op], `${b}`]];
+    const say = [`What is ${a} ${WORD[op]} ${b}?`];
 
     return {
       key,
@@ -85,7 +85,7 @@ export default {
         }
       },
       reveal: { emoji: step.pics ? emoji : '✅', caption: `${a} ${SIGN[op]} ${b} = ${c}` },
-      praise: ['Yes!', [`${a}`, WORD[op], `${b}`, 'equals', `${c}.`]],
+      praise: ['Yes!', `${a} ${WORD[op]} ${b} equals ${c}.`],
     };
   },
 };
