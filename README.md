@@ -32,8 +32,16 @@ Word lists live in `js/data/reading.js`; each game keeps its question bank and d
 Spoken lines can be a list (`say: ['Which rhymes?', 'cat.', 'hat.']`) — each line is spoken with a short pause.
 The voice picker prefers Premium / Enhanced / Natural voices when the device has them.
 
+## Screens
+Home has four big picture tiles (Reading World, Math World, Print & Color, My World) and **Pip**, the guide (`js/core/guide.js`,
+drawn in code, five poses). Worlds list their games (`worlds` in `js/games/index.js`). Pip pops up in games (cheers on a right
+answer, "oops" on a miss) and on the finish screen. **My World** is a scene that fills with the stickers she earns. On tablets in
+landscape the games show the picture on the left and the answers on the right. Screens: `js/ui/home.js`, `js/ui/grownups.js`.
+Everything that isn't for her (name, challenge level, look, Sound Check, My Worksheets, progress) is in the **Grown-ups** corner:
+press and hold the button at the bottom of the home screen.
+
 ## Looks
-The 🎨 button on the home screen switches the whole site's look (7 themes in `js/core/themes.js`: colors, a soft background pattern, a mascot). Saved per device. Add a theme by adding an entry to `THEMES`.
+Pick a look in the Grown-ups corner. It switches the whole site's look (7 themes in `js/core/themes.js`: colors, a soft background pattern, Pip's color; default Rainbow Party). Saved per device. Add a theme by adding an entry to `THEMES`. New spoken lines (Pip's greetings, sticker names) are in `tools/ui-lines.json`; make their clips with `tools/tts.py` like the others.
 
 ## Print & Color
 Home → **Print & Color**: color by number / word / sum, mazes, word searches and dot-to-dots. Every page is random and sized for

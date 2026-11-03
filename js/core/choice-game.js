@@ -34,6 +34,7 @@ import { sfx } from './sfx.js';
 import { burst, burstAt } from './confetti.js';
 import { store, levelCap } from './store.js';
 import { awardSticker, withArticle } from './stickers.js';
+import { guide } from './guide.js';
 
 // Happy, encouraging lines. (All of these have recorded clips; run tools/ again after changing them.)
 export const PRAISE = ['Great job!', 'You got it!', 'Awesome!', 'Way to go!', 'Super!', 'Yes!', 'Wow, nice work!', 'You are so smart!', 'Fantastic!', "That's right!"];
@@ -43,7 +44,7 @@ export const finishLine = (sticker) => (sticker ? `Great job! You got ${withArti
 let startedOnce = false; // phones need one real tap on the page before they'll speak
 const any = (a) => a[Math.floor(Math.random() * a.length)];
 
-export function runChoiceGame(root, game, { onHome, onRestart, onStickers }) {
+export function runChoiceGame(root, game, { onHome, onBack, onRestart, onStickers }) {
   const total = game.rounds || 8;
   const difficulty = store.getDifficulty(); // 0, 1, 2
   const maxLevel = levelCap(game, difficulty);
@@ -65,7 +66,8 @@ export function runChoiceGame(root, game, { onHome, onRestart, onStickers }) {
     'aria-label': 'Say it again',
     onclick: () => current && speak(current.say, { force: true }),
   }, '🔊');
-  const homeBtn = el('button', { class: 'icon-btn', 'aria-label': 'Home', onclick: onHome }, '🏠');
+  // Back goes to the list of games in this world (if we know it); the finish screen also has a Home button.
+  const homeBtn = el('button', { class: 'icon-btn', 'aria-label': onBack ? 'Back' : 'Home', onclick: onBack || onHome }, onBack ? '⬅️' : '🏠');
   const promptEl = el('h2', { class: 'prompt' });
   const visual = el('div', { class: 'visual' });
   const nextRow = el('div', { class: 'next-row' });
@@ -74,6 +76,14 @@ export function runChoiceGame(root, game, { onHome, onRestart, onStickers }) {
   root.append(
     el('header', { class: 'topbar' }, homeBtn, stars, el('div', { class: 'topbar-right' }, sayBtn, soundToggle())),
     promptEl, visual, nextRow, choicesEl);
+
+  // Pip pops into the corner of the picture area: cheering after a right answer, "oops" after a wrong one.
+  function pipSays(pose) {
+    visual.querySelector('.pip-pop')?.remove();
+    const p = el('div', { class: `pip-pop ${pose}` }, guide(pose, 86));
+    visual.append(p);
+    if (pose !== 'cheer') setTimeout(() => p.remove(), 1600);
+  }
 
   function nextRound() {
     if (!alive) return;
@@ -125,6 +135,7 @@ export function runChoiceGame(root, game, { onHome, onRestart, onStickers }) {
           visual.append(el('div', { class: 'reveal-emoji' }, round.reveal.emoji),
             el('div', { class: 'reveal-caption' }, round.reveal.caption));
         }
+        pipSays('cheer');
         stars.children[index].classList.add('on');
         index++;
         streak = misses === 0 ? streak + 1 : 0;
@@ -152,6 +163,7 @@ export function runChoiceGame(root, game, { onHome, onRestart, onStickers }) {
         btn.disabled = true;
         btn.classList.add('wrong');
         sfx.oops();
+        pipSays('oops');
         if (misses >= 2) choicesEl.querySelector('[data-correct]')?.classList.add('hint');
         round.onMiss?.(visual, misses);
         await speak(any(RETRY));
@@ -171,6 +183,7 @@ export function runChoiceGame(root, game, { onHome, onRestart, onStickers }) {
     const cheer = s.name ? `Great job, ${s.name}!` : 'Great job!';
     root.innerHTML = '';
     root.append(el('div', { class: 'finish' },
+      guide('cheer', 120, 'finish-pip'),
       sticker
         ? el('div', { class: 'new-sticker' },
           el('div', { class: 'sticker-big' }, sticker[0]),
@@ -180,8 +193,10 @@ export function runChoiceGame(root, game, { onHome, onRestart, onStickers }) {
       el('p', { class: 'earned' }, '+1 ⭐  ', el('span', {}, `You have ${totalStars} ${totalStars === 1 ? 'star' : 'stars'}!`)),
       el('div', { class: 'finish-actions' },
         el('button', { class: 'big-btn again', onclick: () => (onRestart ? onRestart() : runChoiceGame(root, game, { onHome })) }, '🔁 Play again'),
-        onStickers && el('button', { class: 'big-btn book', onclick: onStickers }, '📒 Stickers'),
+        onStickers && el('button', { class: 'big-btn book', onclick: onStickers }, '🌈 My World'),
+        onBack && el('button', { class: 'big-btn home', onclick: onBack }, '🎮 More games'),
         el('button', { class: 'big-btn home', onclick: onHome }, '🏠 Home'))));
+    window.scrollTo(0, 0);
     sfx.fanfare();
     burst({ count: 140 });
     setTimeout(() => alive && burst({ x: innerWidth * 0.25, y: innerHeight * 0.4, count: 60 }), 500);

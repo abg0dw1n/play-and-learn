@@ -12,3 +12,10 @@ export const games = [spell, read, sight, story, compare, weight, sounds];
 
 // Shown greyed-out on the home screen until they're built. (My Worksheets is a real tile now.)
 export const comingSoon = [];
+
+// The home screen shows these "worlds"; each one opens a page with its games.
+export const worlds = [
+  { id: 'reading', title: 'Reading World', emoji: '📖', color: '#ff6fb5', say: 'Reading World. Pick a game!', games: ['spell', 'read', 'sight', 'story', 'sounds'] },
+  { id: 'math', title: 'Math World', emoji: '🔢', color: '#4d96ff', say: 'Math World. Pick a game!', games: ['compare', 'weight'] },
+];
+export const worldOf = (gameId) => worlds.find((w) => w.games.includes(gameId))?.id;
