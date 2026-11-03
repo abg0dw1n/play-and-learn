@@ -53,12 +53,12 @@ export default {
     // Wrong choices come from other families, so they never rhyme with the target.
     const others = shuffle(FAMILIES.filter((f) => f !== family)).slice(0, count - 1).map((f) => pick(f));
     const options = shuffle([answer, ...others]);
-    const names = options.map(([w]) => w).join('... ');
 
     return {
       key: family[0][0],
       text: `What rhymes with ${target[0]}?`,
-      say: `What rhymes with ${target[0]}? ${names}?`,
+      // Each choice is its own line so the voice pauses between them.
+      say: [`What rhymes with ${target[0]}?`, ...options.map(([w]) => `${w}.`)],
       choices: options.map(([w, e]) => ({ label: e, correct: w === answer[0], className: 'pic' })),
       render: (v) => v.append(el('div', { class: 'word-pic' }, el('span', { class: 'word-emoji' }, target[1]))),
       reveal: { emoji: `${target[1]} ${answer[1]}`, caption: `${target[0]} and ${answer[0]} rhyme!` },

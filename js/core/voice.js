@@ -79,8 +79,22 @@ for (const ev of ['touchend', 'click', 'keydown']) {
 
 let activeUtterance = null; // keep a reference: some phones drop the "finished" event otherwise
 
-/** Speak text; resolves when finished (or after a safety timeout). */
-export function speak(text, { rate = 0.88, pitch = 1.1, force = false } = {}) {
+let speakToken = 0; // bumps whenever new speech starts or hush() is called, to stop a running list
+
+/** Speak text; resolves when finished (or after a safety timeout).
+    Pass a list of lines to say them one after another with a short breath between
+    (device voices run a single long sentence together). */
+export async function speak(text, opts = {}) {
+  const my = ++speakToken;
+  if (!Array.isArray(text)) return speakOne(text, opts);
+  for (let i = 0; i < text.length; i++) {
+    if (my !== speakToken) return;
+    await speakOne(text[i], opts);
+    if (i < text.length - 1 && my === speakToken) await new Promise((r) => setTimeout(r, opts.gap ?? 450));
+  }
+}
+
+function speakOne(text, { rate = 0.88, pitch = 1.1, force = false } = {}) {
   return new Promise((resolve) => {
     if (!supported || (!force && !store.get().sound) || !text) return resolve();
     if (!voice) voice = chooseVoice(); // phones often load voices late and never announce it
@@ -105,6 +119,7 @@ export function speak(text, { rate = 0.88, pitch = 1.1, force = false } = {}) {
 }
 
 export function hush() {
+  speakToken++;
   activeUtterance = null;
   if (supported && (speechSynthesis.speaking || speechSynthesis.pending)) speechSynthesis.cancel();
 }
