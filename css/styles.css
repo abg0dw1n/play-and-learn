@@ -563,14 +563,22 @@ body:not([data-page='home'])::before { opacity: .4; }
 .print-link { margin: 4px 0 14px; }
 
 /* Phone home header: Pip + speech bubble on top, stars and the sound button on their own row (no overlap) */
-@media (max-width: 640px) {
+@media (max-width: 780px) {
   .home-head { flex-wrap: wrap; row-gap: 10px; }
   .home-head .bubble { flex: 1 1 0; min-width: 0; }
   .home-right { flex: 1 0 100%; flex-direction: row; align-items: center; justify-content: space-between; gap: 10px; }
   .home-right .sound-btn.wide { max-width: none; flex: 1 1 auto; min-width: 0; }
 }
-@media (max-width: 640px) { .home-right { gap: 14px; } .home-right .star-count { white-space: nowrap; flex: none; } .home-right .sound-btn.wide { font-size: .95rem; } }
+@media (max-width: 780px) { .home-right { gap: 14px; } .home-right .star-count { white-space: nowrap; flex: none; } .home-right .sound-btn.wide { font-size: .95rem; } }
 /* The flashing sound button grows only inward-friendly: small glow, and room beside the star count */
 @keyframes sound-pulse { 0%,100% { box-shadow: 0 0 0 0 rgba(255,217,61,.0); } 50% { box-shadow: 0 0 0 5px rgba(255,217,61,.75); } }
 .sound-btn.wide.off { animation: sound-pulse 1.6s ease-in-out infinite; }
-@media (max-width: 640px) { .home-right { gap: 24px; } }
+@media (max-width: 780px) { .home-right { gap: 24px; } }
+
+/* Desktop / tablet: Pip + bubble on the left, stars and sound button side by side on the right, all centered on one line */
+@media (min-width: 781px) {
+  .home-head { flex-wrap: nowrap; align-items: center; gap: 18px; }
+  .home-head .bubble { flex: 0 1 auto; max-width: 560px; }
+  .home-right { margin-left: auto; flex-direction: row; align-items: center; gap: 24px; flex: none; }
+  .home-right .sound-btn.wide { white-space: nowrap; max-width: none; padding: 10px 18px; font-size: 1.05rem; }
+}
