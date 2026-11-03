@@ -1,9 +1,9 @@
 // Count It! — tap each object to count out loud, then pick the number.
 // First Steps: up to 3 → 5. Growing Strong: up to 5 → 10. Super Star: up to 10 → 20.
-import { el, pick, rand, shuffle } from '../core/util.js';
-import { speak } from '../core/voice.js';
-import { sfx } from '../core/sfx.js';
-import { choiceCount } from '../data/words.js';
+import { el, pick, rand, shuffle } from '../../core/util.js';
+import { speak } from '../../core/voice.js';
+import { sfx } from '../../core/sfx.js';
+import { choiceCount } from '../../data/words.js';
 
 const THINGS = [
   ['🍎', 'apple', 'apples'], ['🐞', 'ladybug', 'ladybugs'], ['⭐', 'star', 'stars'],

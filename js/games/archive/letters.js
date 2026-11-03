@@ -1,8 +1,8 @@
 // Letter Hunt — see a picture, hear its name, find the letter it starts with.
 // First Steps: capitals, 2 choices. Growing Strong: 3→4 choices, lowercase from level 3.
 // Super Star: 4→5 choices, lowercase from level 3.
-import { el, pick, shuffle } from '../core/util.js';
-import { WORDS, ALPHABET, choiceCount } from '../data/words.js';
+import { el, pick, shuffle } from '../../core/util.js';
+import { WORDS, ALPHABET, choiceCount } from '../../data/words.js';
 
 const TARGETS = Object.keys(WORDS);
 

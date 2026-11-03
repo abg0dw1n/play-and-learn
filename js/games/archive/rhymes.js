@@ -1,8 +1,8 @@
 // Rhyme Time — see a picture, hear "What rhymes with cat?" and the name of each choice,
 // then tap the picture that rhymes. The voice names every choice, so no reading is needed.
 // First Steps: 2 choices. Growing Strong: 3. Super Star: 3 → 4.
-import { el, pick, shuffle } from '../core/util.js';
-import { choiceCount } from '../data/words.js';
+import { el, pick, shuffle } from '../../core/util.js';
+import { choiceCount } from '../../data/words.js';
 
 // Rhyme families. Pictures picked so a 5-year-old names them the way they're written.
 const FAMILIES = [

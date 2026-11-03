@@ -22,6 +22,8 @@
     onMiss?: (visualEl, misses) => void   e.g. show a clue after a wrong pick
     praise?: spoken after a correct answer (a string, or a list of lines said with pauses)
     reveal?: { emoji, caption }     shown big after a correct answer
+    advance?: (visualEl) => null | { choices, say? }   multi-step rounds: called after each right pick;
+              return the next step's choices (the round only ends when it returns null)
   }
 
   Scanned worksheets will later be turned into these same round objects.
@@ -83,18 +85,32 @@ export function runChoiceGame(root, game, { onHome, onRestart, onStickers }) {
     nextRow.innerHTML = '';
     round.render?.(visual);
 
-    choicesEl.innerHTML = '';
-    choicesEl.classList.remove('locked');
-    choicesEl.dataset.count = round.choices.length;
-    for (const choice of round.choices) {
-      const btn = el('button', { class: `choice ${choice.className || ''}`, 'data-correct': choice.correct ? '1' : null }, choice.label);
-      btn.addEventListener('click', () => onPick(btn, choice));
-      choicesEl.append(btn);
+    function showChoices(list) {
+      choicesEl.innerHTML = '';
+      choicesEl.classList.remove('locked');
+      choicesEl.dataset.count = list.length;
+      for (const choice of list) {
+        const btn = el('button', { class: `choice ${choice.className || ''}`, 'data-correct': choice.correct ? '1' : null }, choice.label);
+        btn.addEventListener('click', () => onPick(btn, choice));
+        choicesEl.append(btn);
+      }
     }
+    showChoices(round.choices);
     if (round.sayOnStart !== false) speak(round.say);
 
     async function onPick(btn, choice) {
       if (!alive || btn.disabled || choicesEl.classList.contains('locked')) return;
+      if (choice.correct && round.advance) {
+        // Multi-step round (e.g. spelling a word): a right letter moves on to the next step.
+        const next = round.advance(visual);
+        if (next) {
+          sfx.yes();
+          burstAt(btn);
+          showChoices(next.choices);
+          if (next.say) speak(next.say);
+          return;
+        }
+      }
       if (choice.correct) {
         choicesEl.classList.add('locked');
         btn.classList.add('right');

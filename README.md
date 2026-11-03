@@ -11,16 +11,26 @@ Live at https://play-and-learn-pi.vercel.app (every push to `main` deploys).
   - `voice.js` spoken prompts, voice choice, sound toggle · `sfx.js` sound effects · `confetti.js`
   - `store.js` everything saved on the device (localStorage): stars, stickers, difficulty, per-difficulty levels, voice, Sound Check picks
   - `stickers.js` sticker book · `sound-check.js` grown-ups Sound Check page
-- `js/data/words.js` — shared picture words (one per letter) and the choice-count rule
+- `js/data/words.js` — picture words (one per letter) and the choice-count rule · `js/data/reading.js` — 3/4/5-letter picture words
 - `js/games/` — one file per game, listed in `js/games/index.js`
 - `sw.js` + `manifest.webmanifest` + `icons/` — add to home screen, works offline
 
 ## Games
-- **Letter Hunt** — picture + its name, tap the first letter
-- **Letter Sounds** — hear "buh", tap B. Each letter has spelling options in `SOUND_OPTIONS`
-  (device voices spell some made-up words out as letters); a grown-up picks per device on Sound Check, which also picks the voice
-- **Count It!** — tap to count, pick the number
-- **Rhyme Time** — picture + spoken choices, tap the one that rhymes
+Pitched at a kindergartner who is already sounding out, blending and building words, and whose class is starting
+greater/less than and measuring weight.
+- **Build a Word** — hear a word, see its picture, tap the letters in order (multi-step rounds via `advance` in the engine)
+- **Read the Word** — a word is shown (not spoken); sound it out and tap the matching picture
+- **Sight Words** — hear a word and find it; later, pick the word that fits a sentence
+- **Story Time** — a short story is read aloud, then a question about it
+- **Greater or Less** — which number is greater/less, then the `>` `<` `=` signs with numbers and groups of pictures
+- **Heavy or Light** — which weighs more/less, then heaviest/lightest of three
+- **Letter Sounds** — paused for now (`paused: true` in `js/games/sounds.js`); phone voices read made-up sounds like "buh" as letters
+  Sound Check (Grown-ups) picks the voice and per-letter spellings per device
+- Archived in `js/games/archive/` (too easy for her now, not on the home screen): Letter Hunt, Rhyme Time, Count It!
+
+Word lists live in `js/data/reading.js`; each game keeps its question bank and difficulty table at the top of its file.
+Spoken lines can be a list (`say: ['Which rhymes?', 'cat.', 'hat.']`) — each line is spoken with a short pause.
+The voice picker prefers Premium / Enhanced / Natural voices when the device has them.
 
 ## Sticker book
 Every finished game awards one new sticker (40 in `js/core/stickers.js`) until all are found; then just a star.

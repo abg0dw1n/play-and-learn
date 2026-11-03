@@ -3,7 +3,6 @@ import { el } from './util.js';
 import { store } from './store.js';
 
 const supported = typeof window !== 'undefined' && 'speechSynthesis' in window;
-const PREFERRED = ['Samantha', 'Google US English', 'Microsoft Aria', 'Microsoft Jenny', 'Ava', 'Allison', 'Karen'];
 let voice = null;
 
 /** English voices installed on this device (for the Grown-ups voice picker). */
@@ -29,6 +28,24 @@ export function onVoicesReady(fn) {
   return () => speechSynthesis.removeEventListener?.('voiceschanged', fn);
 }
 
+/* Higher score = more natural. Phones and computers ship a few "Premium", "Enhanced" or
+   "Natural" voices that sound far more human than the basic ones; prefer those, then
+   well-known friendly voices, and English only. */
+function voiceScore(v) {
+  const n = `${v.name} ${v.voiceURI || ''}`.toLowerCase();
+  let score = 0;
+  if (/premium/.test(n)) score += 100;
+  if (/enhanced/.test(n)) score += 80;
+  if (/natural|neural|online/.test(n)) score += 90;       // Edge/Windows natural voices
+  if (/google/.test(n) && /us english/.test(n)) score += 50; // Android Chrome's best
+  const friendly = ['ava', 'zoe', 'samantha', 'allison', 'susan', 'nicky', 'aria', 'jenny', 'karen', 'serena', 'tessa'];
+  if (friendly.some((f) => new RegExp(`\\b${f}\\b`).test(n))) score += 30;
+  if (/compact|eloquence|novelty|whisper|bad news|bahh|bells|boing|bubbles|cellos|deranged|good news|hysterical|organ|trinoids|zarvox|albert|fred|junior|kathy|ralph|superstar/.test(n)) score -= 200;
+  if (v.lang?.toLowerCase().replace('_', '-').startsWith('en-us')) score += 10;
+  if (v.localService) score += 2;
+  return score;
+}
+
 function chooseVoice() {
   const voices = speechSynthesis.getVoices();
   const picked = store.get().voiceName;
@@ -36,11 +53,9 @@ function chooseVoice() {
     const v = voices.find((x) => x.name === picked);
     if (v) return v;
   }
-  for (const name of PREFERRED) {
-    const v = voices.find((x) => x.name.includes(name));
-    if (v) return v;
-  }
-  return voices.find((v) => v.lang?.startsWith('en-US')) || voices.find((v) => v.lang?.startsWith('en')) || null;
+  const english = voices.filter((v) => v.lang?.toLowerCase().replace('_', '-').startsWith('en'));
+  english.sort((a, b) => voiceScore(b) - voiceScore(a));
+  return english[0] || null;
 }
 
 if (supported) {
@@ -94,7 +109,7 @@ export async function speak(text, opts = {}) {
   }
 }
 
-function speakOne(text, { rate = 0.88, pitch = 1.1, force = false } = {}) {
+function speakOne(text, { rate = 0.9, pitch = 1.0, force = false } = {}) {
   return new Promise((resolve) => {
     if (!supported || (!force && !store.get().sound) || !text) return resolve();
     if (!voice) voice = chooseVoice(); // phones often load voices late and never announce it
