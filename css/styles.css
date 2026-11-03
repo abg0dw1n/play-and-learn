@@ -561,3 +561,12 @@ body:not([data-page='home'])::before { opacity: .4; }
 .ttt-pip { flex: none; }
 .pr-group { margin: 14px 4px 4px; color: var(--bg-ink, var(--ink)); text-align: center; }
 .print-link { margin: 4px 0 14px; }
+
+/* Phone home header: Pip + speech bubble on top, stars and the sound button on their own row (no overlap) */
+@media (max-width: 640px) {
+  .home-head { flex-wrap: wrap; row-gap: 10px; }
+  .home-head .bubble { flex: 1 1 0; min-width: 0; }
+  .home-right { flex: 1 0 100%; flex-direction: row; align-items: center; justify-content: space-between; gap: 10px; }
+  .home-right .sound-btn.wide { max-width: none; flex: 1 1 auto; min-width: 0; }
+}
+@media (max-width: 640px) { .home-right { gap: 14px; } .home-right .star-count { white-space: nowrap; flex: none; } .home-right .sound-btn.wide { font-size: .95rem; } }
