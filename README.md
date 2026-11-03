@@ -63,6 +63,9 @@ the first time, choose a parent passcode; after that each phone or tablet asks f
 - Planned next: read the words on each scan (OCR) into `worksheet_pages.text`, edit them in the hub, and turn them into games.
   Changing the service code means re-deploying the function (Supabase → Edge Functions → worksheets).
 
+## Sound
+Sound always starts **off** when the page loads (never saved); the bell turns it on for that visit. The 🔊 buttons in games and Sound Check still speak when pressed on purpose.
+
 ## Voice
 Every line the games say has a recorded clip made with the open-source Kokoro voice (`af_heart`, a warm female voice),
 stored in `audio/` and listed in `audio/manifest.json` (text → clip). `js/core/voice.js` plays the clip for a line and

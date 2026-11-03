@@ -19,7 +19,7 @@ function tappablePip(size, line) {
     sfx.tap();
     setPose(pip, 'wink');
     pip.classList.remove('hop'); void pip.offsetWidth; pip.classList.add('hop');
-    speak(line, { force: true });
+    speak(line); // stays quiet until sound is turned on
     setTimeout(() => setPose(pip, 'happy'), 1500);
   });
   return pip;
@@ -42,7 +42,7 @@ export function renderHome(root, { go, onGrownUps }) {
       el('div', { class: 'bubble' }, PIP_GREETING),
       el('div', { class: 'home-right' },
         el('div', { class: 'star-count', 'aria-label': `${stars} stars` }, '⭐ ', stars),
-        soundToggle())),
+        soundToggle({ label: true }))),
     el('section', { class: 'tiles worlds' },
       ...worlds.map((w) => tile(w.emoji, w.title, w.color, `#/world/${w.id}`)),
       tile('🖍️', 'Print & Color', '#ff9f1c', '#/print'),

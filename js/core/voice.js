@@ -202,15 +202,16 @@ export function hush() {
 
 /** A small bell button that turns voice + sound effects on/off.
     (A bell, so it can't be mistaken for the 🔊 "say it again" button.) */
-export function soundToggle() {
+export function soundToggle({ label = false } = {}) {
   const on = () => store.get().sound;
-  const label = (v) => (v ? 'Sounds on' : 'Sounds off');
-  const btn = el('button', { class: 'sound-btn', 'aria-label': label(on()), 'aria-pressed': String(on()) }, on() ? '🔔' : '🔕');
+  const aria = (v) => (v ? 'Sounds on' : 'Sounds off');
+  const text = (v) => (label ? (v ? '🔔 Sound on' : '🔕 Sound off — tap to turn on') : (v ? '🔔' : '🔕'));
+  const btn = el('button', { class: `sound-btn${label ? ' wide' : ''}`, 'aria-label': aria(on()), 'aria-pressed': String(on()) }, text(on()));
   btn.addEventListener('click', () => {
     const next = !on();
     store.set({ sound: next });
-    btn.textContent = next ? '🔔' : '🔕';
-    btn.setAttribute('aria-label', label(next));
+    btn.textContent = text(next);
+    btn.setAttribute('aria-label', aria(next));
     btn.setAttribute('aria-pressed', String(next));
     btn.classList.toggle('off', !next);
     if (!next) hush();

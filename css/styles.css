@@ -525,3 +525,5 @@ body:not([data-page='home'])::before { opacity: .4; }
 /* Keep Pip from standing on top of counting pictures */
 .pip-pop { top: -34px; }
 .visual:has(.eq-row), .visual:has(.compare.groups) { padding-top: 50px; }
+.sound-btn.wide { width: auto; height: auto; padding: 8px 14px; font-size: 1rem; font-weight: 700; border-radius: 999px; max-width: 190px; line-height: 1.15; }
+.sound-btn.wide.off { animation: pulse 1.6s ease-in-out infinite; }
