@@ -32,6 +32,9 @@ Word lists live in `js/data/reading.js`; each game keeps its question bank and d
 Spoken lines can be a list (`say: ['Which rhymes?', 'cat.', 'hat.']`) — each line is spoken with a short pause.
 The voice picker prefers Premium / Enhanced / Natural voices when the device has them.
 
+## Looks
+The 🎨 button on the home screen switches the whole site's look (7 themes in `js/core/themes.js`: colors, a soft background pattern, a mascot). Saved per device. Add a theme by adding an entry to `THEMES`.
+
 ## Print & Color
 Home → **Print & Color**: color by number / word / sum, mazes, word searches and dot-to-dots. Every page is random and sized for
 one Letter or A4 sheet (Print button → phone's print menu). The color-by pages can also be colored on screen. Difficulty follows
