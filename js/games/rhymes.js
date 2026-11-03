@@ -62,7 +62,7 @@ export default {
       choices: options.map(([w, e]) => ({ label: e, correct: w === answer[0], className: 'pic' })),
       render: (v) => v.append(el('div', { class: 'word-pic' }, el('span', { class: 'word-emoji' }, target[1]))),
       reveal: { emoji: `${target[1]} ${answer[1]}`, caption: `${target[0]} and ${answer[0]} rhyme!` },
-      praise: `Yes! ${target[0]}, ${answer[0]}!`,
+      praise: ['Yes!', `${target[0]}.`, `${answer[0]}.`, 'They rhyme!'], // separate lines so the voice pauses
     };
   },
 };

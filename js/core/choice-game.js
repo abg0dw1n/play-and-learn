@@ -20,7 +20,7 @@
     choices: [{ label, correct, className? }]
     render?: (visualEl) => void     draw a picture / objects above the choices
     onMiss?: (visualEl, misses) => void   e.g. show a clue after a wrong pick
-    praise?: spoken after a correct answer
+    praise?: spoken after a correct answer (a string, or a list of lines said with pauses)
     reveal?: { emoji, caption }     shown big after a correct answer
   }
 
