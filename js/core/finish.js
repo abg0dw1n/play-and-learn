@@ -23,7 +23,7 @@ export function renderFinish(root, game, nav, { alive = () => true, title, say }
   const cheer = title || (s.name ? `Great job, ${s.name}!` : 'Great job!');
   root.innerHTML = '';
   root.append(el('div', { class: 'finish' },
-    guide('cheer', 120, 'finish-pip'),
+    guide('cheer', 120, 'finish-pip', s.character),
     sticker
       ? el('div', { class: 'new-sticker' },
         el('div', { class: 'sticker-big' }, sticker[0]),

@@ -22,7 +22,7 @@ function greetingSpeech(name) {
 
 /** Pip you can tap: waves, winks and says something. */
 function tappablePip(size, line) {
-  const pip = guide('happy', size, 'pip-tap');
+  const pip = guide('happy', size, 'pip-tap', store.get().character);
   pip.setAttribute('role', 'button');
   pip.setAttribute('aria-label', 'Pip');
   pip.removeAttribute('aria-hidden');

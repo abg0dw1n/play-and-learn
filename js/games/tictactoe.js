@@ -61,7 +61,7 @@ export default {
     root.className = `screen game theme-${game.id} ttt`;
     root.style.setProperty('--accent', game.color);
 
-    const pip = guide('happy', 56, 'ttt-pip');
+    const pip = guide('happy', 56, 'ttt-pip', store.get().character);
     const status = el('h2', { class: 'prompt ttt-status' }, 'Your turn! ⭐');
     const cells = board.map((_, i) => el('button', { class: 'ttt-cell', 'aria-label': `Square ${i + 1}`, onclick: () => play(i) }));
     const grid = el('div', { class: 'ttt-board' }, cells);
@@ -105,7 +105,7 @@ export default {
 
     function showAgain(title, sub) {
       root.innerHTML = '';
-      root.append(el('div', { class: 'finish' }, guide('wink', 130, 'finish-pip'), el('h2', {}, title), el('p', { class: 'earned' }, sub),
+      root.append(el('div', { class: 'finish' }, guide('wink', 130, 'finish-pip', store.get().character), el('h2', {}, title), el('p', { class: 'earned' }, sub),
         el('div', { class: 'finish-actions' },
           el('button', { class: 'big-btn again', onclick: nav.onRestart }, '🔁 Play again'),
           nav.onBack && el('button', { class: 'big-btn home', onclick: nav.onBack }, '🎮 More games'),

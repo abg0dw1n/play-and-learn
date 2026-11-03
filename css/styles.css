@@ -436,6 +436,14 @@ body:not([data-page='home'])::before { opacity: .4; }
 .grownups-dialog .look-grid { margin: 6px 0; }
 .look-opt { font-size: .95rem; }
 
+/* Grown-ups: pick Pip's character design */
+.char-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin: 6px 0 4px; }
+.char-opt { border: 3px solid transparent; border-radius: 18px; padding: 8px 4px 6px; display: flex; flex-direction: column; align-items: center; gap: 4px; background: #f5f3ff; box-shadow: 0 4px 0 rgba(0,0,0,.1); }
+.char-opt .guide { margin: 0 auto; pointer-events: none; }
+.char-opt .char-name { font-weight: 700; font-size: .9rem; color: #2b2d42; }
+.char-opt.on { border-color: var(--accent, #4d96ff); background: #eaf1ff; }
+@media (min-width: 420px) { .char-grid { grid-template-columns: repeat(5, 1fr); } }
+
 /* Pip pops in beside the picture while she plays */
 .visual { position: relative; }
 .pip-pop { position: absolute; left: 0; top: -8px; z-index: 5; pointer-events: none; animation: pip-in .45s cubic-bezier(.2,1.5,.4,1) both; }

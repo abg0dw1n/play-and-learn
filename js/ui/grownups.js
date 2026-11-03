@@ -7,6 +7,7 @@ import { owned, STICKERS } from '../core/stickers.js';
 import { THEMES, setTheme, currentTheme } from '../core/themes.js';
 import { games } from '../games/index.js';
 import { speak } from '../core/voice.js';
+import { CHARACTERS, guide, setPose } from '../core/guide.js';
 
 /** Press-and-hold so little fingers don't wander in. */
 export function grownUpsButton(open) {
@@ -66,6 +67,27 @@ export function openGrownUps({ go, done }) {
     voiceRow.append(b);
   });
 
+  // Pip's look (character design)
+  const charGrid = el('div', { class: 'char-grid' });
+  const charState = { id: s.character || 'bunny' };
+  CHARACTERS.forEach((c) => {
+    const thumb = guide('happy', 64, 'char-thumb', c.id);
+    const opt = el('button', {
+      type: 'button', class: `char-opt${c.id === charState.id ? ' on' : ''}`, 'aria-pressed': String(c.id === charState.id),
+    }, thumb, el('span', { class: 'char-name' }, c.name));
+    opt.addEventListener('click', () => {
+      if (charState.id === c.id) return;
+      charState.id = c.id;
+      store.set({ character: c.id });
+      charGrid.querySelectorAll('.char-opt').forEach((o) => o.classList.toggle('on', o === opt));
+      charGrid.querySelectorAll('.char-opt').forEach((o) => o.setAttribute('aria-pressed', String(o === opt)));
+      sfx.yes();
+      setPose(thumb, 'cheer', c.id);
+      setTimeout(() => setPose(thumb, 'happy', c.id), 1200);
+    });
+    charGrid.append(opt);
+  });
+
   const levelItems = () => {
     const d = store.getDifficulty();
     return [
@@ -82,6 +104,7 @@ export function openGrownUps({ go, done }) {
       el('label', {}, 'Name (used in the "Great job" cheer)', nameInput),
       el('h3', {}, 'Challenge level'), diffRow,
       el('h3', {}, 'Look'), grid,
+      el('h3', {}, 'Pip the…'), charGrid,
       el('h3', {}, "Pip's voice"), voiceRow,
       el('h3', {}, 'More'),
       // type=button so pressing Enter in the name box saves (Done) instead of opening a link

@@ -109,7 +109,7 @@ export function renderStickerBook(root, { onHome }) {
     return cell;
   }));
 
-  const pip = guide(have.length ? 'happy' : 'think', 90, 'world-pip');
+  const pip = guide(have.length ? 'happy' : 'think', 90, 'world-pip', store.get().character);
   root.append(
     el('header', { class: 'topbar' },
       el('button', { class: 'icon-btn', 'aria-label': 'Home', onclick: onHome }, '🏠'),
