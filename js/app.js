@@ -42,7 +42,7 @@ function route() {
   } else if (page === 'print') {
     cleanup = renderPrintShop(app, { onHome: () => go('#/') });
   } else if (page === 'worksheets') {
-    cleanup = renderWorksheets(app, { onHome: () => go('#/'), onOpen: (wid) => go(`#/worksheet/${wid}`) });
+    cleanup = renderWorksheets(app, { onHome: () => go('#/'), onOpen: (wid) => go(`#/worksheet/${wid}`), onPrint: () => go('#/print') });
   } else if (page === 'worksheet' && /^[0-9a-f-]{36}$/i.test(id || '')) {
     cleanup = renderWorksheet(app, id, { onBack: () => go('#/worksheets'), onSignedOut: () => go('#/worksheets') });
   } else if (page === 'sound-check') {

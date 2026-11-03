@@ -559,3 +559,5 @@ body:not([data-page='home'])::before { opacity: .4; }
 @media (prefers-reduced-motion: reduce) { .mem-inner { transition: none; } }
 .ttt .topbar { align-items: center; }
 .ttt-pip { flex: none; }
+.pr-group { margin: 14px 4px 4px; color: var(--bg-ink, var(--ink)); text-align: center; }
+.print-link { margin: 4px 0 14px; }

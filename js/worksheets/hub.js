@@ -58,7 +58,7 @@ async function uploadAll(id, items, setStatus) {
 }
 
 /* ------------------------------------------------------------------ hub */
-export function renderWorksheets(root, { onHome, onOpen }) {
+export function renderWorksheets(root, { onHome, onOpen, onPrint }) {
   let alive = true;
   const urls = [];
   const cleanup = () => { alive = false; urls.forEach((u) => URL.revokeObjectURL(u)); };
@@ -117,6 +117,7 @@ export function renderWorksheets(root, { onHome, onOpen }) {
     const body = frame(root, { title: 'My Worksheets', onBack: onHome, right: lockBtn });
     const pending = [];
     let createdId = null;
+    if (onPrint) body.append(el('button', { class: 'big-btn ws-btn print-link', type: 'button', onclick: onPrint }, '🖨️ Print practice pages'));
 
     const preview = el('div', { class: 'ws-previews' });
     const status = el('p', { class: 'ws-note' });

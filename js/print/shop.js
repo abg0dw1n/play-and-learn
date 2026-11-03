@@ -4,12 +4,19 @@ import { store } from '../core/store.js';
 import { sfx } from '../core/sfx.js';
 import { burst } from '../core/confetti.js';
 import { SHEETS } from './sheets.js';
+import { PRACTICE } from './practice.js';
 
 export function renderPrintShop(root, { onHome }) {
   root.className = 'screen pr-screen';
   root.style.removeProperty('--accent');
   let open = null; // which sheet type is showing, or null for the menu
   let diff = store.getDifficulty();
+
+  const grid = (list, color) => el('section', { class: 'tiles pr-ui' }, list.map((s) =>
+    el('button', { class: 'tile', style: { '--accent': color }, onclick: () => { sfx.tap(); show(s); } },
+      el('span', { class: 'tile-emoji' }, s.emoji),
+      el('span', { class: 'tile-title' }, s.title),
+      el('span', { class: 'tile-blurb' }, s.blurb))));
 
   function menu() {
     open = null;
@@ -20,11 +27,10 @@ export function renderPrintShop(root, { onHome }) {
         el('h2', { class: 'ws-title' }, 'Print & Color'),
         el('div', { class: 'ws-top-gap' })),
       el('p', { class: 'home-sub pr-ui' }, 'Pick a page! Print it, or color it right here.'),
-      el('section', { class: 'tiles pr-ui' }, SHEETS.map((s) =>
-        el('button', { class: 'tile', style: { '--accent': '#ff7aa8' }, onclick: () => { sfx.tap(); show(s); } },
-          el('span', { class: 'tile-emoji' }, s.emoji),
-          el('span', { class: 'tile-title' }, s.title),
-          el('span', { class: 'tile-blurb' }, s.blurb)))));
+      el('h3', { class: 'pr-group pr-ui' }, '📚 Practice pages'),
+      grid(PRACTICE, '#4d96ff'),
+      el('h3', { class: 'pr-group pr-ui' }, '🎨 Fun pages'),
+      grid(SHEETS, '#ff7aa8'));
   }
 
   function show(sheet) {
@@ -35,6 +41,11 @@ export function renderPrintShop(root, { onHome }) {
     holder.innerHTML = made.svg;
     const svg = holder.querySelector('svg');
     const note = el('p', { class: 'pr-note pr-ui' }, made.interactive ? 'Tap a color, then tap the boxes to color them!' : 'Tap Print to send it to a printer.');
+    let showingKey = false;
+    const keyBtn = made.answerSvg && el('button', { class: 'big-btn home', onclick: () => {
+      showingKey = !showingKey; holder.innerHTML = showingKey ? made.answerSvg : made.svg;
+      keyBtn.textContent = showingKey ? '📄 Back to the page' : '✅ Answers (grown-ups)';
+    } }, '✅ Answers (grown-ups)');
     root.append(
       el('header', { class: 'topbar pr-ui' },
         el('button', { class: 'icon-btn', 'aria-label': 'Back', onclick: menu }, '⬅️'),
@@ -43,7 +54,8 @@ export function renderPrintShop(root, { onHome }) {
       note, holder,
       el('div', { class: 'pr-actions pr-ui' },
         el('button', { class: 'big-btn', onclick: () => window.print() }, '🖨️ Print'),
-        el('button', { class: 'big-btn home', onclick: () => { sfx.tap(); show(sheet); } }, '🔄 New one')));
+        el('button', { class: 'big-btn home', onclick: () => { sfx.tap(); show(sheet); } }, '🔄 New one'),
+        keyBtn));
     if (made.interactive) colorOnScreen(svg, note);
   }
 
