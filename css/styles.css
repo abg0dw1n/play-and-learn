@@ -478,18 +478,32 @@ body:not([data-page='home'])::before { opacity: .4; }
   .pip-tap, .finish-pip, .pip-pop .guide, .choices .choice, .tiles .tile { animation: none !important; }
 }
 
+/* Every choice-game screen: topbar pinned at top, everything else as one group that
+   fills and centers in the space below it — keeps content together instead of
+   scattered with big gaps above/below on tall or wide screens. */
+.screen.game { display: flex; flex-direction: column; }
+.screen.game > .topbar { flex: none; }
+.game-body { flex: 1; display: flex; flex-direction: column; justify-content: center; }
+
 /* Tablets / landscape: the picture and question on the left, the answers on the right */
 @media (min-width: 800px) and (orientation: landscape) {
-  .screen.game { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); grid-template-rows: auto auto 1fr auto; column-gap: 36px; align-content: start; }
-  .screen.game > .topbar { grid-column: 1 / -1; }
-  .screen.game > .prompt { grid-column: 1; grid-row: 2; }
-  .screen.game > .visual { grid-column: 1; grid-row: 3; align-self: center; }
-  .screen.game > .next-row { grid-column: 1; grid-row: 4; }
-  .screen.game > .choices { grid-column: 2; grid-row: 2 / 5; align-self: center; max-width: 520px; grid-template-columns: repeat(2, 1fr) !important; }
-  .screen.game > .choices[data-count="5"] { grid-template-columns: repeat(3, 1fr) !important; }
+  .game-body {
+    display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); grid-template-rows: auto auto auto;
+    column-gap: 36px; row-gap: 14px; align-content: center; max-width: 900px; width: 100%; margin: 0 auto;
+  }
+  .game-body > .prompt { grid-column: 1; grid-row: 1; margin: 0; }
+  .game-body > .visual { grid-column: 1; grid-row: 2; align-self: center; }
+  .game-body > .next-row { grid-column: 1; grid-row: 3; }
+  .game-body > .choices { grid-column: 2; grid-row: 1 / 4; align-self: center; max-width: 520px; grid-template-columns: repeat(2, 1fr) !important; }
+  .game-body > .choices[data-count="5"] { grid-template-columns: repeat(3, 1fr) !important; }
   .worlds { grid-template-columns: repeat(4, 1fr); }
   .world-games { grid-template-columns: repeat(3, 1fr); }
   .scene { max-width: 900px; aspect-ratio: 16 / 10; }
+}
+/* Very wide screens (desktop): give the pair a bit more room so it isn't swimming in margin,
+   but keep it well short of the full page width so the background stays visible. */
+@media (min-width: 1150px) and (orientation: landscape) {
+  .game-body { max-width: 1040px; column-gap: 54px; }
 }
 
 @media (max-width: 520px) {

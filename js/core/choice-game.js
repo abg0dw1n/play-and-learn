@@ -74,7 +74,7 @@ export function runChoiceGame(root, game, { onHome, onBack, onRestart, onSticker
 
   root.append(
     el('header', { class: 'topbar' }, homeBtn, stars, el('div', { class: 'topbar-right' }, sayBtn, soundToggle())),
-    promptEl, visual, nextRow, choicesEl);
+    el('div', { class: 'game-body' }, promptEl, visual, nextRow, choicesEl));
 
   // Pip pops into the corner of the picture area: cheering after a right answer, "oops" after a wrong one.
   function pipSays(pose) {
