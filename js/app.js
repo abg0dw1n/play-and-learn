@@ -21,7 +21,7 @@ function route() {
   cleanup = null;
   hush();
   const [, page, id] = location.hash.replace(/^#\/?/, '#/').split('/');
-  const game = page === 'play' && games.find((g) => g.id === id);
+  const game = page === 'play' && games.find((g) => g.id === id && !g.paused);
   if (game) {
     const run = game.run || runChoiceGame;
     // "Play again" goes back through route() so the old round is fully stopped first.
@@ -42,8 +42,12 @@ function renderHome() {
   app.style.removeProperty('--accent');
   app.innerHTML = '';
 
-  const tiles = games.map((g) =>
-    el('button', {
+  const tiles = games.map((g) => g.paused
+    ? el('div', { class: 'tile soon', 'aria-disabled': 'true' },
+      el('span', { class: 'tile-emoji' }, g.emoji),
+      el('span', { class: 'tile-title' }, g.title),
+      el('span', { class: 'tile-blurb' }, 'Taking a nap — back soon!'))
+    : el('button', {
       class: 'tile',
       style: { '--accent': g.color },
       onclick: () => { sfx.tap(); go(`#/play/${g.id}`); },

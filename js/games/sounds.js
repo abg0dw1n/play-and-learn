@@ -62,6 +62,7 @@ const LOWERCASE_FROM_LEVEL = 3;
 
 export default {
   id: 'sounds',
+  paused: true, // temporarily unavailable (greyed out on the home screen); remove this line to bring it back
   title: 'Letter Sounds',
   emoji: '👂',
   color: '#9b5de5',
