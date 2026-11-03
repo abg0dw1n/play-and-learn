@@ -1,4 +1,4 @@
-// Home screen + simple hash router:  #/  (home)   #/play/<gameId>   #/stickers   #/sound-check   #/worksheets   #/worksheet/<id>
+// Home screen + simple hash router:  #/  (home)   #/play/<gameId>   #/stickers   #/sound-check   #/print   #/worksheets   #/worksheet/<id>
 import { el } from './core/util.js';
 import { store, levelCap, DIFFICULTY_NAMES } from './core/store.js';
 import { speak, hush, soundToggle } from './core/voice.js';
@@ -8,6 +8,7 @@ import { owned, STICKERS, renderStickerBook } from './core/stickers.js';
 import { renderSoundCheck } from './core/sound-check.js';
 import { games, comingSoon } from './games/index.js';
 import { renderWorksheets, renderWorksheet } from './worksheets/hub.js';
+import { renderPrintShop } from './print/shop.js';
 
 const app = document.getElementById('app');
 let cleanup = null;
@@ -29,6 +30,8 @@ function route() {
     cleanup = run(app, game, { onHome: () => go('#/'), onRestart: route, onStickers: () => go('#/stickers') });
   } else if (page === 'stickers') {
     cleanup = renderStickerBook(app, { onHome: () => go('#/') });
+  } else if (page === 'print') {
+    cleanup = renderPrintShop(app, { onHome: () => go('#/') });
   } else if (page === 'worksheets') {
     cleanup = renderWorksheets(app, { onHome: () => go('#/'), onOpen: (wid) => go(`#/worksheet/${wid}`) });
   } else if (page === 'worksheet' && /^[0-9a-f-]{36}$/i.test(id || '')) {
@@ -70,6 +73,15 @@ function renderHome() {
   el('span', { class: 'tile-title' }, 'My Stickers'),
   el('span', { class: 'tile-blurb' }, `${owned().length} of ${STICKERS.length} found`));
 
+  const printShop = el('button', {
+    class: 'tile',
+    style: { '--accent': '#ff7aa8' },
+    onclick: () => { sfx.tap(); go('#/print'); },
+  },
+  el('span', { class: 'tile-emoji' }, '🖨️'),
+  el('span', { class: 'tile-title' }, 'Print & Color'),
+  el('span', { class: 'tile-blurb' }, 'Color-by, mazes, word search'));
+
   // Grown-ups' hub for scanning her school sheets (asks for the parent passcode).
   const worksheets = el('button', {
     class: 'tile',
@@ -93,7 +105,7 @@ function renderHome() {
       soundToggle(),
       difficultyPicker()),
     el('p', { class: 'home-sub' }, 'Pick a game!'),
-    el('section', { class: 'tiles' }, tiles, book, worksheets, soon),
+    el('section', { class: 'tiles' }, tiles, book, printShop, worksheets, soon),
     grownUpsButton());
 }
 

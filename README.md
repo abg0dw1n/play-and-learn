@@ -32,6 +32,12 @@ Word lists live in `js/data/reading.js`; each game keeps its question bank and d
 Spoken lines can be a list (`say: ['Which rhymes?', 'cat.', 'hat.']`) — each line is spoken with a short pause.
 The voice picker prefers Premium / Enhanced / Natural voices when the device has them.
 
+## Print & Color
+Home → **Print & Color**: color by number / word / sum, mazes, word searches and dot-to-dots. Every page is random and sized for
+one Letter or A4 sheet (Print button → phone's print menu). The color-by pages can also be colored on screen. Difficulty follows
+the home-screen setting. Code: `js/print/sheets.js` (page makers, pure functions) and `js/print/shop.js` (screens).
+Add a picture by adding a 12×12 grid to `PICTURES`.
+
 ## My Worksheets (grown-ups)
 Parents add photos, scans or PDFs of her school sheets and see them on any device. Home → **My Worksheets** (🔒) →
 the first time, choose a parent passcode; after that each phone or tablet asks for it once (stays signed in 30 days).

@@ -374,3 +374,18 @@ button { font: inherit; color: inherit; cursor: pointer; touch-action: manipulat
 .ws-page figcaption { display: flex; justify-content: space-between; align-items: center; padding: 8px 4px 0; color: var(--soft-ink); }
 .ws-pdf-link { display: block; padding: 30px; text-align: center; font-size: 1.4rem; font-weight: 700; color: #2f7de1; }
 .ws-delete { align-self: center; margin-top: 10px; font-size: 1.05rem; }
+
+/* ---- Print & Color ---- */
+.pr-screen { align-items: center; }
+.pr-note { text-align: center; margin: 6px 0; color: var(--soft-ink); font-weight: 600; }
+.pr-sheet { background: #fff; border-radius: 16px; box-shadow: 0 6px 0 rgba(0,0,0,.12); padding: 8px; width: min(100%, 560px); margin: 8px auto; }
+.pr-sheet svg { display: block; width: 100%; height: auto; touch-action: manipulation; -webkit-user-select: none; user-select: none; }
+.pr-actions { display: flex; flex-wrap: wrap; gap: 14px; justify-content: center; margin: 14px 0 30px; }
+@media print {
+  @page { margin: 0.4in; }
+  html, body { background: #fff !important; }
+  .pr-ui, .sound-btn, .grownups { display: none !important; }
+  .pr-screen { padding: 0 !important; display: block !important; min-height: 0 !important; background: #fff !important; }
+  .pr-sheet { box-shadow: none; border-radius: 0; padding: 0; margin: 0 auto; width: 7.4in; }
+  .pr-sheet svg { width: 7.4in; height: auto; }
+}
