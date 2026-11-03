@@ -33,7 +33,8 @@ export const THEMES = [
       '--pattern': pattern(['🍭', '🍬', '🧁', '🍩', '🍓', '🍪', '🍦', '🍒'], 0.5) } },
 ];
 
-export const themeById = (id) => THEMES.find((t) => t.id === id) || THEMES[0];
+export const DEFAULT_THEME = 'rainbow'; // what she sees until someone picks another look
+export const themeById = (id) => THEMES.find((t) => t.id === id) || THEMES.find((t) => t.id === DEFAULT_THEME);
 export const currentTheme = () => themeById(store.get().theme);
 
 export function applyTheme(id = store.get().theme) {
