@@ -35,8 +35,11 @@ import { burst, burstAt } from './confetti.js';
 import { store, levelCap } from './store.js';
 import { awardSticker, withArticle } from './stickers.js';
 
-const PRAISE = ['Great job!', 'You got it!', 'Awesome!', 'Way to go!', 'Super!', 'Yes!'];
-const RETRY = ['Oops, try again!', 'Not quite. Try again!', 'Hmm, try another one!'];
+// Happy, encouraging lines. (All of these have recorded clips; run tools/ again after changing them.)
+export const PRAISE = ['Great job!', 'You got it!', 'Awesome!', 'Way to go!', 'Super!', 'Yes!', 'Wow, nice work!', 'You are so smart!', 'Fantastic!', "That's right!"];
+export const RETRY = ['Oops, try again!', 'Not quite. You can do it!', 'Hmm, try another one!', 'Almost! Try again!'];
+/** What the voice says on the finish screen (no name: the clips are the same for everyone). */
+export const finishLine = (sticker) => (sticker ? `Great job! You got ${withArticle(sticker[1])} sticker!` : 'Great job! You earned a star!');
 let startedOnce = false; // phones need one real tap on the page before they'll speak
 const any = (a) => a[Math.floor(Math.random() * a.length)];
 
@@ -183,7 +186,7 @@ export function runChoiceGame(root, game, { onHome, onRestart, onStickers }) {
     burst({ count: 140 });
     setTimeout(() => alive && burst({ x: innerWidth * 0.25, y: innerHeight * 0.4, count: 60 }), 500);
     setTimeout(() => alive && burst({ x: innerWidth * 0.75, y: innerHeight * 0.4, count: 60 }), 900);
-    speak(sticker ? `${cheer} You got ${withArticle(sticker[1])} sticker!` : `${cheer} You earned a star!`);
+    speak(finishLine(sticker));
   }
 
   if (startedOnce || !store.get().sound) {

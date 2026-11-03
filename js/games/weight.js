@@ -68,7 +68,9 @@ export default {
           ? `${cap(an(answer[1]))} is ${dir === 'either' ? (wantHeavy ? 'heavier' : 'lighter') : dir} than ${an(other[1])}!`
           : `${cap(an(answer[1]))} is the ${wantHeavy ? 'heaviest' : 'lightest'}!`,
       },
-      praise: ['Yes!', `${cap(an(answer[1]))} is ${cfg.n === 2 ? (wantHeavy ? 'heavier' : 'lighter') : `the ${wantHeavy ? 'heaviest' : 'lightest'}`}${cfg.n === 2 ? ` than ${an(other[1])}` : ''}.`],
+      praise: ['Yes!', cfg.n === 2
+        ? [cap(an(answer[1])), wantHeavy ? 'is heavier than' : 'is lighter than', `${an(other[1])}.`]
+        : [cap(an(answer[1])), wantHeavy ? 'is the heaviest.' : 'is the lightest.']],
     };
   },
 };

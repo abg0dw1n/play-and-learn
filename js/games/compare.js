@@ -47,7 +47,7 @@ export default {
         retrySay: [`Which number is ${word}?`],
         choices: shuffle([a, b]).map((n) => ({ label: String(n), correct: n === want, className: 'number' })),
         reveal: { emoji: cfg.t === 'greater' ? '⬆️' : '⬇️', caption: `${big} is greater than ${small}` },
-        praise: ['Yes!', `${big} is greater than ${small}.`],
+        praise: ['Yes!', [`${big}`, 'is greater than', `${small}.`]],
       };
     }
 
@@ -74,7 +74,8 @@ export default {
         v.append(el('div', { class: 'gator' }, '🐊 The hungry alligator opens his mouth to eat the bigger number!'));
       },
       reveal: { emoji: '🐊', caption: `${a} ${sign} ${b}` },
-      praise: ['Yes!', `${a} ${SIGN_WORD[sign]} ${b}.`],
+      // A nested list is spoken as one flowing sentence (short gaps), built from re-usable pieces.
+      praise: ['Yes!', [`${a}`, SIGN_WORD[sign], `${b}.`]],
     };
   },
 };

@@ -32,6 +32,18 @@ Word lists live in `js/data/reading.js`; each game keeps its question bank and d
 Spoken lines can be a list (`say: ['Which rhymes?', 'cat.', 'hat.']`) — each line is spoken with a short pause.
 The voice picker prefers Premium / Enhanced / Natural voices when the device has them.
 
+## Voice
+Every line the games say has a recorded clip made with the open-source Kokoro voice (`af_heart`, a warm female voice),
+stored in `audio/` and listed in `audio/manifest.json` (text → clip). `js/core/voice.js` plays the clip for a line and
+falls back to the device's built-in voice for any line without one (or if a phone blocks playback).
+Names aren't spoken (the clips are the same for everyone).
+
+When you add or change anything the voice says (including `PRAISE`/`RETRY` in `choice-game.js`), make the new clips:
+1. `python3 -m http.server 8090`, then `node tools/collect-lines.mjs` (rewrites `tools/lines.json`)
+2. `python3 tools/tts.py --models <dir> --espeak <dir> --lines tools/lines.json --out audio` (see the top of `tools/tts.py`
+   for where the free model files come from; only new lines are generated)
+3. Commit `audio/`
+
 ## Sticker book
 Every finished game awards one new sticker (40 in `js/core/stickers.js`) until all are found; then just a star.
 Stars earned before the sticker book existed were turned into stickers once.

@@ -78,6 +78,10 @@ function unlockOnTap() {
   if (now - lastTap < 400) return;
   lastTap = now;
   unlockHooks.forEach((fn) => { try { fn(); } catch { /* ignore */ } });
+  if (player && !playerUnlocked && !clipDone) {
+    player.src = SILENCE;
+    player.play().then(() => { playerUnlocked = true; }).catch(() => {});
+  }
   if (!supported || speechUnlocked) return;
   if (!voice) voice = chooseVoice();
   const u = new SpeechSynthesisUtterance('.');
@@ -92,21 +96,76 @@ for (const ev of ['touchend', 'click', 'keydown']) {
   window.addEventListener(ev, unlockOnTap, { capture: true, passive: true });
 }
 
+/* ---- Recorded voice ----
+   Every line the games say was pre-made as a clip with a natural AI voice (tools/tts.py) and is
+   listed in audio/manifest.json. A line with a clip is played from that; any other line (or if the
+   clip can't play) falls back to the device's built-in voice. */
+const CLIP_BASE = '/audio/';
+let manifest = {};
+const manifestReady = fetch(`${CLIP_BASE}manifest.json`).then((r) => (r.ok ? r.json() : {})).then((m) => { manifest = m; }).catch(() => {});
+
+const player = typeof Audio !== 'undefined' ? new Audio() : null; // one element, unlocked by the first tap
+player && (player.preload = 'auto');
+// 0.1s of silence; playing it inside a tap lets the same element play clips later on iPhones.
+const SILENCE = 'data:audio/wav;base64,UklGRiQAAABXQVZFZm10IBAAAAABAAEAQB8AAIA+AAACABAAZGF0YQAAAAA=';
+let playerUnlocked = false;
+let clipDone = null; // ends the clip that's playing now (also used by hush)
+
+function playClip(url) {
+  return new Promise((resolve) => {
+    clipDone?.(false);
+    let over = false;
+    const finish = (ok = true) => {
+      if (over) return;
+      over = true;
+      clearTimeout(t);
+      player.onended = player.onerror = null;
+      if (clipDone === finish) clipDone = null;
+      resolve(ok);
+    };
+    clipDone = finish;
+    const t = setTimeout(() => finish(true), 15000);
+    player.onended = () => finish(true);
+    player.onerror = () => finish(false);
+    player.src = url;
+    player.play().catch(() => finish(false)); // blocked by the phone: let the caller fall back
+  });
+}
+
 let activeUtterance = null; // keep a reference: some phones drop the "finished" event otherwise
-
 let speakToken = 0; // bumps whenever new speech starts or hush() is called, to stop a running list
+const wait = (ms) => new Promise((r) => setTimeout(r, ms));
 
-/** Speak text; resolves when finished (or after a safety timeout).
-    Pass a list of lines to say them one after another with a short breath between
-    (device voices run a single long sentence together). */
+/** Speak a line, or a list of lines said one after another with a breath between.
+    A list inside the list is one flowing sentence made of short pieces. Resolves when done. */
 export async function speak(text, opts = {}) {
   const my = ++speakToken;
-  if (!Array.isArray(text)) return speakOne(text, opts);
-  for (let i = 0; i < text.length; i++) {
+  const items = Array.isArray(text) ? text : [text];
+  await manifestReady;
+  if (my !== speakToken) return;
+  // Warm the cache for the clips that come after the first one.
+  items.flat().slice(1).forEach((t) => manifest[t] && fetch(CLIP_BASE + manifest[t] + '.mp3').catch(() => {}));
+  await speakSeq(items, my, opts.gap ?? 350, opts);
+}
+
+async function speakSeq(items, my, gap, opts) {
+  for (let i = 0; i < items.length; i++) {
     if (my !== speakToken) return;
-    await speakOne(text[i], opts);
-    if (i < text.length - 1 && my === speakToken) await new Promise((r) => setTimeout(r, opts.gap ?? 450));
+    if (Array.isArray(items[i])) await speakSeq(items[i], my, 60, opts);
+    else await speakLine(items[i], opts, my);
+    if (i < items.length - 1 && my === speakToken) await wait(gap);
   }
+}
+
+async function speakLine(text, opts, my) {
+  if (!text || (!opts.force && !store.get().sound)) return;
+  const id = manifest[text];
+  if (id && player) {
+    if (supported && (speechSynthesis.speaking || speechSynthesis.pending)) speechSynthesis.cancel();
+    if (await playClip(`${CLIP_BASE}${id}.mp3`)) return;
+    if (my !== speakToken) return;
+  }
+  await speakOne(text, opts);
 }
 
 function speakOne(text, { rate = 0.9, pitch = 1.0, force = false } = {}) {
@@ -136,6 +195,8 @@ function speakOne(text, { rate = 0.9, pitch = 1.0, force = false } = {}) {
 export function hush() {
   speakToken++;
   activeUtterance = null;
+  clipDone?.(true);
+  player?.pause();
   if (supported && (speechSynthesis.speaking || speechSynthesis.pending)) speechSynthesis.cancel();
 }
 

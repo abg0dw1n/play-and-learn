@@ -14,7 +14,10 @@ self.addEventListener('activate', (e) => {
 
 self.addEventListener('fetch', (e) => {
   const req = e.request;
-  if (req.method !== 'GET' || new URL(req.url).origin !== location.origin) return;
+  const url = new URL(req.url);
+  // Voice clips are never changed once made (their names come from their text), and phones fetch them in
+  // pieces, so let the browser's own cache handle them.
+  if (req.method !== 'GET' || url.origin !== location.origin || url.pathname.startsWith('/audio/')) return;
   e.respondWith(
     fetch(req)
       .then((res) => {
