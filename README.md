@@ -22,7 +22,7 @@ greater/less than and measuring weight.
 - **Read the Word** — a word is shown (not spoken); sound it out and tap the matching picture
 - **Sight Words** — hear a word and find it; later, pick the word that fits a sentence
 - **Story Time** — a short story is read aloud, then a question about it
-- **Add & Take Away** — adding and subtracting, alternating: pictures to count first (within 5, then 10), then numbers only (up to 20 on Super Star); pictures appear as a hint after a miss. Spoken from tiny re-usable clips ("What is" / 3 / "plus" / 2)
+- **Add & Take Away** — adding and subtracting, alternating: pictures to count first (within 5, then 10), then numbers only (up to 20 on Super Star); pictures appear as a hint after a miss. Every question and answer is a whole recorded sentence ("What is 3 plus 2?"), ~800 clips (`tools/addsub-lines.json`)
 - **Greater or Less** — which number is greater/less, then the `>` `<` `=` signs with numbers and groups of pictures
 - **Heavy or Light** — which weighs more/less, then heaviest/lightest of three
 - **Letter Sounds** — paused for now (`paused: true` in `js/games/sounds.js`); phone voices read made-up sounds like "buh" as letters

@@ -31,16 +31,15 @@
 import { el } from './util.js';
 import { speak, hush, soundToggle } from './voice.js';
 import { sfx } from './sfx.js';
-import { burst, burstAt } from './confetti.js';
+import { burstAt } from './confetti.js';
 import { store, levelCap } from './store.js';
-import { awardSticker, withArticle } from './stickers.js';
 import { guide } from './guide.js';
+import { renderFinish } from './finish.js';
 
 // Happy, encouraging lines. (All of these have recorded clips; run tools/ again after changing them.)
 export const PRAISE = ['Great job!', 'You got it!', 'Awesome!', 'Way to go!', 'Super!', 'Yes!', 'Wow, nice work!', 'You are so smart!', 'Fantastic!', "That's right!"];
 export const RETRY = ['Oops, try again!', 'Not quite. You can do it!', 'Hmm, try another one!', 'Almost! Try again!'];
-/** What the voice says on the finish screen (no name: the clips are the same for everyone). */
-export const finishLine = (sticker) => (sticker ? `Great job! You got ${withArticle(sticker[1])} sticker!` : 'Great job! You earned a star!');
+export { finishLine } from './finish.js';
 let startedOnce = false; // phones need one real tap on the page before they'll speak
 const any = (a) => a[Math.floor(Math.random() * a.length)];
 
@@ -174,34 +173,7 @@ export function runChoiceGame(root, game, { onHome, onBack, onRestart, onSticker
   }
 
   function finish() {
-    const s = store.get();
-    store.setGame(game.id, { plays: (store.game(game.id).plays || 0) + 1 });
-    // Sticker first: on the very first finish it also turns stars from before the
-    // sticker book into stickers, and this game's star must not be counted twice.
-    const sticker = awardSticker(); // [emoji, name] or null once she has them all
-    const totalStars = store.addStar();
-    const cheer = s.name ? `Great job, ${s.name}!` : 'Great job!';
-    root.innerHTML = '';
-    root.append(el('div', { class: 'finish' },
-      guide('cheer', 120, 'finish-pip'),
-      sticker
-        ? el('div', { class: 'new-sticker' },
-          el('div', { class: 'sticker-big' }, sticker[0]),
-          el('div', { class: 'sticker-label' }, 'New sticker!'))
-        : el('div', { class: 'trophy' }, '🏆'),
-      el('h2', {}, cheer),
-      el('p', { class: 'earned' }, '+1 ⭐  ', el('span', {}, `You have ${totalStars} ${totalStars === 1 ? 'star' : 'stars'}!`)),
-      el('div', { class: 'finish-actions' },
-        el('button', { class: 'big-btn again', onclick: () => (onRestart ? onRestart() : runChoiceGame(root, game, { onHome })) }, '🔁 Play again'),
-        onStickers && el('button', { class: 'big-btn book', onclick: onStickers }, '🌈 My World'),
-        onBack && el('button', { class: 'big-btn home', onclick: onBack }, '🎮 More games'),
-        el('button', { class: 'big-btn home', onclick: onHome }, '🏠 Home'))));
-    window.scrollTo(0, 0);
-    sfx.fanfare();
-    burst({ count: 140 });
-    setTimeout(() => alive && burst({ x: innerWidth * 0.25, y: innerHeight * 0.4, count: 60 }), 500);
-    setTimeout(() => alive && burst({ x: innerWidth * 0.75, y: innerHeight * 0.4, count: 60 }), 900);
-    speak(finishLine(sticker));
+    renderFinish(root, game, { onHome, onBack, onRestart: onRestart || (() => runChoiceGame(root, game, { onHome })), onStickers }, { alive: () => alive });
   }
 
   if (startedOnce || !store.get().sound) {

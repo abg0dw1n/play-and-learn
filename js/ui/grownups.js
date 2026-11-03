@@ -54,7 +54,8 @@ export function openGrownUps({ go, done }) {
   const levelItems = () => {
     const d = store.getDifficulty();
     return [
-      ...games.map((g) => el('li', {}, `${g.emoji} ${g.title}: level ${Math.min(store.level(g.id, d), levelCap(g, d))} of ${levelCap(g, d)}, played ${store.game(g.id).plays || 0}×`)),
+      ...games.map((g) => el('li', {}, g.fun ? `${g.emoji} ${g.title}: played ${store.game(g.id).plays || 0}×`
+        : `${g.emoji} ${g.title}: level ${Math.min(store.level(g.id, d), levelCap(g, d))} of ${levelCap(g, d)}, played ${store.game(g.id).plays || 0}×`)),
       el('li', {}, `⭐ ${store.get().stars} stars, 🌈 ${owned().length} of ${STICKERS.length} stickers`),
     ];
   };

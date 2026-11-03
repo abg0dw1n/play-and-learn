@@ -45,7 +45,6 @@ export function renderHome(root, { go, onGrownUps }) {
         soundToggle({ label: true }))),
     el('section', { class: 'tiles worlds' },
       ...worlds.map((w) => tile(w.emoji, w.title, w.color, `#/world/${w.id}`)),
-      tile('🖍️', 'Print & Color', '#ff9f1c', '#/print'),
       tile('🌈', 'My World', '#43b05c', '#/stickers', `${owned().length} of ${STICKERS.length}`)),
     onGrownUps);
 }
@@ -68,7 +67,9 @@ export function renderWorld(root, world, { go, onHome, onPlay, grownUps }) {
       el('button', { class: 'icon-btn', 'aria-label': 'Home', onclick: onHome }, '🏠'),
       el('h2', { class: 'world-title' }, `${world.emoji} ${world.title}`),
       tappablePip(70, world.say)),
-    el('section', { class: 'tiles world-games' }, list.map(gameTile)));
+    el('section', { class: 'tiles world-games' }, list.map(gameTile),
+      (world.links || []).map((l) => el('button', { class: 'tile', style: { '--accent': l.color }, onclick: () => { sfx.tap(); go(l.hash); } },
+        el('span', { class: 'tile-emoji' }, l.emoji), el('span', { class: 'tile-title' }, l.title), el('span', { class: 'tile-blurb' }, l.blurb)))));
   setTimeout(() => speak(world.say), 250);
   return () => {};
 }
