@@ -10,7 +10,5 @@ import sounds from './sounds.js';
 
 export const games = [spell, read, sight, story, compare, weight, sounds];
 
-// Shown greyed-out on the home screen until they're built.
-export const comingSoon = [
-  { id: 'worksheets', title: 'My Worksheets', emoji: '📄', blurb: 'Coming soon' },
-];
+// Shown greyed-out on the home screen until they're built. (My Worksheets is a real tile now.)
+export const comingSoon = [];

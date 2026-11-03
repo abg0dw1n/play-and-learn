@@ -1,4 +1,4 @@
-// Home screen + simple hash router:  #/  (home)   #/play/<gameId>   #/stickers   #/sound-check
+// Home screen + simple hash router:  #/  (home)   #/play/<gameId>   #/stickers   #/sound-check   #/worksheets   #/worksheet/<id>
 import { el } from './core/util.js';
 import { store, levelCap, DIFFICULTY_NAMES } from './core/store.js';
 import { speak, hush, soundToggle } from './core/voice.js';
@@ -7,6 +7,7 @@ import { runChoiceGame } from './core/choice-game.js';
 import { owned, STICKERS, renderStickerBook } from './core/stickers.js';
 import { renderSoundCheck } from './core/sound-check.js';
 import { games, comingSoon } from './games/index.js';
+import { renderWorksheets, renderWorksheet } from './worksheets/hub.js';
 
 const app = document.getElementById('app');
 let cleanup = null;
@@ -28,6 +29,10 @@ function route() {
     cleanup = run(app, game, { onHome: () => go('#/'), onRestart: route, onStickers: () => go('#/stickers') });
   } else if (page === 'stickers') {
     cleanup = renderStickerBook(app, { onHome: () => go('#/') });
+  } else if (page === 'worksheets') {
+    cleanup = renderWorksheets(app, { onHome: () => go('#/'), onOpen: (wid) => go(`#/worksheet/${wid}`) });
+  } else if (page === 'worksheet' && /^[0-9a-f-]{36}$/i.test(id || '')) {
+    cleanup = renderWorksheet(app, id, { onBack: () => go('#/worksheets'), onSignedOut: () => go('#/worksheets') });
   } else if (page === 'sound-check') {
     cleanup = renderSoundCheck(app, { onHome: () => go('#/') });
   } else {
@@ -65,6 +70,16 @@ function renderHome() {
   el('span', { class: 'tile-title' }, 'My Stickers'),
   el('span', { class: 'tile-blurb' }, `${owned().length} of ${STICKERS.length} found`));
 
+  // Grown-ups' hub for scanning her school sheets (asks for the parent passcode).
+  const worksheets = el('button', {
+    class: 'tile',
+    style: { '--accent': '#5c6b8a' },
+    onclick: () => { sfx.tap(); go('#/worksheets'); },
+  },
+  el('span', { class: 'tile-emoji' }, '📄'),
+  el('span', { class: 'tile-title' }, 'My Worksheets'),
+  el('span', { class: 'tile-blurb' }, '🔒 For grown-ups'));
+
   const soon = comingSoon.map((g) =>
     el('div', { class: 'tile soon', 'aria-disabled': 'true' },
       el('span', { class: 'tile-emoji' }, g.emoji),
@@ -78,7 +93,7 @@ function renderHome() {
       soundToggle(),
       difficultyPicker()),
     el('p', { class: 'home-sub' }, 'Pick a game!'),
-    el('section', { class: 'tiles' }, tiles, book, soon),
+    el('section', { class: 'tiles' }, tiles, book, worksheets, soon),
     grownUpsButton());
 }
 

@@ -32,6 +32,19 @@ Word lists live in `js/data/reading.js`; each game keeps its question bank and d
 Spoken lines can be a list (`say: ['Which rhymes?', 'cat.', 'hat.']`) — each line is spoken with a short pause.
 The voice picker prefers Premium / Enhanced / Natural voices when the device has them.
 
+## My Worksheets (grown-ups)
+Parents add photos, scans or PDFs of her school sheets and see them on any device. Home → **My Worksheets** (🔒) →
+the first time, choose a parent passcode; after that each phone or tablet asks for it once (stays signed in 30 days).
+- `js/worksheets/` — the screens (`hub.js`: sign-in, add, list, view, rename, notes, delete) and `api.js` (talks to the service,
+  shrinks photos to 2200 px JPEG before upload)
+- `supabase/functions/worksheets/` — the private service (Supabase edge function `worksheets`, project `play-and-learn`):
+  `core.js` is all the logic (passcode hash, lock-out after 8 wrong tries, 30-day sign-in tokens, file-type checks, limits),
+  `index.ts` connects it to the database and a **private** storage bucket. The database tables have row-level security with
+  no public access, so nothing is readable without going through the passcode.
+- `js/config.js` holds the service address (not secret). Tests: `node tests/worksheets-core.test.mjs`
+- Planned next: read the words on each scan (OCR) into `worksheet_pages.text`, edit them in the hub, and turn them into games.
+  Changing the service code means re-deploying the function (Supabase → Edge Functions → worksheets).
+
 ## Voice
 Every line the games say has a recorded clip made with the open-source Kokoro voice (`af_heart`, a warm female voice),
 stored in `audio/` and listed in `audio/manifest.json` (text → clip). `js/core/voice.js` plays the clip for a line and
