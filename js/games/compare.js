@@ -43,8 +43,8 @@ export default {
       return {
         key,
         text: `Which number is ${word}?`,
-        say: [`Which number is ${word}?`],
-        retrySay: [`Which number is ${word}?`],
+        say: [`Which number is ${word}?`, [String(a), 'or', String(b)]],
+        retrySay: [`Which number is ${word}?`, [String(a), 'or', String(b)]],
         choices: shuffle([a, b]).map((n) => ({ label: String(n), correct: n === want, className: 'number' })),
         reveal: { emoji: cfg.t === 'greater' ? '⬆️' : '⬇️', caption: `${big} is greater than ${small}` },
         praise: ['Yes!', [`${big}`, 'is greater than', `${small}.`]],

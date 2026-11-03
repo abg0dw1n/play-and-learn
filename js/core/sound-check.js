@@ -2,7 +2,7 @@
 // spelling for any the voice reads wrong (e.g. spells "zuh" out as "Z U H"), and choose a voice.
 import { el, wait } from './util.js';
 import { store } from './store.js';
-import { speak, hush, englishVoices, setVoice, currentVoiceName, onVoicesReady } from './voice.js';
+import { speak, hush, englishVoices, setVoice, currentVoiceName, onVoicesReady, soundToggle } from './voice.js';
 import { SOUND_OPTIONS, soundFor, soundPrompt } from '../games/sounds.js';
 
 export function renderSoundCheck(root, { onHome }) {
@@ -80,7 +80,7 @@ export function renderSoundCheck(root, { onHome }) {
     el('header', { class: 'topbar' },
       el('button', { class: 'icon-btn', 'aria-label': 'Home', onclick: onHome }, '🏠'),
       el('h2', { class: 'book-title sc-title' }, 'Sound Check'),
-      el('span', { class: 'sc-spacer' })),
+      soundToggle()),
     el('div', { class: 'sc-card' },
       el('p', {}, 'For grown-ups. Tap a sound to hear it the way Letter Sounds says it on this device. ',
         'If the voice spells it out as letters (like "Z U H") or it sounds wrong, tap another spelling for that letter. ',

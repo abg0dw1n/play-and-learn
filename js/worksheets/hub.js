@@ -2,6 +2,7 @@
 // school sheets, and see them on any device. (Reading and editing the words comes next.)
 import { el } from '../core/util.js';
 import { api, token, prepareFile, ApiError } from './api.js';
+import { soundToggle } from '../core/voice.js';
 
 const dateText = (iso) => new Date(iso).toLocaleDateString(undefined, { month: 'short', day: 'numeric', year: 'numeric' });
 
@@ -15,7 +16,7 @@ function frame(root, { title, onBack, backLabel = '🏠', right }) {
     el('header', { class: 'topbar ws-top' },
       el('button', { class: 'icon-btn', type: 'button', 'aria-label': 'Back', onclick: onBack }, backLabel),
       el('h2', { class: 'ws-title' }, title),
-      right || el('span', { class: 'ws-top-gap' })),
+      el('div', { class: 'topbar-right' }, right, soundToggle())),
     body);
   return body;
 }

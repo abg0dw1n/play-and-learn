@@ -2,6 +2,7 @@
 import { el } from '../core/util.js';
 import { store } from '../core/store.js';
 import { sfx } from '../core/sfx.js';
+import { soundToggle } from '../core/voice.js';
 import { burst } from '../core/confetti.js';
 import { SHEETS } from './sheets.js';
 import { PRACTICE } from './practice.js';
@@ -25,7 +26,7 @@ export function renderPrintShop(root, { onHome }) {
       el('header', { class: 'topbar pr-ui' },
         el('button', { class: 'icon-btn', 'aria-label': 'Home', onclick: onHome }, '🏠'),
         el('h2', { class: 'ws-title' }, 'Print & Color'),
-        el('div', { class: 'ws-top-gap' })),
+        soundToggle()),
       el('p', { class: 'home-sub pr-ui' }, 'Pick a page! Print it, or color it right here.'),
       el('h3', { class: 'pr-group pr-ui' }, '📚 Practice pages'),
       grid(PRACTICE, '#4d96ff'),
@@ -50,7 +51,7 @@ export function renderPrintShop(root, { onHome }) {
       el('header', { class: 'topbar pr-ui' },
         el('button', { class: 'icon-btn', 'aria-label': 'Back', onclick: menu }, '⬅️'),
         el('h2', { class: 'ws-title' }, sheet.title),
-        el('div', { class: 'ws-top-gap' })),
+        soundToggle()),
       note, holder,
       el('div', { class: 'pr-actions pr-ui' },
         el('button', { class: 'big-btn', onclick: () => window.print() }, '🖨️ Print'),

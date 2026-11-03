@@ -1,7 +1,7 @@
 // Sticker book: every finished game earns a new sticker until she has them all.
 import { el, pick } from './util.js';
 import { store } from './store.js';
-import { speak } from './voice.js';
+import { speak, soundToggle } from './voice.js';
 import { sfx } from './sfx.js';
 import { burstAt } from './confetti.js';
 import { guide } from './guide.js';
@@ -114,7 +114,7 @@ export function renderStickerBook(root, { onHome }) {
     el('header', { class: 'topbar' },
       el('button', { class: 'icon-btn', 'aria-label': 'Home', onclick: onHome }, '🏠'),
       el('h2', { class: 'book-title' }, '🌈 My World'),
-      el('div', { class: 'star-count' }, `${have.length} / ${STICKERS.length}`)),
+      el('div', { class: 'topbar-right' }, el('div', { class: 'star-count' }, `${have.length} / ${STICKERS.length}`), soundToggle())),
     el('div', { class: 'world-row' }, pip,
       el('p', { class: 'bubble' },
         have.length === STICKERS.length ? 'You found them all! 🎉'

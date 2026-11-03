@@ -78,7 +78,7 @@ export function renderWorld(root, world, { go, onHome, onPlay, grownUps }) {
     el('header', { class: 'topbar' },
       el('button', { class: 'icon-btn', 'aria-label': 'Home', onclick: onHome }, '🏠'),
       el('h2', { class: 'world-title' }, `${world.emoji} ${world.title}`),
-      tappablePip(70, world.say)),
+      el('div', { class: 'topbar-right' }, soundToggle(), tappablePip(70, world.say))),
     el('section', { class: 'tiles world-games' }, list.map(gameTile),
       (world.links || []).map((l) => el('button', { class: 'tile', style: { '--accent': l.color }, onclick: () => { sfx.tap(); go(l.hash); } },
         el('span', { class: 'tile-emoji' }, l.emoji), el('span', { class: 'tile-title' }, l.title), el('span', { class: 'tile-blurb' }, l.blurb)))));
