@@ -59,7 +59,7 @@ export default {
       render(v) {
         v.append(el('div', { class: 'story-wrap' },
           el('div', { class: 'story' }, st.s.map((x) => el('p', {}, x))),
-          el('button', { class: 'hear-btn', type: 'button', 'aria-label': 'Hear the story again', onclick: () => speak(st.s, { force: true }) }, '🔊 Read the story again')));
+          el('button', { class: 'hear-btn', type: 'button', 'aria-label': 'Hear the story again', onclick: () => speak([...st.s, st.q], { force: true }) }, '🔊 Read the story again')));
       },
       reveal: { emoji: st.e, caption: st.a },
       praise: ['Yes!', `${st.a}.`],

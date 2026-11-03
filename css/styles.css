@@ -291,7 +291,7 @@ button { font: inherit; color: inherit; cursor: pointer; touch-action: manipulat
 
 .read-word { display: flex; justify-content: center; gap: 0; font-size: clamp(4.4rem, 17vw, 8rem); font-weight: 700; line-height: 1.1; animation: pop .4s ease-out; }
 .read-word.spaced { gap: clamp(8px, 3vw, 22px); }
-.rw-letter { color: var(--ink); }
+.rw-letter { color: var(--bg-ink, var(--ink)); }
 
 .choice.word, .choice.sign { aspect-ratio: auto; min-height: 110px; padding: 10px 8px; font-size: clamp(2rem, 7vw, 3.4rem); overflow-wrap: anywhere; line-height: 1.15; }
 .choice.sign { font-size: clamp(3.6rem, 13vw, 6rem); color: #06a77d; }
@@ -303,7 +303,7 @@ button { font: inherit; color: inherit; cursor: pointer; touch-action: manipulat
   .choices[data-count="5"] .choice.word { grid-column: auto; }
 }
 
-.sentence { font-size: clamp(2.2rem, 8vw, 4rem); font-weight: 700; text-align: center; padding: 18px; animation: pop .4s ease-out; }
+.sentence { font-size: clamp(2.2rem, 8vw, 4rem); font-weight: 700; text-align: center; padding: 18px; animation: pop .4s ease-out; color: var(--bg-ink, var(--ink)); }
 .story { background: rgba(255,255,255,.85); border-radius: 24px; padding: 16px 22px; max-width: 640px; box-shadow: 0 5px 0 rgba(0,0,0,.08); animation: pop .4s ease-out; }
 .story p { margin: 6px 0; font-size: clamp(1.4rem, 4.6vw, 2rem); line-height: 1.35; }
 
