@@ -1,14 +1,30 @@
 // Little synthesized sound effects — no audio files to host.
 import { store } from './store.js';
+import { onFirstTap } from './voice.js';
 
 let ctx;
 function audio() {
   const AC = window.AudioContext || window.webkitAudioContext;
   if (!AC) return null;
   ctx ||= new AC();
-  if (ctx.state === 'suspended') ctx.resume();
+  // 'suspended' before the first tap; iPhones also use 'interrupted' after a call or switching apps.
+  if (ctx.state !== 'running') ctx.resume?.();
   return ctx;
 }
+
+// Phones keep sound off until it's started inside a tap: on every tap until it's running,
+// wake the audio engine and play a tiny silent sound.
+let audioUnlocked = false;
+onFirstTap(() => {
+  if (audioUnlocked) return;
+  const c = audio();
+  if (!c) return;
+  const src = c.createBufferSource();
+  src.buffer = c.createBuffer(1, 1, 22050);
+  src.connect(c.destination);
+  src.start(0);
+  if (c.state === 'running') audioUnlocked = true;
+});
 
 function tone(freq, start, dur, type = 'triangle', vol = 0.18) {
   const c = audio();
