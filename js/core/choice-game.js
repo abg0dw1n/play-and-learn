@@ -35,6 +35,7 @@ import { awardSticker, withArticle } from './stickers.js';
 
 const PRAISE = ['Great job!', 'You got it!', 'Awesome!', 'Way to go!', 'Super!', 'Yes!'];
 const RETRY = ['Oops, try again!', 'Not quite. Try again!', 'Hmm, try another one!'];
+let startedOnce = false; // phones need one real tap on the page before they'll speak
 const any = (a) => a[Math.floor(Math.random() * a.length)];
 
 export function runChoiceGame(root, game, { onHome, onRestart, onStickers }) {
@@ -169,6 +170,14 @@ export function runChoiceGame(root, game, { onHome, onRestart, onStickers }) {
     speak(sticker ? `${cheer} You got ${withArticle(sticker[1])} sticker!` : `${cheer} You earned a star!`);
   }
 
-  nextRound();
+  if (startedOnce || !store.get().sound) {
+    nextRound();
+  } else {
+    // Start gate: the first question is spoken inside this very tap, which phones always allow.
+    promptEl.textContent = 'Ready to play?';
+    const go = el('button', { class: 'big-btn start-btn', type: 'button' }, "Let's play! ▶️");
+    go.addEventListener('click', () => { startedOnce = true; go.remove(); nextRound(); });
+    nextRow.append(go);
+  }
   return () => { alive = false; hush(); };
 }

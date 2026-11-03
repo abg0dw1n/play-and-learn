@@ -276,3 +276,4 @@ button { font: inherit; color: inherit; cursor: pointer; touch-action: manipulat
   .icon-btn { width: 54px; height: 54px; font-size: 1.6rem; }
   .dot { width: 16px; height: 16px; }
 }
+.start-btn { --accent: var(--accent, #4d96ff); font-size: clamp(1.8rem, 6vw, 2.6rem); padding: 18px 48px; animation: pop .35s ease-out; }
