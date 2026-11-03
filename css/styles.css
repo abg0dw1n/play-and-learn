@@ -331,11 +331,14 @@ button { font: inherit; color: inherit; cursor: pointer; touch-action: manipulat
 .story-wrap, .sentence-wrap { display: flex; flex-direction: column; align-items: center; gap: 12px; }
 
 /* ---- My Worksheets (grown-ups) ---- */
-.screen.ws { user-select: text; -webkit-user-select: text; }
+.screen.ws { user-select: text; -webkit-user-select: text; display: flex; flex-direction: column; }
+.screen.ws > .topbar { flex: none; }
 .ws-top { gap: 12px; }
 .ws-title { color: var(--bg-ink, var(--ink)); flex: 1; text-align: center; font-size: clamp(1.4rem, 5vw, 2.2rem); margin: 0; }
 .ws-top-gap { width: 60px; }
-.ws-body { display: flex; flex-direction: column; gap: 14px; max-width: 760px; width: 100%; margin: 8px auto 40px; }
+/* Short content (the sign-in gate) sits centered in the space below the topbar instead of
+   floating near the top with a big gap below; long content (the worksheet list) just scrolls. */
+.ws-body { display: flex; flex-direction: column; gap: 14px; max-width: 760px; width: 100%; margin: 8px auto 24px; flex: 1; justify-content: center; }
 .ws-hidden { display: none; }
 .ws-note { margin: 4px 0; font-size: 1.1rem; color: var(--soft-ink); line-height: 1.4; }
 .ws-note.bad { color: #c1121f; font-weight: 700; }
