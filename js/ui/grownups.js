@@ -6,6 +6,7 @@ import { sfx } from '../core/sfx.js';
 import { owned, STICKERS } from '../core/stickers.js';
 import { THEMES, setTheme, currentTheme } from '../core/themes.js';
 import { games } from '../games/index.js';
+import { speak } from '../core/voice.js';
 
 /** Press-and-hold so little fingers don't wander in. */
 export function grownUpsButton(open) {
@@ -51,6 +52,20 @@ export function openGrownUps({ go, done }) {
     grid.append(opt);
   });
 
+  // Pip's voice
+  const voiceRow = el('div', { class: 'diff-row' });
+  const voices = [['heart', 'Heart'], ['bella', 'Bella']];
+  voices.forEach(([id, label]) => {
+    const b = el('button', { type: 'button', class: `diff-btn${s.ttsVoice === id || (!s.ttsVoice && id === 'heart') ? ' on' : ''}`, 'aria-pressed': String(s.ttsVoice === id) }, `🎙️ ${label}`);
+    b.addEventListener('click', () => {
+      store.set({ ttsVoice: id });
+      voiceRow.querySelectorAll('.diff-btn').forEach((x) => { x.classList.toggle('on', x === b); x.setAttribute('aria-pressed', String(x === b)); });
+      sfx.tap();
+      speak("Hi! I'm Pip. What do you want to play?", { force: true });
+    });
+    voiceRow.append(b);
+  });
+
   const levelItems = () => {
     const d = store.getDifficulty();
     return [
@@ -67,6 +82,7 @@ export function openGrownUps({ go, done }) {
       el('label', {}, 'Name (used in the "Great job" cheer)', nameInput),
       el('h3', {}, 'Challenge level'), diffRow,
       el('h3', {}, 'Look'), grid,
+      el('h3', {}, "Pip's voice"), voiceRow,
       el('h3', {}, 'More'),
       // type=button so pressing Enter in the name box saves (Done) instead of opening a link
       el('button', { type: 'button', class: 'sc-link', onclick: () => dialog.close('soundcheck') }, '🔊 Sound Check: voice and letter sounds'),

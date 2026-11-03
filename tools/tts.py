@@ -70,6 +70,7 @@ def main():
     ap.add_argument('--lines', required=True); ap.add_argument('--out', required=True)
     ap.add_argument('--voice', default=VOICE); ap.add_argument('--speed', type=float, default=SPEED)
     ap.add_argument('--limit', type=int, default=0)
+    ap.add_argument('--manifest', default='manifest.json', help='manifest filename (use a different one per voice, e.g. manifest-bella.json)')
     a = ap.parse_args()
     vocab = json.load(open(os.path.join(a.models, 'vocab.json')))
     voices = np.load(os.path.join(a.models, 'voices.bin'))
@@ -78,7 +79,7 @@ def main():
     lines = json.load(open(a.lines))
     if a.limit: lines = lines[:a.limit]
     os.makedirs(a.out, exist_ok=True)
-    manifest_path = os.path.join(a.out, 'manifest.json')
+    manifest_path = os.path.join(a.out, a.manifest)
     manifest = json.load(open(manifest_path)) if os.path.exists(manifest_path) else {}
     for n, text in enumerate(lines):
         cid = clip_id(text + '|' + a.voice)

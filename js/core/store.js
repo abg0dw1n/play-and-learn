@@ -2,7 +2,7 @@
 
 const KEY = 'playlearn:v1';
 // Sound is never remembered: every time the page loads it starts silent, and a grown-up or child turns it on with the bell.
-const defaults = () => ({ name: '', sound: false, stars: 0, games: {} });
+const defaults = () => ({ name: '', sound: false, stars: 0, games: {}, ttsVoice: 'heart' });
 
 // Difficulty modes: 0 = First Steps, 1 = Growing Strong (default), 2 = Super Star
 export const DIFFICULTY_NAMES = ['First Steps', 'Growing Strong', 'Super Star'];
@@ -16,6 +16,7 @@ function load() {
   if (!s.games || typeof s.games !== 'object' || Array.isArray(s.games)) s.games = {};
   if (!Number.isFinite(s.stars) || s.stars < 0) s.stars = 0;
   if (typeof s.name !== 'string') s.name = '';
+  if (s.ttsVoice !== 'heart' && s.ttsVoice !== 'bella') s.ttsVoice = 'heart';
   s.sound = false; // ignore anything saved by older versions
   if (![0, 1, 2].includes(s.difficulty)) delete s.difficulty;
   if (s.stickers != null && !Array.isArray(s.stickers)) delete s.stickers;
@@ -39,8 +40,8 @@ export const store = {
   addStar(n = 1) { state.stars += n; save(); return state.stars; },
   // Clears stars, stickers and levels; keeps name, look, sound, difficulty, voice and Sound Check picks.
   reset() {
-    const { name, sound, difficulty, voiceName, soundSpellings, theme } = state;
-    state = { ...defaults(), name, sound, difficulty, voiceName, soundSpellings, theme };
+    const { name, sound, difficulty, voiceName, soundSpellings, theme, ttsVoice } = state;
+    state = { ...defaults(), name, sound, difficulty, voiceName, soundSpellings, theme, ttsVoice };
     save();
   },
 

@@ -101,8 +101,16 @@ for (const ev of ['touchend', 'click', 'keydown']) {
    listed in audio/manifest.json. A line with a clip is played from that; any other line (or if the
    clip can't play) falls back to the device's built-in voice. */
 const CLIP_BASE = '/audio/';
-let manifest = {};
-const manifestReady = fetch(`${CLIP_BASE}manifest.json`).then((r) => (r.ok ? r.json() : {})).then((m) => { manifest = m; }).catch(() => {});
+// Two voices to choose from in the Grown-ups corner. Each has its own manifest; a line missing
+// from the chosen voice (new lines not yet recorded in it) falls back to the Heart manifest.
+const MANIFEST_FILES = { heart: 'manifest.json', bella: 'manifest-bella.json' };
+const manifests = { heart: {}, bella: {} };
+const manifestReady = Promise.all(Object.entries(MANIFEST_FILES).map(([key, file]) =>
+  fetch(CLIP_BASE + file).then((r) => (r.ok ? r.json() : {})).then((m) => { manifests[key] = m; }).catch(() => {})));
+function manifestFor(text) {
+  const picked = store.get().ttsVoice === 'bella' ? 'bella' : 'heart';
+  return manifests[picked][text] || manifests.heart[text];
+}
 
 const player = typeof Audio !== 'undefined' ? new Audio() : null; // one element, unlocked by the first tap
 player && (player.preload = 'auto');
@@ -144,7 +152,7 @@ export async function speak(text, opts = {}) {
   await manifestReady;
   if (my !== speakToken) return;
   // Warm the cache for the clips that come after the first one.
-  items.flat().slice(1).forEach((t) => manifest[t] && fetch(CLIP_BASE + manifest[t] + '.mp3').catch(() => {}));
+  items.flat().slice(1).forEach((t) => { const id = manifestFor(t); if (id) fetch(CLIP_BASE + id + '.mp3').catch(() => {}); });
   await speakSeq(items, my, opts.gap ?? 350, opts);
 }
 
@@ -159,7 +167,7 @@ async function speakSeq(items, my, gap, opts) {
 
 async function speakLine(text, opts, my) {
   if (!text || (!opts.force && !store.get().sound)) return;
-  const id = manifest[text];
+  const id = manifestFor(text);
   if (id && player) {
     if (supported && (speechSynthesis.speaking || speechSynthesis.pending)) speechSynthesis.cancel();
     if (await playClip(`${CLIP_BASE}${id}.mp3`)) return;
