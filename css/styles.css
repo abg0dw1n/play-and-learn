@@ -570,3 +570,7 @@ body:not([data-page='home'])::before { opacity: .4; }
   .home-right .sound-btn.wide { max-width: none; flex: 1 1 auto; min-width: 0; }
 }
 @media (max-width: 640px) { .home-right { gap: 14px; } .home-right .star-count { white-space: nowrap; flex: none; } .home-right .sound-btn.wide { font-size: .95rem; } }
+/* The flashing sound button grows only inward-friendly: small glow, and room beside the star count */
+@keyframes sound-pulse { 0%,100% { box-shadow: 0 0 0 0 rgba(255,217,61,.0); } 50% { box-shadow: 0 0 0 5px rgba(255,217,61,.75); } }
+.sound-btn.wide.off { animation: sound-pulse 1.6s ease-in-out infinite; }
+@media (max-width: 640px) { .home-right { gap: 24px; } }
