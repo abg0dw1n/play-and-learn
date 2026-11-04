@@ -1,0 +1,15 @@
+{
+  "name": "play-and-learn-dev-tools",
+  "private": true,
+  "description": "Lint tooling only. Never deployed; the site itself has no dependencies.",
+  "type": "module",
+  "engines": { "node": ">=20" },
+  "scripts": {
+    "lint": "eslint -c eslint.config.mjs --no-config-lookup ..",
+    "audit": "npm audit --audit-level=high"
+  },
+  "devDependencies": {
+    "eslint": "9.39.5",
+    "globals": "15.15.0"
+  }
+}
