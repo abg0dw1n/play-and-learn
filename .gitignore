@@ -1,0 +1,6 @@
+# Local test-server and Python leftovers
+*.pid
+__pycache__/
+*.pyc
+node_modules/
+.DS_Store

@@ -16,7 +16,7 @@ const SENTENCES = [
   ['is', 'The cat ___ big.', ['see', 'and', 'to', 'can']],
   ['and', 'I have a hat ___ a bag.', ['the', 'is', 'go', 'he']],
   ['to', 'We go ___ the park.', ['is', 'my', 'a', 'can']],
-  ['are', 'You ___ my friend.', ['is', 'can', 'see', 'go']],
+  ['are', 'You ___ my friend.', ['is', 'can', 'the', 'go']],
   ['have', 'I ___ a red ball.', ['the', 'is', 'to', 'and']],
   ['she', '___ is my mom.', ['see', 'and', 'to', 'go']],
   ['he', '___ can jump.', ['see', 'and', 'to', 'is']],
@@ -87,7 +87,8 @@ export default {
     const [answer, sentence, nope] = item;
     const wrong = shuffle(nope).slice(0, cfg.n - 1);
     const [before, after] = sentence.split('___').map((x) => x.trim());
-    const spoken = ['Which word fits?', `${before || ''}`, 'blank,', `${after || ''}`].filter(Boolean);
+    // (pieces that are only punctuation, like the "." after a blank at the end, aren't spoken)
+    const spoken = ['Which word fits?', before, 'blank,', after].filter((x) => /[a-z0-9]/i.test(x || ''));
     return {
       key: answer,
       text: 'Which word fits?',

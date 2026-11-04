@@ -4,7 +4,6 @@
 import { WORDS3, WORDS4, WORDS5 } from '../data/reading.js';
 
 const rand = (n) => Math.floor(Math.random() * n);
-const pick = (a) => a[rand(a.length)];
 const shuffle = (a) => { const r = [...a]; for (let i = r.length - 1; i > 0; i--) { const j = rand(i + 1); [r[i], r[j]] = [r[j], r[i]]; } return r; };
 const esc = (s) => String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;');
 const W = 750, H = 1000, INK = '#2b2d42', KEY = '#e63946';
@@ -40,7 +39,8 @@ export function mathSheet(diff = 1) {
   return make('Add & Take Away', diff === 0 ? 'Count the stars to help!' : 'Solve each one.', (ans) => probsMixed.map((p, i) => {
     const x = 50 + (i % 2) * 345, y = 140 + Math.floor(i / 2) * 140;
     let s = text(x, y + 62, `${p.a} ${p.op} ${p.b} =`, 50, { weight: 700 }) + box(x + 215, y + 12, 90, 68, ans ? p.ans : undefined);
-    if (diff === 0) s += text(x, y + 108, '⭐'.repeat(p.a), 22);
+    // Counting help on First Steps: both groups for adding; for taking away, the stars to cross out from.
+    if (diff === 0) s += text(x, y + 108, p.op === '+' ? `${'⭐'.repeat(p.a)}  +  ${'⭐'.repeat(p.b)}` : '⭐'.repeat(p.a), 22);
     return s;
   }).join(''));
 }

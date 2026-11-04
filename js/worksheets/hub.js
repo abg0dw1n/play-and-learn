@@ -1,7 +1,7 @@
 // My Worksheets — the grown-ups' hub. Parents sign in with a passcode, add photos or scans of her
 // school sheets, and see them on any device. (Reading and editing the words comes next.)
 import { el } from '../core/util.js';
-import { api, token, prepareFile, ApiError } from './api.js';
+import { api, token, prepareFile } from './api.js';
 import { soundToggle } from '../core/voice.js';
 
 const dateText = (iso) => new Date(iso).toLocaleDateString(undefined, { month: 'short', day: 'numeric', year: 'numeric' });
@@ -242,11 +242,9 @@ export function renderWorksheet(root, id, { onBack, onSignedOut }) {
     });
 
     const status = el('p', { class: 'ws-note' });
-    const adding = [];
     const picks = pickers(async (files) => {
       status.className = 'ws-note';
       const items = files.map((file) => ({ file, done: false }));
-      adding.push(...items);
       try {
         await uploadAll(id, items, (t) => { if (alive) status.textContent = t; });
         if (alive) load();

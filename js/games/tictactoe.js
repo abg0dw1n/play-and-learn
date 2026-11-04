@@ -4,11 +4,11 @@ import { store } from '../core/store.js';
 import { speak, hush, soundToggle } from '../core/voice.js';
 import { sfx } from '../core/sfx.js';
 import { burstAt } from '../core/confetti.js';
-import { guide, setPose } from '../core/guide.js';
+import { guide, setPose, CHARACTERS } from '../core/guide.js';
 import { renderFinish } from '../core/finish.js';
 
 export const LINES = [[0, 1, 2], [3, 4, 5], [6, 7, 8], [0, 3, 6], [1, 4, 7], [2, 5, 8], [0, 4, 8], [2, 4, 6]];
-const ME = '⭐', PIP = '🐰';
+const ME = '⭐', PIP = '🐰'; // board tokens; Pip's squares are drawn with the chosen character's face
 
 /** Returns { who, line } when someone has three in a row, otherwise null. */
 export function winner(b) {
@@ -52,6 +52,7 @@ export default {
 
   run(root, game, nav) {
     const d = store.getDifficulty();
+    const pipFace = (CHARACTERS.find((c) => c.id === store.get().character) || CHARACTERS[0]).emoji;
     let alive = true, busy = false, over = false;
     const board = Array(9).fill(null);
     const timers = [];
@@ -68,13 +69,13 @@ export default {
     root.append(
       el('header', { class: 'topbar' },
         el('button', { class: 'icon-btn', 'aria-label': 'Back', onclick: nav.onBack || nav.onHome }, nav.onBack ? '⬅️' : '🏠'),
-        el('div', { class: 'ttt-who' }, pip, el('span', {}, 'You ⭐   Pip 🐰')),
+        el('div', { class: 'ttt-who' }, pip, el('span', {}, `You ⭐   Pip ${pipFace}`)),
         el('div', { class: 'topbar-right' }, soundToggle())),
       status, grid);
 
     function mark(i, who) {
       board[i] = who;
-      cells[i].textContent = who;
+      cells[i].textContent = who === ME ? ME : pipFace;
       cells[i].classList.add(who === ME ? 'mine' : 'pips');
       cells[i].disabled = true;
     }
@@ -90,7 +91,7 @@ export default {
         } else {
           status.textContent = 'Pip wins this time!'; setPose(pip, 'wink'); sfx.oops();
           speak('Pip wins this time! Want to play again?');
-          later(() => showAgain('Pip won this time! 🐰', 'Want to play again?'), 1800);
+          later(() => showAgain(`Pip won this time! ${pipFace}`, 'Want to play again?'), 1800);
         }
         return true;
       }
@@ -116,7 +117,7 @@ export default {
       if (!alive || busy || over || board[i]) return;
       sfx.tap(); mark(i, ME);
       if (check()) return;
-      busy = true; status.textContent = "Pip's turn… 🐰"; setPose(pip, 'think');
+      busy = true; status.textContent = `Pip's turn… ${pipFace}`; setPose(pip, 'think');
       later(() => {
         mark(pipMove(board, d), PIP); sfx.tap(); setPose(pip, 'happy');
         busy = false;

@@ -25,7 +25,9 @@ function pickItems(n, min) {
     const got = shuffle(ITEMS).slice(0, n).sort((x, y) => x[2] - y[2]);
     if (got.every((it, i) => i === 0 || it[2] / got[i - 1][2] >= min)) return got; // lightest → heaviest
   }
-  return [ITEMS[0], ITEMS[ITEMS.length - 1]].slice(0, n); // always valid: feather vs whale
+  // Always valid: feather < dog < whale (each thousands of times heavier than the last).
+  const dog = ITEMS.find((it) => it[1] === 'dog');
+  return n === 3 ? [ITEMS[0], dog, ITEMS[ITEMS.length - 1]] : [ITEMS[0], ITEMS[ITEMS.length - 1]];
 }
 
 export default {

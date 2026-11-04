@@ -10,7 +10,6 @@ import { PRACTICE } from './practice.js';
 export function renderPrintShop(root, { onHome }) {
   root.className = 'screen pr-screen';
   root.style.removeProperty('--accent');
-  let open = null; // which sheet type is showing, or null for the menu
   let diff = store.getDifficulty();
 
   const grid = (list, color) => el('section', { class: 'tiles pr-ui' }, list.map((s) =>
@@ -20,7 +19,6 @@ export function renderPrintShop(root, { onHome }) {
       el('span', { class: 'tile-blurb' }, s.blurb))));
 
   function menu() {
-    open = null;
     root.innerHTML = '';
     root.append(
       el('header', { class: 'topbar pr-ui' },
@@ -35,7 +33,6 @@ export function renderPrintShop(root, { onHome }) {
   }
 
   function show(sheet) {
-    open = sheet;
     const made = sheet.make(diff);
     root.innerHTML = '';
     const holder = el('div', { class: 'pr-sheet' });
@@ -61,7 +58,7 @@ export function renderPrintShop(root, { onHome }) {
   }
 
   menu();
-  return () => { open = null; };
+  return () => {};
 }
 
 /* Color-by sheets: pick a crayon (the circles at the bottom), then tap boxes with that number/word/sum. */
