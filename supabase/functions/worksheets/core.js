@@ -2,7 +2,7 @@
 // in the Supabase edge function (index.ts) and in the Node tests (tests/worksheets-core.test.mjs).
 // All storage and database access goes through the `db` and `storage` objects passed in.
 
-const MIN_PASSCODE = 6;
+const MIN_PASSCODE = 8;            // applies to new/changed passcodes (an existing shorter one keeps working)
 const MAX_FAILS = 8;               // wrong passcodes in a row before a lock-out
 const LOCK_MS = 15 * 60 * 1000;
 const TOKEN_DAYS = 30;
@@ -79,20 +79,17 @@ export function createHandler({ db, storage, allowedOrigins = [], now = () => Da
     return same(parts[2], await sign(secret, `v1.${parts[1]}`));
   }
 
-  /** Check a passcode with the lock-out rule. Returns null when right, otherwise an error response. */
+  /** Check a passcode with the lock-out rule. Returns null when right, otherwise an error response.
+   *  Every attempt is counted first, atomically (db.takeAttempt), so parallel guesses can't dodge the lock-out. */
   async function checkPasscode(req, passcode) {
-    const lockUntil = Number(await db.getSetting('lock_until') || 0);
-    if (lockUntil > now()) return fail(req, 429, 'Too many tries. Please wait a few minutes and try again.');
+    if (!(await db.takeAttempt(now(), MAX_FAILS, LOCK_MS))) return fail(req, 429, 'Too many tries. Please wait a few minutes and try again.');
     const salt = await db.getSetting('pass_salt');
     const want = await db.getSetting('pass_hash');
-    const good = salt && want && typeof passcode === 'string' && same(await hashPasscode(passcode, salt), want);
+    const good = salt && want && typeof passcode === 'string' && passcode.length <= 100 && same(await hashPasscode(passcode, salt), want);
     if (good) {
       await db.setSetting('fail_count', '0');
       return null;
     }
-    const fails = Number(await db.getSetting('fail_count') || 0) + 1;
-    await db.setSetting('fail_count', String(fails >= MAX_FAILS ? 0 : fails));
-    if (fails >= MAX_FAILS) await db.setSetting('lock_until', String(now() + LOCK_MS));
     return fail(req, 401, 'That passcode is not right.');
   }
 
@@ -130,6 +127,7 @@ export function createHandler({ db, storage, allowedOrigins = [], now = () => Da
     } else {
       try { input = await req.json(); } catch { return fail(req, 400, 'Bad request.'); }
     }
+    if (!input || typeof input !== 'object' || Array.isArray(input)) return fail(req, 400, 'Bad request.');
     const action = input.action;
 
     // ---- no sign-in needed

@@ -81,7 +81,7 @@ export function renderWorksheets(root, { onHome, onOpen, onPrint }) {
 
   function showGate(hasPasscode) {
     const body = frame(root, { title: hasPasscode ? 'Grown-ups only' : 'Set a parent passcode', onBack: onHome });
-    const pass = el('input', { type: 'password', class: 'ws-input', placeholder: hasPasscode ? 'Passcode' : 'Choose a passcode (6 or more)', autocomplete: hasPasscode ? 'current-password' : 'new-password', 'aria-label': 'Passcode' });
+    const pass = el('input', { type: 'password', class: 'ws-input', placeholder: hasPasscode ? 'Passcode' : 'Choose a passcode (8 or more)', autocomplete: hasPasscode ? 'current-password' : 'new-password', 'aria-label': 'Passcode' });
     const again = hasPasscode ? null : el('input', { type: 'password', class: 'ws-input', placeholder: 'Type it again', autocomplete: 'new-password', 'aria-label': 'Passcode again' });
     const msg = el('p', { class: 'ws-note' });
     const go = el('button', { type: 'submit', class: 'big-btn ws-btn' }, hasPasscode ? 'Open' : 'Save passcode');

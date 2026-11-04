@@ -20,6 +20,9 @@ const db = {
   async setSetting(key: string, value: string) {
     ok(await supabase.from('settings').upsert({ key, value }));
   },
+  async takeAttempt(nowMs: number, max: number, lockMs: number) {
+    return ok(await supabase.rpc('take_attempt', { p_now: nowMs, p_max: max, p_lock_ms: lockMs })) as boolean;
+  },
   async listWorksheets() {
     return ok(await supabase.from('worksheets').select('id,title,notes,created_at,updated_at').order('created_at', { ascending: false }));
   },

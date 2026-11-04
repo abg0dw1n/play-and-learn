@@ -9,6 +9,12 @@ const uuid = () => `00000000-0000-4000-8000-${String(nextId++).padStart(12, '0')
 const db = {
   async getSetting(k) { return rows.settings.get(k) ?? null; },
   async setSetting(k, v) { rows.settings.set(k, v); },
+  async takeAttempt(now, max, lockMs) { // same rules as the SQL function public.take_attempt (no awaits = atomic)
+    if (Number(rows.settings.get('lock_until') || 0) > now) return false;
+    const n = Number(rows.settings.get('fail_count') || 0) + 1;
+    if (n >= max) { rows.settings.set('lock_until', String(now + lockMs)); rows.settings.set('fail_count', '0'); } else rows.settings.set('fail_count', String(n));
+    return true;
+  },
   async listWorksheets() { return [...rows.worksheets.values()].reverse(); },
   async getWorksheet(id) { return rows.worksheets.get(id) ?? null; },
   async createWorksheet({ title }) { const w = { id: uuid(), title, notes: '', created_at: 'x', updated_at: 'x' }; rows.worksheets.set(w.id, w); return w; },
@@ -130,7 +136,21 @@ res = await handler(new Request('https://fn.example/worksheets', { method: 'DELE
 ok(res.status === 405, 'odd methods refused');
 res = await handler(new Request('https://fn.example/worksheets', { method: 'POST', headers: { 'content-type': 'application/json' }, body: '{oops' }));
 ok(res.status === 400, 'bad JSON is a 400, not a crash');
+for (const b of ['null', '[]', '"s"', '123']) {
+  res = await handler(new Request('https://fn.example/worksheets', { method: 'POST', headers: { 'content-type': 'application/json' }, body: b }));
+  ok(res.status === 400, `JSON body ${b} is a 400, not a crash`);
+}
 ok(sniff(new Uint8Array(12)) === null, 'zero bytes are not a file');
+
+console.log('parallel guessing');
+clock += 60 * 60 * 1000;
+{
+  const out = await Promise.all(Array.from({ length: 100 }, (_, i) => call({ action: 'login', passcode: 'guess-' + i })));
+  const wrong = out.filter((x) => x.status === 401).length, locked = out.filter((x) => x.status === 429).length;
+  ok(wrong <= 8 && locked >= 90, `100 parallel guesses: at most 8 are tried, the rest are locked out (tried ${wrong}, locked ${locked})`);
+}
+r = await call({ action: 'setup', passcode: 'short7!' });
+ok(r.status === 409 || r.status === 400, 'passcodes under 8 characters are not accepted for new setup');
 
 console.log(problems ? `\n${problems} PROBLEM(S)` : '\nALL WORKSHEET API CHECKS PASSED');
 process.exit(problems ? 1 : 0);
