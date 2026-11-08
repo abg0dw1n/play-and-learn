@@ -7,6 +7,45 @@ import { burst } from '../core/confetti.js';
 import { SHEETS } from './sheets.js';
 import { PRACTICE } from './practice.js';
 
+const isStandalone = () => window.navigator.standalone === true || window.matchMedia?.('(display-mode: standalone)').matches;
+
+/** Draw the sheet that is on screen into a PNG (white page, 2x size) so it can be shared or printed. */
+async function sheetPng(svg) {
+  const [, , vw, vh] = (svg.getAttribute('viewBox') || '0 0 750 1000').split(/\s+/).map(Number);
+  const W = 1500, H = Math.round(W * vh / vw);
+  const clone = svg.cloneNode(true);
+  clone.setAttribute('width', W); clone.setAttribute('height', H);
+  const url = URL.createObjectURL(new Blob([new XMLSerializer().serializeToString(clone)], { type: 'image/svg+xml;charset=utf-8' }));
+  try {
+    const img = new Image();
+    await new Promise((ok, bad) => { img.onload = ok; img.onerror = () => bad(new Error('draw')); img.src = url; });
+    const canvas = document.createElement('canvas');
+    canvas.width = W; canvas.height = H;
+    const ctx = canvas.getContext('2d');
+    ctx.fillStyle = '#fff'; ctx.fillRect(0, 0, W, H);
+    ctx.drawImage(img, 0, 0, W, H);
+    return await new Promise((ok, bad) => canvas.toBlob((b) => (b ? ok(b) : bad(new Error('png'))), 'image/png'));
+  } finally { URL.revokeObjectURL(url); }
+}
+
+/** Print the sheet. A home-screen app on iPhone ignores window.print(), so there we hand the page to the
+ *  share sheet (which has Print, Save and AirDrop); anywhere else the normal print dialog opens. */
+async function printSheet(svg, title, say) {
+  if (!isStandalone() && typeof window.print === 'function') { window.print(); return; }
+  say('Getting the page ready…');
+  try {
+    const file = new File([await sheetPng(svg)], `${title.replace(/[^\w]+/g, '-')}.png`, { type: 'image/png' });
+    if (navigator.canShare?.({ files: [file] })) {
+      try { await navigator.share({ files: [file], title }); say('In the share sheet, tap Print.'); } catch (e) { say(e?.name === 'AbortError' ? '' : 'Could not open the share sheet.'); }
+      return;
+    }
+    const url = URL.createObjectURL(file);
+    window.open(url, '_blank');
+    say('Press and hold the page, choose Share, then Print.');
+    setTimeout(() => URL.revokeObjectURL(url), 120000);
+  } catch { say('Could not get the page ready. Try again.'); }
+}
+
 export function renderPrintShop(root, { onHome }) {
   root.className = 'screen pr-screen';
   root.style.removeProperty('--accent');
@@ -38,7 +77,8 @@ export function renderPrintShop(root, { onHome }) {
     const holder = el('div', { class: 'pr-sheet' });
     holder.innerHTML = made.svg;
     const svg = holder.querySelector('svg');
-    const note = el('p', { class: 'pr-note pr-ui' }, made.interactive ? 'Tap a color, then tap the boxes to color them!' : 'Tap Print to send it to a printer.');
+    const defaultNote = made.interactive ? 'Tap a color, then tap the boxes to color them!' : 'Tap Print to send it to a printer.';
+    const note = el('p', { class: 'pr-note pr-ui' }, defaultNote);
     let showingKey = false;
     const keyBtn = made.answerSvg && el('button', { class: 'big-btn home', onclick: () => {
       showingKey = !showingKey; holder.innerHTML = showingKey ? made.answerSvg : made.svg;
@@ -51,7 +91,7 @@ export function renderPrintShop(root, { onHome }) {
         soundToggle()),
       note, holder,
       el('div', { class: 'pr-actions pr-ui' },
-        el('button', { class: 'big-btn', onclick: () => window.print() }, '🖨️ Print'),
+        el('button', { class: 'big-btn', onclick: () => printSheet(holder.querySelector('svg'), sheet.title, (t) => { note.textContent = t || defaultNote; }) }, '🖨️ Print'),
         el('button', { class: 'big-btn home', onclick: () => { sfx.tap(); show(sheet); } }, '🔄 New one'),
         keyBtn));
     if (made.interactive) colorOnScreen(svg, note);
