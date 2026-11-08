@@ -87,7 +87,7 @@ export default {
         w.line.forEach((i) => cells[i].classList.add('win'));
         if (w.who === ME) {
           status.textContent = 'You win! 🎉'; setPose(pip, 'cheer'); sfx.fanfare(); burstAt(cells[w.line[1]], 80); speak('You win!');
-          later(() => renderFinish(root, game, nav, { alive: () => alive, title: 'You win!' }), 2200);
+          later(() => renderFinish(root, game, nav, { alive: () => alive, title: 'You win!', perfect: true }), 2200);
         } else {
           status.textContent = 'Pip wins this time!'; setPose(pip, 'wink'); sfx.oops();
           speak('Pip wins this time! Want to play again?');

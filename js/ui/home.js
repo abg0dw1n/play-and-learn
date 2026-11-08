@@ -4,7 +4,7 @@ import { store } from '../core/store.js';
 import { speak, soundToggle } from '../core/voice.js';
 import { sfx } from '../core/sfx.js';
 import { guide, setPose } from '../core/guide.js';
-import { owned, STICKERS } from '../core/stickers.js';
+import { ownedCommon, ownedRare, STICKERS } from '../core/stickers.js';
 import { games, worlds } from '../games/index.js';
 import { isLocked } from '../core/lock.js';
 
@@ -58,7 +58,7 @@ export function renderHome(root, { go, onGrownUps }) {
         soundToggle({ label: true }))),
     el('section', { class: 'tiles worlds' },
       ...worlds.map((w) => tile(w.emoji, w.title, w.color, `#/world/${w.id}`)),
-      tile('🌈', 'My World', '#43b05c', '#/stickers', `${owned().length} of ${STICKERS.length}`)),
+      tile('🌈', 'My World', '#43b05c', '#/stickers', `${ownedCommon().length} of ${STICKERS.length}${ownedRare().length ? ` · ✨${ownedRare().length}` : ''}`)),
     ...(onGrownUps && !isLocked() ? [onGrownUps] : []));
 }
 

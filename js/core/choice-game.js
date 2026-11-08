@@ -50,6 +50,7 @@ export function runChoiceGame(root, game, { onHome, onBack, onRestart, onSticker
   let level = Math.min(store.level(game.id, difficulty), maxLevel);
   let index = 0;
   let streak = 0;
+  let wrong = 0; // wrong answers in this whole game (none = a perfect game)
   let alive = true;
   let current = null;
   const history = [];
@@ -158,6 +159,7 @@ export function runChoiceGame(root, game, { onHome, onBack, onRestart, onSticker
         speak(round.praise || any(PRAISE));
       } else {
         misses++;
+        wrong++;
         streak = 0;
         btn.disabled = true;
         btn.classList.add('wrong');
@@ -173,7 +175,7 @@ export function runChoiceGame(root, game, { onHome, onBack, onRestart, onSticker
   }
 
   function finish() {
-    renderFinish(root, game, { onHome, onBack, onRestart: onRestart || (() => runChoiceGame(root, game, { onHome })), onStickers }, { alive: () => alive });
+    renderFinish(root, game, { onHome, onBack, onRestart: onRestart || (() => runChoiceGame(root, game, { onHome })), onStickers }, { alive: () => alive, perfect: wrong === 0 });
   }
 
   if (startedOnce || !store.get().sound) {

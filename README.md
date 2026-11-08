@@ -79,8 +79,15 @@ When you add or change anything the voice says (including `PRAISE`/`RETRY` in `c
 3. Commit `audio/`
 
 ## Sticker book
-Every finished game awards one new sticker (40 in `js/core/stickers.js`) until all are found; then just a star.
+Every finished game awards one new everyday sticker (40 in `js/core/stickers.js`) until all are found; then just a star.
 Stars earned before the sticker book existed were turned into stickers once.
+
+**Rare and legendary stickers** (17 in `js/core/rare.js`: 12 rare, 5 legendary) are earned by doing something specific, so repeating one
+game never finds them: a game with no wrong answers (the same game again doesn't count twice), perfect games in different games or worlds,
+trying every game in a world, Super Star wins, playing on 3 / 7 different days, a weekend, an early morning, a top level, and so on.
+They show as ❓ in My World with a hint when tapped (the hints are the rules, for grown-ups). Rules are plain functions in `RARE`
+(tested by `node tests/rare.test.mjs`); each game tells the finish screen whether it was `perfect`. Add one by adding an entry to `RARE`,
+then make its voice clips (name + "Wow! A rare sticker! You got …" line; see `tools/ui-lines.json`).
 
 ## Difficulty
 Three modes chosen on the home screen: First Steps, Growing Strong (default), Super Star.

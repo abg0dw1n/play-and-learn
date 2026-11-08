@@ -40,6 +40,7 @@ export default {
       if (alive && spawned >= cfg.total && gone >= cfg.total) {
         later(() => renderFinish(root, game, nav, {
           alive: () => alive,
+          perfect: popped >= cfg.total,
           title: `You popped ${popped}!`,
           say: `You popped ${popped} ${popped === 1 ? 'balloon' : 'balloons'}!`,
         }), 500);

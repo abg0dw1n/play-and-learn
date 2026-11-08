@@ -3,7 +3,7 @@
 import { el } from '../core/util.js';
 import { store, levelCap, DIFFICULTY_NAMES } from '../core/store.js';
 import { sfx } from '../core/sfx.js';
-import { owned, STICKERS } from '../core/stickers.js';
+import { ownedCommon, ownedRare, STICKERS, RARE } from '../core/stickers.js';
 import { THEMES, setTheme, currentTheme } from '../core/themes.js';
 import { games } from '../games/index.js';
 import { speak } from '../core/voice.js';
@@ -94,7 +94,7 @@ export function openGrownUps({ go, done }) {
     return [
       ...games.map((g) => el('li', {}, g.fun ? `${g.emoji} ${g.title}: played ${store.game(g.id).plays || 0}×`
         : `${g.emoji} ${g.title}: level ${Math.min(store.level(g.id, d), levelCap(g, d))} of ${levelCap(g, d)}, played ${store.game(g.id).plays || 0}×`)),
-      el('li', {}, `⭐ ${store.get().stars} stars, 🌈 ${owned().length} of ${STICKERS.length} stickers`),
+      el('li', {}, `⭐ ${store.get().stars} stars, 🌈 ${ownedCommon().length} of ${STICKERS.length} stickers, ✨ ${ownedRare().length} of ${RARE.length} rare`),
     ];
   };
   const levelsList = el('ul', {}, levelItems());

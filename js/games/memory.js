@@ -58,7 +58,7 @@ export default {
       if (a.dataset.pic === b.dataset.pic) {
         found++;
         later(() => { a.classList.add('matched'); b.classList.add('matched'); sfx.yes(); burstAt(b, 30); }, 350);
-        if (found === pairs) later(() => renderFinish(root, game, nav, { alive: () => alive }), 1500);
+        if (found === pairs) later(() => renderFinish(root, game, nav, { alive: () => alive, perfect: tries <= pairs + 2 }), 1500);
       } else {
         busy = true;
         later(() => { a.classList.remove('up'); b.classList.remove('up'); busy = false; }, 1000);

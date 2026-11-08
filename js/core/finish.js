@@ -4,15 +4,19 @@ import { store } from './store.js';
 import { sfx } from './sfx.js';
 import { burst } from './confetti.js';
 import { speak } from './voice.js';
-import { awardSticker, withArticle } from './stickers.js';
+import { awardSticker, awardRare, withArticle } from './stickers.js';
 import { guide } from './guide.js';
 
 /** What the voice says on the finish screen (no name: the clips are the same for everyone). */
 export const finishLine = (sticker) => (sticker ? `Great job! You got ${withArticle(sticker[1])} sticker!` : 'Great job! You earned a star!');
 
+/** What the voice says for a rare or legendary sticker. */
+export const rareLine = (r) => `Wow! A ${r.rarity} sticker! You got ${withArticle(r.name)} sticker!`;
+
 /** game: { id }.  nav: { onHome, onBack, onRestart, onStickers }.  alive(): false once she has left the screen.
-    title / say: optional replacements for the headline and the spoken line(s) before the sticker line. */
-export function renderFinish(root, game, nav, { alive = () => true, title, say } = {}) {
+    title / say: optional replacements for the headline and the spoken line(s) before the sticker line.
+    perfect: she got everything right (no wrong answers), which can unlock rare stickers. */
+export async function renderFinish(root, game, nav, { alive = () => true, title, say, perfect = false } = {}) {
   const { onHome, onBack, onRestart, onStickers } = nav;
   const s = store.get();
   store.setGame(game.id, { plays: (store.game(game.id).plays || 0) + 1 });
@@ -20,10 +24,17 @@ export function renderFinish(root, game, nav, { alive = () => true, title, say }
   // sticker book into stickers, and this game's star must not be counted twice.
   const sticker = awardSticker(); // [emoji, name] or null once she has them all
   const totalStars = store.addStar();
+  let rare = [];
+  try { rare = await awardRare(game, { perfect }); } catch { /* the everyday sticker still counts */ }
+  if (!alive()) return; // she left while this was being worked out
   const cheer = title || (s.name ? `Great job, ${s.name}!` : 'Great job!');
   root.innerHTML = '';
   root.append(el('div', { class: 'finish' },
     guide('cheer', 120, 'finish-pip', s.character),
+    ...rare.map((r) => el('div', { class: `rare-sticker ${r.rarity}` },
+      el('div', { class: 'rare-badge' }, r.rarity === 'legendary' ? '🌟 LEGENDARY STICKER!' : '✨ RARE STICKER!'),
+      el('div', { class: 'rare-emoji' }, r.emoji),
+      el('div', { class: 'rare-name' }, r.name))),
     sticker
       ? el('div', { class: 'new-sticker' },
         el('div', { class: 'sticker-big' }, sticker[0]),
@@ -38,8 +49,8 @@ export function renderFinish(root, game, nav, { alive = () => true, title, say }
       el('button', { class: 'big-btn home', onclick: onHome }, '🏠 Home'))));
   window.scrollTo(0, 0);
   sfx.fanfare();
-  burst({ count: 140 });
+  burst({ count: rare.length ? 260 : 140 });
   setTimeout(() => alive() && burst({ x: innerWidth * 0.25, y: innerHeight * 0.4, count: 60 }), 500);
   setTimeout(() => alive() && burst({ x: innerWidth * 0.75, y: innerHeight * 0.4, count: 60 }), 900);
-  speak([...(say ? [].concat(say) : []), finishLine(sticker)]);
+  speak([...(say ? [].concat(say) : []), finishLine(sticker), ...rare.map(rareLine)]);
 }

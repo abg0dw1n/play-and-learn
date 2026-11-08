@@ -647,3 +647,22 @@ body.locked { overscroll-behavior: none; -webkit-user-select: none; user-select:
 .pin-key { font-size: 1.8rem; font-weight: 700; height: 64px; border-radius: 16px; border: 2px solid #d6d9e8; background: #f6f2ff; }
 .pin-key.alt { background: #fff; font-size: 1.4rem; }
 .pin-key:active { transform: translateY(2px); background: #e6dcff; }
+
+/* ---------- Rare & legendary stickers ---------- */
+.rare-title { margin-top: 26px; }
+.rare-hint { margin: 0 0 12px; padding: 10px 14px; border-radius: 14px; background: rgba(255,255,255,.75); font-weight: 600; text-align: center; color: var(--ink); }
+.sticker.rare, .sticker.legendary { position: relative; }
+.sticker.rare { border: 3px solid #a56bff; box-shadow: 0 0 14px rgba(165,107,255,.55); }
+.sticker.legendary { border: 3px solid #ffb400; box-shadow: 0 0 18px rgba(255,180,0,.8); animation: shimmer 2.4s ease-in-out infinite; }
+.sticker.mystery { filter: none; opacity: .9; background: repeating-linear-gradient(45deg, rgba(255,255,255,.8), rgba(255,255,255,.8) 8px, rgba(240,235,255,.9) 8px, rgba(240,235,255,.9) 16px); font-size: 2.6rem; }
+.sticker.legendary.mystery { background: repeating-linear-gradient(45deg, rgba(255,250,230,.9), rgba(255,250,230,.9) 8px, rgba(255,240,190,.95) 8px, rgba(255,240,190,.95) 16px); }
+@keyframes shimmer { 50% { box-shadow: 0 0 28px rgba(255,200,40,1); } }
+.scene-item.rare { filter: drop-shadow(0 0 6px rgba(165,107,255,.9)); }
+.scene-item.legendary { filter: drop-shadow(0 0 8px rgba(255,190,0,1)); }
+.rare-sticker { display: flex; flex-direction: column; align-items: center; margin-bottom: 14px; animation: pop .6s ease-out both; }
+.rare-badge { font-size: 1.5rem; font-weight: 800; letter-spacing: .5px; color: #8a45e6; }
+.rare-sticker.legendary .rare-badge { color: #d98a00; }
+.rare-emoji { width: 170px; height: 170px; margin: 8px 0 4px; display: grid; place-items: center; font-size: 7rem; border-radius: 50%; background: #fff;
+  border: 6px solid #a56bff; box-shadow: 0 0 30px rgba(165,107,255,.8); }
+.rare-sticker.legendary .rare-emoji { border-color: #ffb400; box-shadow: 0 0 40px rgba(255,190,0,1); animation: shimmer 1.6s ease-in-out infinite; }
+.rare-name { font-size: 1.6rem; font-weight: 700; text-transform: capitalize; }
