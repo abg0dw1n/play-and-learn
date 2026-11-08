@@ -95,3 +95,11 @@ A game that needs its own screen can export `run(root, game, { onHome, onRestart
 
 ## Run locally
 `python3 -m http.server 8080` then open http://localhost:8080
+
+## Play lock
+Grown-ups corner → **Play lock** sets a 4-number PIN and locks the app: only home, the worlds, games and stickers are reachable
+(no Grown-ups corner, Print & Color, worksheets or Sound Check), the back button/swipe stays inside the app, and Android Chrome goes full screen.
+Press and hold the small 🔒 (bottom-left) and enter the PIN to unlock. Three wrong PINs pause the pad for a minute.
+The PIN is stored only as a salted hash on that device. Forgot it? Clear this site's data in the browser settings (this also resets progress).
+It guards against wandering inside the app; for a hard lock on the whole phone use iPhone Guided Access or Android app pinning.
+Code: `js/core/lock.js`.

@@ -6,6 +6,7 @@ import { sfx } from '../core/sfx.js';
 import { guide, setPose } from '../core/guide.js';
 import { owned, STICKERS } from '../core/stickers.js';
 import { games, worlds } from '../games/index.js';
+import { isLocked } from '../core/lock.js';
 
 export const PIP_GREETING = "Hi! I'm Pip. What do you want to play?";
 const PIP_INTRO = "I'm Pip. What do you want to play?"; // recorded separately so a name can go between "Hi" and this
@@ -58,7 +59,7 @@ export function renderHome(root, { go, onGrownUps }) {
     el('section', { class: 'tiles worlds' },
       ...worlds.map((w) => tile(w.emoji, w.title, w.color, `#/world/${w.id}`)),
       tile('🌈', 'My World', '#43b05c', '#/stickers', `${owned().length} of ${STICKERS.length}`)),
-    onGrownUps);
+    ...(onGrownUps && !isLocked() ? [onGrownUps] : []));
 }
 
 export function renderWorld(root, world, { go, onHome, onPlay, grownUps }) {
@@ -80,7 +81,7 @@ export function renderWorld(root, world, { go, onHome, onPlay, grownUps }) {
       el('h2', { class: 'world-title' }, `${world.emoji} ${world.title}`),
       el('div', { class: 'topbar-right' }, soundToggle(), tappablePip(70, world.say))),
     el('section', { class: 'tiles world-games' }, list.map(gameTile),
-      (world.links || []).map((l) => el('button', { class: 'tile', style: { '--accent': l.color }, onclick: () => { sfx.tap(); go(l.hash); } },
+      (isLocked() ? [] : world.links || []).map((l) => el('button', { class: 'tile', style: { '--accent': l.color }, onclick: () => { sfx.tap(); go(l.hash); } },
         el('span', { class: 'tile-emoji' }, l.emoji), el('span', { class: 'tile-title' }, l.title), el('span', { class: 'tile-blurb' }, l.blurb)))));
   setTimeout(() => speak(world.say), 250);
   return () => {};

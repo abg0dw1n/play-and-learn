@@ -9,6 +9,7 @@ import { renderPrintShop } from './print/shop.js';
 import { applyTheme } from './core/themes.js';
 import { renderHome, renderWorld } from './ui/home.js';
 import { grownUpsButton, openGrownUps } from './ui/grownups.js';
+import { installLock, screenAllowed } from './core/lock.js';
 
 const app = document.getElementById('app');
 applyTheme();
@@ -20,12 +21,14 @@ function go(hash) {
 }
 
 const grownUps = () => grownUpsButton(() => openGrownUps({ go, done: route }));
+installLock(() => go('#/'));
 
 function route() {
   cleanup?.();
   cleanup = null;
   hush();
   const [, page, id] = location.hash.replace(/^#\/?/, '#/').split('/');
+  if (!screenAllowed(page)) { location.replace('#/'); return; } // play lock: only home, worlds, games and stickers
   document.body.dataset.page = page || 'home';
   const game = page === 'play' && games.find((g) => g.id === id && !g.paused);
   const world = page === 'world' && worlds.find((w) => w.id === id);

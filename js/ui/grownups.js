@@ -8,6 +8,7 @@ import { THEMES, setTheme, currentTheme } from '../core/themes.js';
 import { games } from '../games/index.js';
 import { speak } from '../core/voice.js';
 import { CHARACTERS, guide, setPose } from '../core/guide.js';
+import { hasPin, startLock, changePin } from '../core/lock.js';
 
 /** Press-and-hold so little fingers don't wander in. */
 export function grownUpsButton(open) {
@@ -106,6 +107,12 @@ export function openGrownUps({ go, done }) {
       el('h3', {}, 'Look'), grid,
       el('h3', {}, 'Pip the…'), charGrid,
       el('h3', {}, "Pip's voice"), voiceRow,
+      el('h3', {}, 'Play lock'),
+      el('p', { class: 'lock-note' }, 'Keeps her in the games: no Grown-ups corner, printing or worksheets, and the back button stays in the app. A PIN (press and hold the little 🔒) unlocks it.'),
+      el('button', { type: 'button', class: 'sc-link', onclick: () => dialog.close('lock') }, hasPin() ? '🔒 Lock the app for play' : '🔒 Set a PIN and lock the app'),
+      hasPin() && el('button', { type: 'button', class: 'sc-link', onclick: () => changePin() }, '🔑 Change PIN'),
+      el('details', { class: 'lock-tip' }, el('summary', {}, 'Want to lock the whole phone too?'),
+        el('p', {}, 'iPhone/iPad: Settings → Accessibility → Guided Access, turn it on, then triple-click the side button inside Play & Learn. Android: Settings → Security → App pinning (also called Screen pinning), then pin Play & Learn from the recent apps screen.')),
       el('h3', {}, 'More'),
       // type=button so pressing Enter in the name box saves (Done) instead of opening a link
       el('button', { type: 'button', class: 'sc-link', onclick: () => dialog.close('soundcheck') }, '🔊 Sound Check: voice and letter sounds'),
@@ -122,6 +129,7 @@ export function openGrownUps({ go, done }) {
     dialog.remove();
     if (dialog.returnValue === 'soundcheck') go('#/sound-check');
     else if (dialog.returnValue === 'worksheets') go('#/worksheets');
+    else if (dialog.returnValue === 'lock') startLock().then((ok) => (ok ? go('#/') : done()));
     else done();
   });
   document.body.append(dialog);

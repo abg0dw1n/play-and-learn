@@ -19,6 +19,11 @@ function load() {
   if (typeof s.name !== 'string') s.name = '';
   if (s.ttsVoice !== 'heart' && s.ttsVoice !== 'bella') s.ttsVoice = 'heart';
   if (!CHARACTER_IDS.includes(s.character)) s.character = 'bunny';
+  const hexOk = (v, n) => typeof v === 'string' && new RegExp(`^[0-9a-f]{${n}}$`).test(v);
+  if (!hexOk(s.pinHash, 64) || !hexOk(s.pinSalt, 32)) { delete s.pinHash; delete s.pinSalt; }
+  s.locked = s.locked === true && !!s.pinHash; // locked only counts when there is a PIN to unlock it
+  if (!Number.isFinite(s.pinFails) || s.pinFails < 0) s.pinFails = 0;
+  if (!Number.isFinite(s.pinWaitUntil)) s.pinWaitUntil = 0;
   s.sound = false; // ignore anything saved by older versions
   if (![0, 1, 2].includes(s.difficulty)) delete s.difficulty;
   if (s.stickers != null && !Array.isArray(s.stickers)) delete s.stickers;
@@ -40,10 +45,10 @@ export const store = {
     save();
   },
   addStar(n = 1) { state.stars += n; save(); return state.stars; },
-  // Clears stars, stickers and levels; keeps name, look, sound, difficulty, voice, character and Sound Check picks.
+  // Clears stars, stickers and levels; keeps name, look, sound, difficulty, voice, character, play lock/PIN and Sound Check picks.
   reset() {
-    const { name, sound, difficulty, voiceName, soundSpellings, theme, ttsVoice, character } = state;
-    state = { ...defaults(), name, sound, difficulty, voiceName, soundSpellings, theme, ttsVoice, character };
+    const { name, sound, difficulty, voiceName, soundSpellings, theme, ttsVoice, character, locked, pinSalt, pinHash } = state;
+    state = { ...defaults(), name, sound, difficulty, voiceName, soundSpellings, theme, ttsVoice, character, locked, pinSalt, pinHash };
     save();
   },
 

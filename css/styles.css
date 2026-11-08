@@ -387,7 +387,7 @@ button { font: inherit; color: inherit; cursor: pointer; touch-action: manipulat
 @media print {
   @page { margin: 0.4in; }
   html, body { background: #fff !important; }
-  .pr-ui, .sound-btn, .grownups { display: none !important; }
+  .pr-ui, .sound-btn, .grownups, .lock-badge { display: none !important; }
   .pr-screen { padding: 0 !important; display: block !important; min-height: 0 !important; background: #fff !important; }
   .pr-sheet { box-shadow: none; border-radius: 0; padding: 0; margin: 0 auto; width: 7.4in; }
   .pr-sheet svg { width: 7.4in; height: auto; }
@@ -626,3 +626,24 @@ body:not([data-page='home'])::before { opacity: .4; }
 
 /* Keep the compact sound button a sensible size wherever it appears in a topbar */
 .topbar-right .sound-btn:not(.wide) { width: 54px; height: 54px; font-size: 1.5rem; }
+
+/* ---------- Play lock ---------- */
+body.locked { overscroll-behavior: none; -webkit-user-select: none; user-select: none; -webkit-touch-callout: none; }
+.lock-badge {
+  position: fixed; left: calc(10px + env(safe-area-inset-left, 0px)); bottom: calc(10px + env(safe-area-inset-bottom, 0px)); z-index: 50;
+  width: 44px; height: 44px; border-radius: 50%; border: 2px solid color-mix(in srgb, var(--bg-ink, #2b2d42) 25%, transparent);
+  background: color-mix(in srgb, var(--paper, #fff) 70%, transparent); font-size: 1.1rem; opacity: .55; overflow: hidden; -webkit-touch-callout: none;
+}
+.lock-badge::after { content: ''; position: absolute; inset: 0; background: rgba(77,150,255,.35); transform: scaleY(0); transform-origin: bottom; transition: transform 1.2s linear; }
+.lock-badge.holding::after { transform: scaleY(1); }
+.lock-note, .lock-tip p { margin: 0 0 8px; color: var(--soft-ink); font-size: .95rem; }
+.lock-tip { margin: 4px 0 6px; font-size: .95rem; }
+.lock-tip summary { cursor: pointer; font-weight: 600; padding: 6px 0; }
+.pin-dialog { text-align: center; user-select: none; -webkit-user-select: none; }
+.pin-dots { font-size: 2rem; letter-spacing: .4em; margin: 6px 0 4px; }
+.pin-msg { min-height: 1.4em; margin: 0 0 10px; color: var(--soft-ink); }
+.pin-msg.bad { color: #d6342f; font-weight: 600; }
+.pin-pad { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; max-width: 280px; margin: 0 auto; }
+.pin-key { font-size: 1.8rem; font-weight: 700; height: 64px; border-radius: 16px; border: 2px solid #d6d9e8; background: #f6f2ff; }
+.pin-key.alt { background: #fff; font-size: 1.4rem; }
+.pin-key:active { transform: translateY(2px); background: #e6dcff; }
