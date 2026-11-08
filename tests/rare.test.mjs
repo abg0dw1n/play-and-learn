@@ -23,7 +23,7 @@ ok(names(ctx({ stats: stats({ days: ['2026-11-07', '2026-11-08'] }) })).includes
 ok(!names(ctx({ stats: stats({ days: ['2026-11-04', '2026-11-05'] }) })).includes('circus tent'), 'two weekdays: no circus tent');
 ok(names(ctx({ stats: stats({ perfect: { spell: 1, read: 1, addsub: 1 } }) })).includes('gold medal'), 'perfect in 3 games: gold medal');
 ok(names(ctx({ stats: stats({ perfect: { spell: 5 } }) })).length === 0, 'perfect in the SAME game many times: nothing (not just repetition)');
-ok(names(ctx({ stats: stats({ perfect: { spell: 1, addsub: 1, memory: 1 } }) })).includes('wise owl'), 'perfect in every world: wise owl');
+ok(names(ctx({ have: new Set(['🥇']), stats: stats({ perfect: { spell: 1, addsub: 1, memory: 1 } }) })).includes('wise owl'), 'perfect in every world: wise owl');
 ok(names(ctx({ game: games[4], perfect: true })).includes('brain'), 'Memory with almost no misses: brain');
 ok(names(ctx({ game: games[5], perfect: true })).includes('bullseye'), 'every balloon: bullseye');
 ok(!names(ctx({ game: games[5], perfect: true, difficulty: 0 })).includes('bullseye'), '...not on First Steps');
@@ -42,14 +42,26 @@ const twelve = RARE.filter((r) => r.rarity === 'rare').map((r) => r.emoji);
 let got = unlocked(ctx({ perfect: true, have: new Set(twelve.filter((e) => e !== '💎')) })).map((r) => r.name);
 ok(got.includes('diamond') && got.includes('dragon'), 'the last rare one unlocks the dragon in the same finish');
 ok(!names(ctx({ have: new Set(twelve.slice(1)) })).includes('dragon'), 'dragon needs all 12');
-ok(names(ctx({ stats: stats({ days: Array.from({ length: 7 }, (_, i) => `2026-11-0${i + 1}`) }) })).includes('shooting star'), '7 days: shooting star');
-ok(names(ctx({ stats: stats({ perfect: Object.fromEntries(games.map((g) => [g.id, 1])) }) })).includes('planet'), 'perfect in 6 games: planet');
+ok(names(ctx({ have: new Set(['🔥', '🎪']), stats: stats({ days: Array.from({ length: 7 }, (_, i) => `2026-11-0${i + 1}`) }) })).includes('shooting star'), '7 days: shooting star');
+ok(names(ctx({ have: new Set(['🥇', '🦉']), stats: stats({ perfect: Object.fromEntries(games.map((g) => [g.id, 1])) }) })).includes('planet'), 'perfect in 6 games: planet');
 ok(names(ctx({ stats: stats({ perfectSS: { spell: 1, read: 1, addsub: 1 } }) })).includes('genie'), 'Super Star perfect in 3 games: genie');
 const everythingElse = new Set([...commons, ...RARE.filter((r) => r.emoji !== '🦚').map((r) => r.emoji)]);
 ok(names(ctx({ have: everythingElse })).includes('peacock'), 'everything else found: peacock');
 ok(!names(ctx({ have: new Set([...everythingElse].slice(1)) })).includes('peacock'), 'peacock needs every one');
 ok(new Set(RARE.map((r) => r.emoji)).size === RARE.length && RARE.length === 17, '17 distinct stickers (12 rare, 5 legendary)');
 ok(RARE.filter((r) => r.rarity === 'legendary').length === 5, '5 legendary');
+
+console.log('no pile-ups');
+store.set({ games: { spell: { plays: 1, levels: { 1: 3 } }, read: { plays: 1 } } }); // old play already satisfies puzzle piece + graduation cap
+const backlog = { stats: stats({ days: ['2026-11-01', '2026-11-02', '2026-11-04'], perfect: { spell: 1, read: 1, addsub: 1 } }) };
+let first = names(ctx(backlog));
+ok(first.length === 1, `old progress pays out one sticker per finish, not all at once (${first.join(', ')})`);
+let have = new Set(); let rounds = 0; const order = [];
+for (; rounds < 10; rounds++) { const w = unlocked(ctx({ ...backlog, have })); if (!w.length) break; w.forEach((r) => { have.add(r.emoji); order.push(r.name); }); ok(w.length === 1, `finish ${rounds + 1} gives exactly one`); }
+ok(['puzzle piece', 'graduation cap', 'flame', 'gold medal'].every((n) => order.includes(n)), 'every earned sticker still arrives eventually: ' + order.join(', '));
+got = names(ctx({ perfect: true, difficulty: 2, ...backlog }));
+ok(got.includes('diamond') && got.includes('superhero'), 'stickers decided by this very game are all given now, even when one from the backlog comes too (' + got.join(', ') + ')');
+store.set({ games: {} });
 
 console.log('bookkeeping');
 store.set({ stats: undefined });
