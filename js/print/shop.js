@@ -1,4 +1,5 @@
 // "Print & Color": printable fun sheets (and the colour-by sheets can be coloured right on the screen too).
+import { WORLD_SHEETS } from './world.js';
 import { el } from '../core/util.js';
 import { store } from '../core/store.js';
 import { sfx } from '../core/sfx.js';
@@ -68,7 +69,9 @@ export function renderPrintShop(root, { onHome }) {
       el('h3', { class: 'pr-group pr-ui' }, '📚 Practice pages'),
       grid(PRACTICE, '#4d96ff'),
       el('h3', { class: 'pr-group pr-ui' }, '🎨 Fun pages'),
-      grid(SHEETS, '#ff7aa8'));
+      grid(SHEETS, '#ff7aa8'),
+      el('h3', { class: 'pr-group pr-ui' }, '🌈 My World'),
+      grid(WORLD_SHEETS, '#43b05c'));
   }
 
   function show(sheet) {

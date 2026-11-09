@@ -8,6 +8,8 @@ import { THEMES, setTheme, currentTheme } from '../core/themes.js';
 import { games } from '../games/index.js';
 import { speak } from '../core/voice.js';
 import { CHARACTERS, guide, setPose } from '../core/guide.js';
+import { readStats } from '../core/rare.js';
+import { setGoal, clearGoal, goalProgress } from '../world/progress.js';
 import { hasPin, startLock, changePin } from '../core/lock.js';
 
 /** Press-and-hold so little fingers don't wander in. */
@@ -89,11 +91,40 @@ export function openGrownUps({ go, done }) {
     charGrid.append(opt);
   });
 
+  const summaryItems = () => {
+    const played = games.filter((g) => !g.paused).map((g) => [g, store.game(g.id).plays || 0]).sort((a, b) => b[1] - a[1]);
+    const out = [];
+    if (played[0]?.[1]) out.push(el('li', {}, `👍 Plays most: ${played[0][0].emoji} ${played[0][0].title}`));
+    const least = played.filter(([, n]) => n === 0).slice(0, 3).map(([g]) => `${g.emoji} ${g.title}`);
+    if (played[0]?.[1] && least.length) out.push(el('li', {}, `🌱 Not tried yet: ${least.join(', ')}`));
+    const days = new Set(readStats().days);
+    let week = 0;
+    for (let i = 0; i < 7; i++) { const d = new Date(); d.setDate(d.getDate() - i); if (days.has(d.toLocaleDateString('en-CA'))) week++; }
+    out.push(el('li', {}, `📅 Played on ${week} of the last 7 days`));
+    return out;
+  };
+  // A reward goal: she fills a bar with stickers; when it is full, a grown-up gives the treat.
+  const goalLabel = el('input', { type: 'text', maxlength: '40', placeholder: 'e.g. ice cream trip', 'aria-label': 'Reward' });
+  const goalIcon = el('select', { 'aria-label': 'Reward picture' }, ['🍦', '🎁', '🎬', '🛝', '🍕', '📚', '🧁'].map((e) => el('option', { value: e }, e)));
+  const goalNeed = el('input', { type: 'number', min: '1', max: '200', value: '20', 'aria-label': 'Stickers needed' });
+  const goalNote = el('p', { class: 'lock-note' }, '');
+  const showGoal = () => {
+    const g = goalProgress();
+    goalNote.textContent = g ? `${g.icon} ${g.label}: ${g.have} of ${g.need} stickers${g.reached ? ' (reached! 🎉)' : ''}` : 'No goal set. She will see a progress bar in My World.';
+  };
+  showGoal();
+  const goalSet = el('button', { type: 'button', class: 'sc-link', onclick: () => {
+    if (!goalLabel.value.trim()) { goalLabel.focus(); return; }
+    setGoal({ label: goalLabel.value, icon: goalIcon.value, need: Number(goalNeed.value) || 20 }); sfx.yes(); showGoal();
+  } }, '🎯 Start this goal');
+  const goalClear = el('button', { type: 'button', class: 'sc-link', onclick: () => { clearGoal(); showGoal(); } }, 'Clear goal');
+
   const levelItems = () => {
     const d = store.getDifficulty();
     return [
       ...games.map((g) => el('li', {}, g.fun ? `${g.emoji} ${g.title}: played ${store.game(g.id).plays || 0}×`
         : `${g.emoji} ${g.title}: level ${Math.min(store.level(g.id, d), levelCap(g, d))} of ${levelCap(g, d)}, played ${store.game(g.id).plays || 0}×`)),
+      ...summaryItems(),
       el('li', {}, `⭐ ${store.get().stars} stars, 🌈 ${ownedCommon().length} of ${STICKERS.length} stickers, ✨ ${ownedRare().length} of ${RARE.length} rare`),
     ];
   };
@@ -117,6 +148,9 @@ export function openGrownUps({ go, done }) {
       // type=button so pressing Enter in the name box saves (Done) instead of opening a link
       el('button', { type: 'button', class: 'sc-link', onclick: () => dialog.close('soundcheck') }, '🔊 Sound Check: voice and letter sounds'),
       el('button', { type: 'button', class: 'sc-link', onclick: () => dialog.close('worksheets') }, '📄 My Worksheets: upload her school sheets'),
+      el('h3', {}, 'Reward goal'),
+      el('p', { class: 'lock-note' }, 'Pick a treat and how many new stickers earn it.'),
+      el('label', {}, 'Treat', goalLabel), el('label', {}, 'Picture', goalIcon), el('label', {}, 'New stickers needed', goalNeed), goalNote, goalSet, goalClear,
       el('h3', {}, 'Progress on this device'), levelsList,
       el('div', { class: 'settings-actions' },
         el('button', { type: 'button', class: 'link-danger', onclick: () => {

@@ -89,6 +89,15 @@ They show as ❓ in My World with a hint when tapped (the hints are the rules, f
 (tested by `node tests/rare.test.mjs`); each game tells the finish screen whether it was `perfect`. Add one by adding an entry to `RARE`,
 then make its voice clips (name + "Wow! A rare sticker! You got …" line; see `tools/ui-lines.json`).
 
+## My World
+`#/stickers` is a living scene (`js/ui/myworld.js`, scene in `js/world/scene.js`, styles in `css/world.css`, data in `js/world/data.js`, rules in `js/world/progress.js`; `node tests/world.test.mjs`).
+- **Opening a sticker:** the finish screen shows a glowing pack she taps; a perfect game on Growing Strong+ has a 40% chance of a ✨ shiny version; the sticker then flies to the My World button and lands in her world with a spotlight.
+- **Living scene:** each friend idles and reacts (and makes a synthesized sound) when tapped (`BEHAVIOR` in data.js, `SOUNDS` in sfx.js); day/night follows the device clock; light rain then a rainbow; Pip wanders and can be tapped. Reduced motion turns the motion off.
+- **Decorate:** ✏️ lets her drag, enlarge, shrink and flip friends; the layout is saved. **Places** unlock by sticker count: meadow 0, beach 6, space 12 (always night), snow 20, candy land 30.
+- **Collections:** 8 sets of 5 everyday stickers; finishing one gives a bonus decoration. **Gift boxes** come every 3 finished games and from the daily hunt (2 different games in a day); they hold a decoration, a new sticker or a shiny upgrade.
+- **Grown-ups:** a reward goal ("20 new stickers = ice cream", shown as a bar in My World) and a progress summary. **Print & Color** has a My World poster and a sticker sheet.
+- Saved fields (`shinies, decor, world, gifts, giftTick, daily, goal`) are repaired in `store.load` and cleared by Reset progress. Every spoken line needs clips in both voices (`tools/ui-lines.json`).
+
 ## Difficulty
 Three modes chosen on the home screen: First Steps, Growing Strong (default), Super Star.
 Each game keeps a separate level for each mode, and goes up a level after 3 first-try right answers in a row,
