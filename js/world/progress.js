@@ -1,7 +1,7 @@
 // The rules behind the rewards around stickers: shiny stickers, gift boxes, the daily hunt, finished collections,
 // new places and a grown-up's reward goal. Everything here saves into the same device storage as the rest of the app.
 import { store } from '../core/store.js';
-import { SETS, setsDone, unlockedScenes, DECOR } from './data.js';
+import { SETS, setsDone, unlockedScenes, DECOR, completedBy } from './data.js';
 
 export const GIFT_EVERY = 3;   // finished games per gift box
 export const DAILY_NEED = 2;   // different games for the day's hunt
@@ -11,6 +11,11 @@ export const dayKey = (d = new Date()) => d.toLocaleDateString('en-CA'); // YYYY
 
 /** Only a game with no wrong answers on Growing Strong or harder can make a shiny sticker. */
 export const rollShiny = ({ perfect, difficulty }, rng = Math.random) => !!perfect && difficulty >= 1 && rng() < SHINY_CHANCE;
+
+export function addDecor(emoji) {
+  const have = store.get().decor || [];
+  if (!have.includes(emoji)) store.set({ decor: [...have, emoji] });
+}
 
 export function makeShiny(emoji) {
   const have = store.get().shinies || [];
@@ -47,6 +52,7 @@ export function afterFinish({ game, before, after, now = new Date() }) {
   out.daily = { count: Math.min(games.length, DAILY_NEED), need: DAILY_NEED, justDone: out.giftFrom.includes('daily') };
 
   const patch = { gifts: Math.min(gifts, 99), giftTick: tick, daily: { day: daily.day, games, claimed } };
+  if (out.set) addDecor(out.set.bonus.emoji);
   const goal = store.get().goal;
   if (goal && !goal.reached && after.length >= goal.base + goal.need) { patch.goal = { ...goal, reached: true }; out.goalReached = true; }
   store.set(patch);
@@ -86,3 +92,26 @@ export function goalProgress() {
 }
 
 export { SETS };
+
+/** Give a sticker from a gift box. Returns the collection it completed (its bonus decoration is added), or null. */
+export function grantSticker(emoji) {
+  const have = store.get().stickers || [];
+  if (have.includes(emoji)) return null;
+  const set = completedBy(emoji, have);
+  store.set({ stickers: [...have, emoji], newest: emoji });
+  if (set) addDecor(set.bonus.emoji);
+  return set;
+}
+
+/** Open one gift box: spends it and applies the prize. Returns { prize, set } or null when there is no box. */
+export function openGift(commons, rng = Math.random) {
+  const st = store.get();
+  if (!(st.gifts > 0)) return null;
+  const prize = chooseGiftPrize({ commons, have: st.stickers || [], decor: st.decor || [], shinies: st.shinies || [] }, rng);
+  store.set({ gifts: st.gifts - 1 });
+  let set = null;
+  if (prize.kind === 'decor') addDecor(prize.emoji);
+  else if (prize.kind === 'sticker') set = grantSticker(prize.emoji);
+  else if (prize.kind === 'shiny') makeShiny(prize.emoji);
+  return { prize, set };
+}

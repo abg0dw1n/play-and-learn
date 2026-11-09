@@ -1,7 +1,7 @@
 // Simple hash router:  #/  (home)   #/world/<id>   #/play/<gameId>   #/stickers   #/sound-check   #/print   #/worksheets   #/worksheet/<id>
 import { hush } from './core/voice.js';
 import { runChoiceGame } from './core/choice-game.js';
-import { renderStickerBook } from './core/stickers.js';
+import { renderMyWorld } from './ui/myworld.js';
 import { renderSoundCheck } from './core/sound-check.js';
 import { games, worlds, worldOf } from './games/index.js';
 import { renderWorksheets, renderWorksheet } from './worksheets/hub.js';
@@ -41,7 +41,7 @@ function route() {
   } else if (world) {
     cleanup = renderWorld(app, world, { go, onHome: () => go('#/'), onPlay: (gid) => go(`#/play/${gid}`) });
   } else if (page === 'stickers') {
-    cleanup = renderStickerBook(app, { onHome: () => go('#/') });
+    cleanup = renderMyWorld(app, { onHome: () => go('#/'), onPrint: () => go('#/print') });
   } else if (page === 'print') {
     cleanup = renderPrintShop(app, { onHome: () => go('#/') });
   } else if (page === 'worksheets') {

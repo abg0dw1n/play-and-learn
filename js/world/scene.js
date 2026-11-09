@@ -1,0 +1,119 @@
+// The living scene: friends that move on their own, react (and make sounds) when tapped, follow the time of day,
+// get rained on and then see a rainbow, and can be dragged around in decorate mode.
+import { el, pick } from '../core/util.js';
+import { guide } from '../core/guide.js';
+import { speak } from '../core/voice.js';
+import { sfx } from '../core/sfx.js';
+import { SKY, behaviorOf, phaseOf, PIP_WORLD_LINES } from './data.js';
+
+const reduced = () => typeof matchMedia === 'function' && matchMedia('(prefers-reduced-motion: reduce)').matches;
+// A steady scatter: the same friend always starts in the same spot, so her world doesn't shuffle when she gets a new one.
+const hash = (str, salt) => {
+  let h = 2166136261 ^ salt;
+  for (const ch of str) { h = Math.imul(h ^ ch.codePointAt(0), 16777619) >>> 0; }
+  h ^= h >>> 13; h = Math.imul(h, 1274126177) >>> 0;
+  return (h >>> 8) / 16777216;
+};
+export const defaultSpot = (emoji) => (SKY.has(emoji)
+  ? { x: 8 + hash(emoji, 1) * 84, y: 6 + hash(emoji, 2) * 32 }
+  : { x: 6 + hash(emoji, 3) * 88, y: 54 + hash(emoji, 4) * 38 });
+export const baseSize = (emoji, y) => (SKY.has(emoji) ? 9 : 7.5 + ((y - 52) / 40) * 6);
+
+/** items: [{ emoji, name, shiny, rarity }]. world: { scene, items }. opts.edit lets friends be dragged.
+    Returns { node, select(emoji|null), refresh(emoji), stop() }. */
+export function buildScene({ items, world, sceneId, edit = false, newest = null, onTap, onMove, onSelect, onPip, now = new Date() }) {
+  const night = sceneId === 'space' ? 'night' : phaseOf(now);
+  const nodes = new Map();
+  let selected = null;
+  const timers = [];
+
+  const place = (it, node) => {
+    const saved = world.items[it.emoji] || {};
+    const d = defaultSpot(it.emoji);
+    const x = saved.x ?? d.x, y = saved.y ?? d.y, s = saved.s ?? 1;
+    node.style.left = `${x}%`; node.style.top = `${y}%`;
+    node.style.fontSize = `${baseSize(it.emoji, y) * s}cqw`;
+    node.style.zIndex = String(Math.round(y));
+    node.firstChild.style.setProperty('--flip', saved.f ? '-1' : '1');
+  };
+
+  const makeItem = (it) => {
+    const beh = behaviorOf(it.emoji);
+    const emo = el('span', { class: `emo idle-${beh.idle}`, style: { 'animation-delay': `${-(hash(it.emoji, 9) * 4).toFixed(2)}s` } }, it.emoji);
+    const node = el('button', { class: `scene-item${it.shiny ? ' shiny' : ''}${it.rarity ? ` ${it.rarity}` : ''}${it.emoji === newest ? ' newest' : ''}`, 'aria-label': it.name, 'data-emoji': it.emoji }, emo);
+    place(it, node);
+    nodes.set(it.emoji, node);
+    let drag = null;
+    if (edit) {
+      node.addEventListener('pointerdown', (e) => {
+        const r = box.getBoundingClientRect();
+        drag = { r, moved: false };
+        node.setPointerCapture(e.pointerId);
+        api.select(it.emoji);
+        e.preventDefault();
+      });
+      node.addEventListener('pointermove', (e) => {
+        if (!drag) return;
+        drag.moved = true;
+        const x = Math.max(4, Math.min(96, ((e.clientX - drag.r.left) / drag.r.width) * 100));
+        const y = Math.max(4, Math.min(94, ((e.clientY - drag.r.top) / drag.r.height) * 100));
+        node.style.left = `${x}%`; node.style.top = `${y}%`; node.style.zIndex = '999';
+        drag.x = x; drag.y = y;
+      });
+      const end = () => { if (drag?.moved && drag.x != null) onMove?.(it.emoji, { x: Math.round(drag.x * 10) / 10, y: Math.round(drag.y * 10) / 10 }); drag = null; };
+      node.addEventListener('pointerup', end);
+      node.addEventListener('pointercancel', end);
+    } else {
+      node.addEventListener('click', () => {
+        for (const c of ['jump', 'spin', 'grow', 'shake', 'zoom', 'wiggle']) emo.classList.remove(`tap-${c}`);
+        void emo.offsetWidth;
+        emo.classList.add(`tap-${beh.tap}`);
+        sfx.critter(beh.sound);
+        onTap?.(it, node);
+      });
+    }
+    return node;
+  };
+
+  const pip = el('button', { class: 'scene-pip', 'aria-label': 'Pip' }, guide('happy', 64, '', undefined));
+  pip.addEventListener('click', () => {
+    pip.classList.remove('hop'); void pip.offsetWidth; pip.classList.add('hop');
+    sfx.tap();
+    const line = pick(PIP_WORLD_LINES);
+    onPip?.(line);
+    speak(line);
+  });
+
+  const sky = el('div', { class: 'scene-sky' }, el('div', { class: 'scene-sun' }), el('div', { class: 'scene-moon' }), el('div', { class: 'scene-stars' }),
+    el('div', { class: 'scene-cloud c1' }), el('div', { class: 'scene-cloud c2' }));
+  const rain = el('div', { class: 'scene-rain' });
+  const rainbow = el('div', { class: 'scene-rainbow' });
+  const box = el('div', { class: `scene scene-${sceneId} phase-${night}${edit ? ' editing' : ''}`, role: 'group', 'aria-label': 'Your world' },
+    sky, el('div', { class: 'scene-hill back' }), el('div', { class: 'scene-hill front' }), rainbow, rain,
+    items.map(makeItem), pip);
+  if (edit) box.addEventListener('pointerdown', (e) => { if (e.target === box || e.target.classList.contains('scene-hill')) api.select(null); });
+
+  // Light rain, then a rainbow (never at night, in space, or when motion is reduced).
+  if (!reduced() && night !== 'night' && sceneId !== 'space' && !edit) {
+    const cycle = () => {
+      box.classList.add('raining');
+      timers.push(setTimeout(() => { box.classList.remove('raining'); box.classList.add('rainbowing'); }, 7000));
+      timers.push(setTimeout(() => { box.classList.remove('rainbowing'); timers.push(setTimeout(cycle, 70000)); }, 17000));
+    };
+    timers.push(setTimeout(cycle, 22000));
+  }
+
+  const api = {
+    node: box,
+    select(emoji) {
+      for (const n of nodes.values()) n.classList.remove('selected');
+      selected = emoji && nodes.has(emoji) ? emoji : null;
+      if (selected) nodes.get(selected).classList.add('selected');
+      onSelect?.(selected);
+    },
+    get selected() { return selected; },
+    refresh(emoji) { const n = nodes.get(emoji); const it = items.find((i) => i.emoji === emoji); if (n && it) place(it, n); },
+    stop() { timers.forEach(clearTimeout); },
+  };
+  return api;
+}
