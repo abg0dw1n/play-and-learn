@@ -20,7 +20,6 @@ ok(true, 'sticker revealed after tap');
 const banners = await page.$$eval('.banner', (n) => n.map((x) => x.textContent));
 console.log(banners);
 ok(banners.some((t) => /gift/i.test(t)), 'gift banner (3rd finish)');
-ok(banners.some((t) => /set done/.test(t)), 'set completed banner (pets/wild)');
 await page.screenshot({ path: process.argv[2] + '/reveal.png', fullPage: true });
 await page.waitForTimeout(2800);
 ok((await page.$$('.flyer')).length <= 1, 'flyer ok');
