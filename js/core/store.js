@@ -27,6 +27,29 @@ function load() {
   s.sound = false; // ignore anything saved by older versions
   if (![0, 1, 2].includes(s.difficulty)) delete s.difficulty;
   if (s.stickers != null && !Array.isArray(s.stickers)) delete s.stickers;
+  // My World extras: all repaired to something safe so a damaged save can never break the screen.
+  const emojiList = (v, max) => (Array.isArray(v) ? [...new Set(v.filter((e) => typeof e === 'string' && e.length > 0 && e.length <= 12))].slice(0, max) : []);
+  s.shinies = emojiList(s.shinies, 100);
+  s.decor = emojiList(s.decor, 100);
+  const count = (v, max) => (Number.isInteger(v) && v >= 0 ? Math.min(v, max) : 0);
+  s.gifts = count(s.gifts, 99);
+  s.giftTick = count(s.giftTick, 9);
+  const w = s.world && typeof s.world === 'object' && !Array.isArray(s.world) ? s.world : {};
+  const items = {};
+  if (w.items && typeof w.items === 'object' && !Array.isArray(w.items)) {
+    for (const [k, v] of Object.entries(w.items).slice(0, 200)) {
+      if (!v || typeof v !== 'object' || k.length > 12) continue;
+      const num = (n, lo, hi) => (Number.isFinite(n) ? Math.max(lo, Math.min(hi, n)) : undefined);
+      items[k] = { x: num(v.x, 0, 100), y: num(v.y, 0, 100), s: num(v.s, 0.5, 2.5), f: v.f === true };
+    }
+  }
+  s.world = { scene: typeof w.scene === 'string' ? w.scene.slice(0, 20) : 'meadow', items };
+  const d = s.daily;
+  s.daily = d && typeof d === 'object' && /^\d{4}-\d\d-\d\d$/.test(d.day) ? { day: d.day, games: Array.isArray(d.games) ? d.games.filter((g) => typeof g === 'string').slice(0, 20) : [], claimed: d.claimed === true } : undefined;
+  const g = s.goal;
+  s.goal = g && typeof g === 'object' && Number.isInteger(g.need) && g.need > 0 && g.need <= 200 && Number.isInteger(g.base) && g.base >= 0
+    ? { label: String(g.label || '').slice(0, 40), icon: typeof g.icon === 'string' ? g.icon.slice(0, 8) : '🎁', need: g.need, base: g.base, reached: g.reached === true, celebrated: g.celebrated === true }
+    : undefined;
   return s;
 }
 
