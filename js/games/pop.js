@@ -7,8 +7,14 @@ import { burstAt } from '../core/confetti.js';
 import { renderFinish } from '../core/finish.js';
 
 const COLORS = ['#ff5d6c', '#ff9f1c', '#ffd23f', '#43b05c', '#4d96ff', '#8e5bd9', '#ff6fb5'];
-// First Steps: slow balloons, fewer. Super Star: quicker.
-const SETTINGS = [{ total: 12, rise: [9, 11], every: 1500 }, { total: 14, rise: [7, 9], every: 1300 }, { total: 16, rise: [5.5, 7.5], every: 1100 }];
+// Every level is a real challenge. More balloons each time, floating up faster, coming more often, smaller,
+// and from Growing Strong on they sway side to side (rise = seconds to float off the top; sway = pixels either way).
+const SETTINGS = [
+  { total: 16, rise: [6.5, 8.5], every: 1100, size: 66, sway: 0, swayT: [2, 2] },
+  { total: 22, rise: [4.8, 6.4], every: 800, size: 58, sway: 26, swayT: [1.4, 2.2] },
+  { total: 30, rise: [3.6, 5], every: 600, size: 52, sway: 46, swayT: [0.9, 1.6] },
+];
+const between = ([a, b]) => a + Math.random() * (b - a);
 
 export default {
   id: 'pop',
@@ -50,8 +56,10 @@ export default {
     function spawn() {
       if (!alive) return;
       const color = COLORS[rand(COLORS.length)];
-      const rise = cfg.rise[0] + Math.random() * (cfg.rise[1] - cfg.rise[0]); // seconds to float off the top
-      const b = el('button', { class: 'balloon', 'aria-label': 'Balloon', style: { '--c': color, '--rise': `${rise}s`, left: `${4 + rand(78)}%` } });
+      const rise = between(cfg.rise); // seconds to float off the top
+      const b = el('button', { class: 'balloon', 'aria-label': 'Balloon', style: {
+        '--c': color, '--rise': `${rise}s`, '--w': `${cfg.size}px`, '--h': `${Math.round(cfg.size * 1.24)}px`,
+        '--sway': `${cfg.sway}px`, '--swayT': `${between(cfg.swayT)}s`, left: `${3 + rand(84)}%` } });
       // Each balloon leaves exactly once: popped, floated off the top, or (backup) its time ran out.
       // The backup matters when the browser never reports the float finishing (e.g. the tab was hidden).
       let left = false;
