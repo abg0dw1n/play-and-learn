@@ -63,3 +63,4 @@ await go('#/'); await scan('locked-home');
 console.log(JSON.stringify(findings, null, 1));
 console.log('errors:', errs.filter((e) => !/TUNNEL/.test(e)));
 await b.close();
+process.exit(findings.length ? 1 : 0);
