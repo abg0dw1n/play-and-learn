@@ -1,6 +1,7 @@
 // Free coloring pages, drawn here as outlines (each part can be colored by tapping, or print and use crayons).
 // All drawings are original. Coordinates: a 650 x 800 picture area.
-import { path, circle, ellipse, rect, poly, line, eye, dot, cloud, star, heart, flower, sun, grass, bubble, coloringPage } from './draw.js';
+import { path, circle, ellipse, rect, poly, line, eye, dot, cloud, star, heart, flower, sun, grass, bubble, coloringPage,
+  hills3, bunting, birds, butterfly, tulip, meadow, scatter, bricks } from './draw.js';
 
 const hills = (y = 640) => path(`M0 ${y} Q160 ${y - 70} 330 ${y - 10} T650 ${y - 20} L650 800 L0 800 Z`);
 const smile = (x, y, w = 14) => line(`M${x - w} ${y} Q${x} ${y + w * 0.9} ${x + w} ${y}`);
@@ -16,6 +17,7 @@ function girl(cx, top, { crown = true, wings = false, wand = false, scale = 1 } 
   }
   // hair behind
   o += path(`M${X(-82)} ${Y(120)} Q${X(-88)} ${Y(30)} ${X(0)} ${Y(25)} Q${X(88)} ${Y(30)} ${X(82)} ${Y(120)} L${X(95)} ${Y(270)} Q${X(70)} ${Y(290)} ${X(55)} ${Y(250)} L${X(-55)} ${Y(250)} Q${X(-70)} ${Y(290)} ${X(-95)} ${Y(270)} Z`);
+  o += line(`M${X(-70)} ${Y(150)} Q${X(-82)} ${Y(210)} ${X(-75)} ${Y(260)} M${X(70)} ${Y(150)} Q${X(82)} ${Y(210)} ${X(75)} ${Y(260)}`, 2);
   // feet peek out under the skirt
   o += ellipse(X(-38), Y(588), 26 * s, 14 * s) + ellipse(X(38), Y(588), 26 * s, 14 * s);
   // skirt, bodice, sleeves, arms
@@ -25,10 +27,16 @@ function girl(cx, top, { crown = true, wings = false, wand = false, scale = 1 } 
   o += rect(X(-14), Y(170), 28 * s, 30 * s, 8);
   o += path(`M${X(-52)} ${Y(200)} Q${X(0)} ${Y(185)} ${X(52)} ${Y(200)} L${X(48)} ${Y(295)} Q${X(0)} ${Y(310)} ${X(-48)} ${Y(295)} Z`);
   o += line(`M${X(-30)} ${Y(225)} L${X(0)} ${Y(255)} L${X(30)} ${Y(225)}`, 2.5);
+  // skirt panels, a pattern, a belt with a bow, a necklace (lots of little parts for older kids)
+  o += line(`M${X(-24)} ${Y(300)} Q${X(-60)} ${Y(440)} ${X(-90)} ${Y(585)} M${X(24)} ${Y(300)} Q${X(60)} ${Y(440)} ${X(90)} ${Y(585)} M${X(0)} ${Y(302)} L${X(0)} ${Y(592)}`, 2);
+  o += scatter([[X(-110), Y(500)], [X(-70), Y(420)], [X(-45), Y(510)], [X(45), Y(500)], [X(70), Y(410)], [X(110), Y(505)], [X(-20), Y(380)], [X(22), Y(450)]], 'heart', 9 * s);
+  o += rect(X(-50), Y(282), 100 * s, 18 * s, 6, 2.5) + poly([X(0), Y(291), X(-24), Y(276), X(-24), Y(306)]) + poly([X(0), Y(291), X(24), Y(276), X(24), Y(306)]) + circle(X(0), Y(291), 7 * s, 2);
+  for (let i = -3; i <= 3; i++) o += circle(X(i * 8), Y(205 + Math.abs(i) * -3 + 12), 3.5 * s, 1.5);
   o += path(`M${X(-56)} ${Y(225)} L${X(-92)} ${Y(320)} Q${X(-80)} ${Y(334)} ${X(-68)} ${Y(322)} L${X(-40)} ${Y(245)} Z`);
   o += path(`M${X(56)} ${Y(225)} L${X(92)} ${Y(320)} Q${X(80)} ${Y(334)} ${X(68)} ${Y(322)} L${X(40)} ${Y(245)} Z`);
   o += circle(X(-80), Y(332), 13 * s) + circle(X(80), Y(332), 13 * s);
   o += circle(X(-56), Y(212), 22 * s) + circle(X(56), Y(212), 22 * s);
+  o += line(`M${X(-70)} ${Y(200)} Q${X(-56)} ${Y(212)} ${X(-62)} ${Y(232)} M${X(-48)} ${Y(194)} Q${X(-40)} ${Y(212)} ${X(-48)} ${Y(232)} M${X(70)} ${Y(200)} Q${X(56)} ${Y(212)} ${X(62)} ${Y(232)} M${X(48)} ${Y(194)} Q${X(40)} ${Y(212)} ${X(48)} ${Y(232)}`, 1.8);
   if (wand) o += line(`M${X(80)} ${Y(330)} L${X(130)} ${Y(250)}`, 4) + star(X(138), Y(236), 26 * s);
   // head
   o += circle(X(0), Y(105), 72 * s);
@@ -45,10 +53,13 @@ function girl(cx, top, { crown = true, wings = false, wand = false, scale = 1 } 
 
 function castle(x, y, s = 1) { // x = left, y = ground
   const X = (v) => x + v * s, Y = (v) => y - v * s;
-  let o = rect(X(40), Y(260), 220 * s, 260 * s);
+  let o = rect(X(40), Y(260), 220 * s, 260 * s) + bricks(X(40), Y(260), 220 * s, 260 * s, 30 * s, 16 * s);
   for (let i = 0; i < 6; i++) o += rect(X(40 + i * 38), Y(285), 26 * s, 26 * s);
-  o += rect(X(0), Y(330), 80 * s, 330 * s) + rect(X(220), Y(330), 80 * s, 330 * s);
+  o += rect(X(0), Y(330), 80 * s, 330 * s) + rect(X(220), Y(330), 80 * s, 330 * s) + bricks(X(0), Y(330), 80 * s, 330 * s, 26 * s, 16 * s) + bricks(X(220), Y(330), 80 * s, 330 * s, 26 * s, 16 * s);
+  for (const tx of [0, 220]) for (let i = 0; i < 3; i++) o += rect(X(tx + 4 + i * 26), Y(352), 20 * s, 22 * s);
   o += poly([X(-12), Y(330), X(40), Y(440), X(92), Y(330)]) + poly([X(208), Y(330), X(260), Y(440), X(312), Y(330)]);
+  o += line(`M${X(8)} ${Y(360)} L${X(72)} ${Y(360)} M${X(22)} ${Y(390)} L${X(58)} ${Y(390)} M${X(228)} ${Y(360)} L${X(292)} ${Y(360)} M${X(242)} ${Y(390)} L${X(278)} ${Y(390)}`, 2);
+  o += circle(X(150), Y(210), 22 * s) + line(`M${X(150)} ${Y(188)} L${X(150)} ${Y(232)} M${X(128)} ${Y(210)} L${X(172)} ${Y(210)}`, 2);
   o += line(`M${X(40)} ${Y(440)} L${X(40)} ${Y(490)}`) + poly([X(40), Y(490), X(80), Y(475), X(40), Y(460)]);
   o += line(`M${X(260)} ${Y(440)} L${X(260)} ${Y(490)}`) + poly([X(260), Y(490), X(300), Y(475), X(260), Y(460)]);
   o += path(`M${X(115)} ${Y(0)} L${X(115)} ${Y(90)} Q${X(150)} ${Y(140)} ${X(185)} ${Y(90)} L${X(185)} ${Y(0)} Z`);
@@ -61,16 +72,17 @@ function castle(x, y, s = 1) { // x = left, y = ground
 
 export const PAGES = [
   { id: 'princess', title: 'Princess', emoji: '👸', draw: () =>
-    sun(560, 90, 34, true) + cloud(120, 110, 1.5) + cloud(380, 80, 1)
-    + castle(395, 560, 0.75) + hills(600)
-    + girl(260, 150, { crown: true })
-    + flower(60, 660) + flower(120, 700, 0.8) + flower(560, 680) + heart(470, 640, 0.9) },
+    bunting(0, 18, 650, 18, 12, 14) + sun(575, 120, 32, true) + cloud(110, 130, 1.4) + cloud(370, 110, 1) + birds([[200, 210], [235, 190, 0.8], [470, 205]])
+    + castle(395, 560, 0.75) + hills3(610) + meadow(690, 1) + butterfly(70, 330, 1.3) + butterfly(600, 470, 1)
+    + girl(260, 160, { crown: true })
+    + heart(470, 640, 0.9) + scatter([[60, 260], [610, 290], [450, 300]], 'star', 12) },
 
   { id: 'unicorn', title: 'Unicorn', emoji: '🦄', draw: () => {
     let o = path('M40 330 A250 250 0 0 1 540 330 L500 330 A210 210 0 0 0 80 330 Z') + path('M80 330 A210 210 0 0 1 500 330 L460 330 A170 170 0 0 0 120 330 Z')
       + path('M120 330 A170 170 0 0 1 460 330 L420 330 A130 130 0 0 0 160 330 Z');
-    o += cloud(80, 345, 2.2) + cloud(560, 345, 2) + star(590, 70, 24) + star(70, 90, 18) + star(320, 50, 16);
-    o += hills(640);
+    o += path('M160 330 A130 130 0 0 1 420 330 L380 330 A90 90 0 0 0 200 330 Z');
+    o += cloud(80, 345, 2.2) + cloud(560, 345, 2) + star(590, 70, 24) + star(70, 90, 18) + star(320, 50, 16) + star(620, 180, 12) + star(30, 200, 12);
+    o += birds([[400, 120], [440, 100, 0.8]]) + hills3(630) + meadow(700, 2);
     // tail
     o += circle(150, 450, 30) + circle(130, 490, 28) + circle(140, 530, 24) + circle(165, 560, 18);
     // legs (back first)
@@ -89,15 +101,18 @@ export const PAGES = [
     o += circle(500, 292, 9, 2);
     // mane
     for (const [x, y, r] of [[452, 230, 26], [432, 262, 28], [418, 300, 28], [408, 340, 28], [402, 380, 26], [400, 418, 24]]) o += circle(x, y, r);
-    o += flower(80, 690, 0.9) + flower(600, 700, 0.9) + heart(560, 560, 0.8);
+    o += line('M240 600 L240 645 M285 610 L285 655 M400 600 L400 645 M445 610 L445 655', 1.8);
+    o += scatter([[260, 450], [300, 500], [350, 450], [330, 540], [380, 500], [230, 520]], 'star', 11);
+    o += poly([505, 340, 520, 330, 535, 345]) + heart(560, 560, 0.8) + butterfly(600, 430, 1.1);
     return o; } },
 
   { id: 'castle', title: 'Magic Castle', emoji: '🏰', draw: () =>
-    sun(90, 90, 32) + cloud(330, 100, 1.4) + cloud(560, 160, 1) + star(470, 60, 18)
-    + hills(560) + castle(170, 640, 1.05)
+    sun(90, 90, 32, true) + cloud(330, 100, 1.4) + cloud(560, 160, 1) + star(470, 60, 18) + birds([[220, 200], [250, 180, 0.8], [520, 250]])
+    + bunting(170, 190, 485, 190, 9, 10) + hills3(570) + castle(170, 640, 1.05)
     + path('M290 640 Q300 700 260 800 L390 800 Q350 700 360 640 Z')
     + circle(80, 560, 50) + rect(72, 600, 16, 60) + circle(575, 560, 45) + rect(567, 595, 16, 60)
-    + flower(60, 700, 0.9) + flower(140, 720, 0.8) + flower(520, 710, 0.9) + flower(600, 690, 0.8) },
+    + scatter([[285, 670], [330, 700], [300, 740], [350, 770], [320, 650]], 'dot', 9)
+    + tulip(60, 700) + flower(140, 720, 0.8) + tulip(520, 710) + flower(600, 690, 0.8) + butterfly(470, 560) + butterfly(110, 470, 0.9) },
 
   { id: 'mermaid', title: 'Mermaid', emoji: '🧜‍♀️', draw: () => {
     let o = '';
@@ -106,6 +121,10 @@ export const PAGES = [
     o += path('M60 700 Q40 620 70 560 Q90 620 80 700 Z') + path('M90 700 Q100 600 130 540 Q130 630 110 700 Z');
     o += path('M560 700 Q540 610 580 540 Q595 620 585 700 Z') + path('M600 700 Q620 630 640 590 Q640 650 625 700 Z');
     o += star(200, 735, 30) + path('M450 745 q20 -40 40 0 q-20 10 -40 0 Z') + line('M462 745 L470 728 L478 745', 2);
+    o += path('M120 300 Q160 270 200 300 Q160 330 120 300 Z') + poly([120, 300, 100, 285, 100, 315]) + dot(185, 297, 3);
+    o += path('M450 420 Q500 390 550 420 Q500 450 450 420 Z') + poly([550, 420, 575, 402, 575, 438]) + dot(468, 416, 3);
+    o += circle(60, 760, 20) + circle(95, 770, 14) + circle(560, 770, 18) + circle(600, 760, 12);
+    o += path('M500 600 Q520 560 545 600 Q520 620 500 600 Z') + line('M505 600 L540 600', 2);
     // tail
     o += path('M260 430 Q230 560 300 620 Q360 670 330 720 L300 760 Q340 750 360 740 L400 770 Q395 720 360 700 Q420 640 380 540 Q370 470 380 430 Z');
     for (let i = 0; i < 5; i++) o += line(`M${280 + i * 4} ${470 + i * 45} Q${310 + i * 6} ${490 + i * 45} ${370 - i * 2} ${470 + i * 45}`, 2);
@@ -117,17 +136,20 @@ export const PAGES = [
     o += rect(306, 255, 28, 30, 8) + circle(320, 200, 64);
     o += path('M258 190 Q262 135 320 132 Q378 135 382 190 Q350 160 320 172 Q290 160 258 190 Z');
     o += eye(298, 205) + eye(342, 205) + circle(282, 228, 8, 2) + circle(358, 228, 8, 2) + smile(320, 232, 11);
-    o += flower(372, 160, 0.7, 0);
+    o += flower(372, 160, 0.7, 0) + line('M250 230 Q240 290 250 350 M390 230 Q400 290 390 350 M268 140 Q250 180 252 220', 2);
+    for (let i = 0; i < 4; i++) o += circle(278 + i * 28, 262, 5, 1.6);
+    o += scatter([[300, 520], [345, 560], [320, 620], [350, 670]], 'dot', 6);
     return o; } },
 
   { id: 'fairy', title: 'Flower Fairy', emoji: '🧚', draw: () => {
-    let o = sun(570, 85, 30, true) + cloud(140, 110, 1.3);
-    o += hills(620);
+    let o = sun(570, 85, 30, true) + cloud(140, 110, 1.3) + birds([[300, 80], [330, 60, 0.8]]) + scatter([[60, 220], [600, 250], [520, 170], [110, 330]], 'star', 13);
+    o += hills3(610) + meadow(700, 3);
     o += path('M60 660 Q70 590 120 590 Q170 590 180 660 Z') + rect(105, 650, 30, 60, 8) + circle(95, 615, 9, 2) + circle(140, 605, 11, 2) + circle(155, 635, 7, 2);
     o += path('M500 690 Q510 640 545 640 Q580 640 590 690 Z') + rect(533, 682, 24, 40, 6) + circle(530, 660, 7, 2) + circle(560, 655, 8, 2);
     o += girl(325, 140, { crown: false, wings: true, wand: true, scale: 0.92 });
     o += flower(325, 175, 0.9, 0);
-    o += flower(250, 720, 0.8) + flower(410, 730, 0.8) + heart(600, 560, 0.7) + heart(50, 520, 0.6);
+    o += heart(600, 560, 0.7) + heart(50, 520, 0.6) + butterfly(590, 420, 1.1) + butterfly(70, 440);
+    o += line('M200 520 Q230 470 215 430 M450 520 Q420 470 435 430', 2) + scatter([[215, 430], [435, 430]], 'star', 9);
     return o; } },
 
   { id: 'butterflies', title: 'Butterfly Garden', emoji: '🦋', draw: () => {
@@ -136,15 +158,19 @@ export const PAGES = [
       + circle(x - 55 * s, y - 35 * s, 18 * s, 2) + circle(x + 55 * s, y - 35 * s, 18 * s, 2) + circle(x - 42 * s, y + 46 * s, 12 * s, 2) + circle(x + 42 * s, y + 46 * s, 12 * s, 2)
       + ellipse(x, y + 10 * s, 12 * s, 62 * s) + circle(x, y - 62 * s, 16 * s)
       + line(`M${x - 6 * s} ${y - 76 * s} Q${x - 20 * s} ${y - 110 * s} ${x - 34 * s} ${y - 112 * s} M${x + 6 * s} ${y - 76 * s} Q${x + 20 * s} ${y - 110 * s} ${x + 34 * s} ${y - 112 * s}`, 2.5)
-      + circle(x - 36 * s, y - 112 * s, 6 * s, 2) + circle(x + 36 * s, y - 112 * s, 6 * s, 2);
-    let o = sun(80, 80, 30) + cloud(560, 90, 1.2);
+      + circle(x - 36 * s, y - 112 * s, 6 * s, 2) + circle(x + 36 * s, y - 112 * s, 6 * s, 2)
+      + circle(x - 78 * s, y - 52 * s, 9 * s, 2) + circle(x + 78 * s, y - 52 * s, 9 * s, 2) + circle(x - 30 * s, y - 70 * s, 8 * s, 2) + circle(x + 30 * s, y - 70 * s, 8 * s, 2)
+      + circle(x - 58 * s, y + 30 * s, 7 * s, 2) + circle(x + 58 * s, y + 30 * s, 7 * s, 2)
+      + line(`M${x - 12 * s} ${y - 15 * s} L${x + 12 * s} ${y - 15 * s} M${x - 12 * s} ${y + 10 * s} L${x + 12 * s} ${y + 10 * s} M${x - 11 * s} ${y + 35 * s} L${x + 11 * s} ${y + 35 * s}`, 2);
+    let o = sun(80, 80, 30, true) + cloud(560, 90, 1.2) + cloud(280, 70, 0.9) + birds([[420, 60], [450, 45, 0.8]]);
     o += fly(330, 260, 1.7) + fly(120, 300, 0.7) + fly(540, 380, 0.8);
     o += path('M0 640 Q325 590 650 640 L650 800 L0 800 Z');
     for (const [x, y, s] of [[70, 560, 1.4], [190, 600, 1.1], [320, 570, 1.5], [450, 610, 1.1], [580, 560, 1.4]]) o += flower(x, y, s, 170);
-    o += grass(30, 790, 3) + grass(260, 790, 3) + grass(520, 790, 3);
+    o += grass(30, 790, 3) + grass(260, 790, 3) + grass(520, 790, 3) + tulip(130, 700) + tulip(390, 700) + tulip(520, 720) + butterfly(250, 470, 0.9) + butterfly(420, 520, 0.8);
     return o; } },
   { id: 'sweets', title: 'Sweet Treats', emoji: '🍦', draw: () => {
-    let o = sun(570, 80, 28, true) + cloud(110, 100, 1.2) + heart(330, 70, 0.8);
+    let o = bunting(0, 20, 650, 20, 12, 14) + sun(575, 105, 28, true) + cloud(110, 120, 1.2) + heart(330, 90, 0.8) + scatter([[430, 160], [60, 220], [600, 260]], 'heart', 12);
+    o += rect(0, 760, 650, 40) + line('M0 775 L650 775', 2);
     // ice cream cone
     o += poly([170, 420, 330, 420, 250, 720]);
     for (let i = 0; i < 4; i++) o += line(`M${190 + i * 34} 420 L${250 + i * 5} ${640 - i * 30}`, 2) + line(`M${310 - i * 34} 420 L${250 - i * 5} ${640 - i * 30}`, 2);
@@ -159,11 +185,16 @@ export const PAGES = [
     o += circle(482, 440, 16) + line('M482 424 Q488 405 500 402', 3);
     // lollipop
     o += rect(114, 610, 12, 190, 6) + circle(120, 570, 55) + line('M120 570 Q150 545 135 525 M120 570 Q95 600 70 585 M120 570 Q150 600 160 590 M120 570 Q90 540 95 520', 3);
-    o += path('M0 760 L650 760 L650 800 L0 800 Z');
+    for (const [x, y] of [[420, 610], [470, 640], [520, 600], [440, 690], [500, 690]]) o += circle(x, y, 6, 1.8);
+    const candy = (x, y) => ellipse(x, y, 26, 18) + poly([x - 24, y, x - 46, y - 14, x - 46, y + 14]) + poly([x + 24, y, x + 46, y - 14, x + 46, y + 14]) + line(`M${x - 8} ${y - 16} L${x - 8} ${y + 16} M${x + 8} ${y - 16} L${x + 8} ${y + 16}`, 2);
+    o += candy(590, 735) + candy(470, 745) + path('M40 760 Q40 720 70 720 Q100 720 100 760 Z') + line('M52 735 Q70 745 88 735', 2);
     return o; } },
 
   { id: 'pets', title: 'Puppy and Kitty', emoji: '🐶', draw: () => {
-    let o = sun(560, 90, 30, true) + cloud(140, 100, 1.3) + path('M0 600 L650 600 L650 800 L0 800 Z');
+    let o = rect(0, 0, 650, 600) + line('M0 120 L650 120 M0 240 L650 240 M0 360 L650 360 M0 480 L650 480', 1.5);
+    o += rect(30, 60, 170, 140, 6) + line('M115 60 L115 200 M30 130 L200 130', 2.5) + sun(160, 100, 16) + cloud(90, 170, 0.8);
+    o += rect(470, 70, 140, 110, 8) + circle(540, 125, 34) + heart(540, 108, 0.7);
+    o += path('M0 600 L650 600 L650 800 L0 800 Z') + line('M0 650 L650 650 M0 710 L650 710 M100 600 L80 800 M260 600 L250 800 M410 600 L420 800 M560 600 L580 800', 1.6);
     // rug
     o += ellipse(325, 690, 290, 70) + ellipse(325, 690, 230, 50);
     // puppy (left)
@@ -185,13 +216,17 @@ export const PAGES = [
     o += line('M420 380 L380 372 M420 390 L380 394 M500 380 L540 372 M500 390 L540 394', 2.5);
     // ball and bone
     o += circle(325, 650, 36) + line('M290 640 Q325 620 360 640 M296 668 Q325 690 354 668', 2.5);
-    o += heart(325, 430, 1.1);
+    o += heart(325, 430, 1.1) + path('M150 435 Q190 455 230 435 L232 450 Q190 470 148 450 Z') + circle(190, 462, 9, 2);
+    o += path('M415 438 Q460 458 505 438 L507 452 Q460 472 413 452 Z') + star(460, 465, 9, 2);
+    o += scatter([[150, 560], [230, 520], [210, 610], [420, 540], [500, 580], [445, 620]], 'dot', 8);
+    o += path('M560 760 L620 760 L612 720 L568 720 Z') + ellipse(590, 720, 22, 8);
     return o; } },
 
   { id: 'dino', title: 'Dinosaur Land', emoji: '🦕', draw: () => {
-    let o = sun(560, 80, 30, true) + cloud(300, 90, 1.3);
+    let o = sun(560, 80, 30, true) + cloud(300, 90, 1.3) + birds([[380, 160], [410, 140, 0.8], [250, 200]]) + path('M0 420 Q120 300 240 420 Z') + path('M380 440 Q520 330 650 440 Z');
     o += poly([20, 470, 120, 270, 160, 270, 260, 470]) + path('M120 270 Q140 230 160 270') + circle(140, 230, 22) + circle(165, 200, 26) + circle(130, 175, 20) + circle(160, 150, 18);
-    o += hills(560);
+    o += hills3(570);
+    o += path('M60 470 Q90 430 120 470 Q90 480 60 470 Z') + path('M540 480 Q575 440 610 480 Q575 490 540 480 Z');
     // dinosaur
     o += path('M120 620 Q90 640 30 600 Q110 600 160 560 Z');
     for (const [x, y] of [[175, 500], [225, 478], [282, 468], [340, 472], [395, 488], [440, 420], [462, 360], [472, 300]]) o += poly([x - 20, y + 20, x, y - 20, x + 20, y + 20]);
@@ -206,7 +241,9 @@ export const PAGES = [
     o += path('M580 760 Q570 650 590 540 L605 540 Q590 650 600 760 Z');
     for (const d of ['M597 540 Q520 480 470 540 Q530 510 597 548', 'M597 540 Q680 470 720 530 Q660 505 597 548', 'M597 540 Q580 450 520 430 Q575 480 597 548', 'M597 540 Q630 450 690 440 Q630 480 597 548']) o += path(d + ' Z');
     o += circle(590, 552, 10) + circle(608, 556, 10);
-    o += ellipse(110, 740, 40, 26) + ellipse(80, 730, 24, 18, -20) + flower(330, 740, 0.8, 0);
+    o += ellipse(110, 740, 40, 26) + ellipse(80, 730, 24, 18, -20) + flower(330, 740, 0.8, 0) + flower(400, 760, 0.6, 0);
+    o += ellipse(230, 760, 30, 40) + line('M215 745 L225 740 M238 770 L246 762', 2) + ellipse(275, 768, 22, 30) + grass(450, 790) + grass(30, 790);
+    o += line('M480 580 Q470 600 480 620 M210 690 L210 718 M260 700 L260 728 M390 690 L390 718 M440 700 L440 728', 2);
     return o; } },
 
   { id: 'ocean', title: 'Under the Sea', emoji: '🐙', draw: () => {
@@ -225,11 +262,15 @@ export const PAGES = [
     o += ellipse(110, 640, 22, 14) + ellipse(200, 640, 22, 14) + circle(240, 600, 24) + eye(248, 594, 4, 5);
     o += path('M80 620 Q150 520 225 620 Z') + line('M125 590 L150 570 L175 590 L150 610 Z M105 612 L125 590 M195 612 L175 590', 2);
     o += star(470, 740, 30) + path('M330 745 q22 -42 44 0 q-22 10 -44 0 Z');
+    for (let i = 0; i < 6; i++) o += circle(220 + i * 50, 545, 7, 1.8) + circle(212 + i * 50, 575, 6, 1.8);
+    o += path('M380 700 Q390 640 420 620 Q430 660 400 700 Z') + path('M420 700 Q440 650 470 640 Q460 680 440 700 Z');
+    o += circle(260, 330, 14, 2) + circle(395, 320, 10, 2) + circle(325, 300, 8, 2);
+    o += path('M540 720 Q560 690 580 720 Q600 690 620 720 L620 735 L540 735 Z') + circle(30, 740, 18) + circle(620, 600, 0.1);
     return o; } },
 
   { id: 'teddy', title: 'Teddy Bear Picnic', emoji: '🧸', draw: () => {
-    let o = sun(90, 90, 30, true) + cloud(400, 110, 1.4) + cloud(590, 170, 0.9);
-    o += hills(520);
+    let o = bunting(0, 20, 650, 20, 12, 14) + sun(90, 110, 30, true) + cloud(400, 120, 1.4) + cloud(590, 180, 0.9) + birds([[250, 210], [280, 195, 0.8]]);
+    o += hills3(530) + butterfly(110, 400) + butterfly(600, 300, 0.9);
     o += circle(560, 420, 70) + rect(548, 480, 24, 80);
     // blanket
     o += poly([40, 640, 610, 640, 650, 800, 0, 800]);
@@ -247,6 +288,8 @@ export const PAGES = [
     o += path('M470 680 L610 680 L595 760 L485 760 Z') + path('M480 680 Q540 600 600 680', 3);
     for (let i = 1; i < 4; i++) o += line(`M${470 + i * 4} ${680 + i * 20} L${610 - i * 4} ${680 + i * 20}`, 2);
     o += circle(95, 690, 26) + line('M95 664 Q100 650 110 646', 3) + circle(150, 720, 22) + line('M150 698 Q154 684 164 680', 3);
+    o += path('M30 760 L110 760 L105 790 L35 790 Z') + ellipse(70, 760, 40, 8) + path('M190 770 Q190 740 215 740 Q240 740 240 770 Z') + rect(205, 725, 20, 16, 4);
+    o += scatter([[290, 480], [360, 470], [300, 560], [355, 570], [325, 610]], 'heart', 9) + circle(560, 395, 12, 2) + circle(590, 430, 10, 2) + circle(535, 440, 9, 2);
     return o; } },
 
   { id: 'balloon', title: 'Hot Air Balloon', emoji: '🎈', draw: () => {
@@ -254,11 +297,15 @@ export const PAGES = [
     o += path('M325 80 Q470 80 470 250 Q470 370 365 440 L285 440 Q180 370 180 250 Q180 80 325 80 Z');
     o += path('M325 80 Q260 120 260 250 Q260 370 300 440 L350 440 Q390 370 390 250 Q390 120 325 80 Z');
     o += line('M190 200 Q325 230 460 200 M182 290 Q325 320 468 290 M210 370 Q325 395 440 370', 2.5);
+    o += scatter([[220, 250], [430, 250], [300, 170], [350, 170], [325, 340], [240, 330], [410, 330]], 'heart', 11);
+    o += bunting(180, 245, 470, 245, 8, 6);
     o += line('M290 440 L300 520 M360 440 L350 520', 3);
     o += path('M285 520 L365 520 L355 590 L295 590 Z') + line('M285 540 L365 540', 2);
     o += path('M0 730 Q160 680 330 720 T650 700 L650 800 L0 800 Z');
     o += line('M80 300 q10 -10 20 0 q10 -10 20 0 M520 200 q8 -8 16 0 q8 -8 16 0 M430 520 q8 -8 16 0 q8 -8 16 0', 3);
     o += circle(80, 690, 30) + rect(72, 715, 16, 40) + circle(590, 680, 34) + rect(582, 710, 16, 45);
+    o += cloud(160, 380, 0.8) + cloud(540, 440, 0.7) + cloud(560, 620, 0.6) + birds([[100, 560], [130, 545, 0.8]]);
+    o += rect(230, 740, 120, 50, 6) + poly([220, 742, 290, 700, 360, 742]) + rect(275, 760, 26, 30) + rect(320, 752, 20, 18) + meadow(735, 5);
     return o; } },
 ];
 
