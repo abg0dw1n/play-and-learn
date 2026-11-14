@@ -49,7 +49,8 @@ one Letter or A4 sheet (Print button → phone's print menu). The color-by pages
 the home-screen setting. Code: `js/print/sheets.js` (page makers, pure functions) and `js/print/shop.js` (screens).
 First Steps uses the small 12×12 pictures in `PICTURES`. Growing Strong and up use the detailed pictures in `js/print/art.js`
 (drawn from shapes, every square colored including the background, 5–9 colors): 16×16, and 20×20 for Super Star color by number;
-Super Star color by word uses harder words. **Coloring pages** (`js/print/pip-pages.js`): each Pip friend as an outline in a meadow,
+Super Star color by word uses harder words. **Coloring pages**: 12 drawn pictures (`js/print/coloring-pages.js`, using the outline kit in `draw.js`: princess, unicorn, castle,
+mermaid, fairy, butterflies, sweets, puppy and kitty, dinosaur, under the sea, teddy picnic, hot air balloon), plus (`js/print/pip-pages.js`) each Pip friend as an outline in a meadow,
 beach, space or snow scene ("New one" changes the scene); color on screen with crayons, or print.
 
 ## My Worksheets (grown-ups)

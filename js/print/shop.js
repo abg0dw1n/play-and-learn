@@ -8,6 +8,7 @@ import { burst } from '../core/confetti.js';
 import { SHEETS, COLORS } from './sheets.js';
 import { PRACTICE } from './practice.js';
 import { PIP_PAGES } from './pip-pages.js';
+import { COLORING } from './coloring-pages.js';
 
 const isStandalone = () => window.navigator.standalone === true || window.matchMedia?.('(display-mode: standalone)').matches;
 
@@ -72,7 +73,7 @@ export function renderPrintShop(root, { onHome }) {
       el('h3', { class: 'pr-group pr-ui' }, '🎨 Fun pages'),
       grid(SHEETS, '#ff7aa8'),
       el('h3', { class: 'pr-group pr-ui' }, '🖍️ Coloring pages'),
-      grid(PIP_PAGES, '#ffb400'),
+      grid([...COLORING, ...PIP_PAGES], '#ffb400'),
       el('h3', { class: 'pr-group pr-ui' }, '🌈 My World'),
       grid(WORLD_SHEETS, '#43b05c'));
   }
