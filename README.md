@@ -77,6 +77,10 @@ When you add or change anything the voice says (including `PRAISE`/`RETRY` in `c
    for where the free model files come from; only new lines are generated)
 3. Commit `audio/`
 
+### Her name
+Pip greets her by name on the home screen ("Hi, <name>!", name set in Grown-ups). For it to be in Pip's own voice, record it once:
+`sh tools/name-clip.sh <name> <models-dir> <espeak-dir>` (makes `audio/names/<hash>-heart.mp3` and `-bella.mp3`; the hash is of the greeting, so the name isn't written in the site's files). Without a recording, the phone's own voice says the name.
+
 ## Sticker book
 Every finished game awards one new everyday sticker (40 in `js/core/stickers.js`) until all are found; then just a star.
 Stars earned before the sticker book existed were turned into stickers once.

@@ -16,9 +16,9 @@ export function greetingText(name) {
   return name ? `Hi, ${name}! ${PIP_INTRO}` : PIP_GREETING;
 }
 
-/** What to pass to speak(): the recorded "Hi" and intro clips, with her name (device voice) between them. */
+/** What to pass to speak(): "Hi, <name>!" (recorded, or the phone's voice for the name), then the recorded intro. */
 function greetingSpeech(name) {
-  return name ? ['Hi', name, PIP_INTRO] : PIP_GREETING;
+  return name ? [{ hello: name }, PIP_INTRO] : PIP_GREETING;
 }
 
 /** Pip you can tap: waves, winks and says something. */

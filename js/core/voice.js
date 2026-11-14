@@ -160,9 +160,29 @@ async function speakSeq(items, my, gap, opts) {
   for (let i = 0; i < items.length; i++) {
     if (my !== speakToken) return;
     if (Array.isArray(items[i])) await speakSeq(items[i], my, 60, opts);
+    else if (items[i] && typeof items[i] === 'object' && items[i].hello) await speakHello(items[i].hello, my, opts);
     else await speakLine(items[i], opts, my);
     if (i < items.length - 1 && my === speakToken) await wait(gap);
   }
+}
+
+/* "Hi, <name>!" in Pip's own voice. A grown-up records it once with tools/tts.py (see README, "Her name");
+   the file is named by a hash of the greeting, so her name itself never appears in the site's files.
+   Without a recording, Pip says the recorded "Hi" and the phone's own voice says the name. */
+export async function helloKey(name) {
+  const data = new TextEncoder().encode(`hi, ${String(name).trim().toLowerCase()}!`);
+  const digest = await crypto.subtle.digest('SHA-256', data);
+  return [...new Uint8Array(digest)].slice(0, 8).map((b) => b.toString(16).padStart(2, '0')).join('');
+}
+async function speakHello(name, my, opts) {
+  if (!opts.force && !store.get().sound) return;
+  try {
+    const voiceId = store.get().ttsVoice === 'bella' ? 'bella' : 'heart';
+    const key = await helloKey(name);
+    if (my !== speakToken) return;
+    if (player && await playClip(`${CLIP_BASE}names/${key}-${voiceId}.mp3`)) return;
+  } catch { /* no crypto (old browser, plain http): fall back below */ }
+  if (my === speakToken) await speakSeq(['Hi', name], my, 350, opts);
 }
 
 async function speakLine(text, opts, my) {
