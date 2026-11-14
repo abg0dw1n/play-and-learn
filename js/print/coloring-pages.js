@@ -1,5 +1,6 @@
 // Free coloring pages, drawn here as outlines (each part can be colored by tapping, or print and use crayons).
 // All drawings are original. Coordinates: a 650 x 800 picture area.
+import { mermaidPicture } from './mermaid.js';
 import { path, circle, ellipse, rect, poly, line, eye, dot, cloud, star, heart, flower, sun, grass, bubble, coloringPage,
   hills3, bunting, birds, butterfly, tulip, meadow, scatter, bricks } from './draw.js';
 
@@ -113,32 +114,7 @@ export const PAGES = [
     + scatter([[285, 670], [330, 700], [300, 740], [350, 770], [320, 650]], 'dot', 9)
     + tulip(60, 700) + flower(140, 720, 0.8) + tulip(520, 710) + flower(600, 690, 0.8) + butterfly(470, 560) + butterfly(110, 470, 0.9) },
 
-  { id: 'mermaid', title: 'Mermaid', emoji: '🧜‍♀️', draw: () => {
-    let o = '';
-    for (const [x, y, r] of [[80, 120, 18], [110, 80, 12], [560, 260, 16], [590, 220, 10], [520, 120, 22]]) o += bubble(x, y, r);
-    o += path('M0 700 Q160 660 330 700 T650 690 L650 800 L0 800 Z');
-    o += path('M60 700 Q40 620 70 560 Q90 620 80 700 Z') + path('M90 700 Q100 600 130 540 Q130 630 110 700 Z');
-    o += path('M560 700 Q540 610 580 540 Q595 620 585 700 Z') + path('M600 700 Q620 630 640 590 Q640 650 625 700 Z');
-    o += star(200, 735, 30) + path('M450 745 q20 -40 40 0 q-20 10 -40 0 Z') + line('M462 745 L470 728 L478 745', 2);
-    o += path('M120 300 Q160 270 200 300 Q160 330 120 300 Z') + poly([120, 300, 100, 285, 100, 315]) + dot(185, 297, 3);
-    o += path('M450 420 Q500 390 550 420 Q500 450 450 420 Z') + poly([550, 420, 575, 402, 575, 438]) + dot(468, 416, 3);
-    o += circle(60, 760, 20) + circle(95, 770, 14) + circle(560, 770, 18) + circle(600, 760, 12);
-    o += path('M500 600 Q520 560 545 600 Q520 620 500 600 Z') + line('M505 600 L540 600', 2);
-    // tail
-    o += path('M260 430 Q230 560 300 620 Q360 670 330 720 L300 760 Q340 750 360 740 L400 770 Q395 720 360 700 Q420 640 380 540 Q370 470 380 430 Z');
-    for (let i = 0; i < 5; i++) o += line(`M${280 + i * 4} ${470 + i * 45} Q${310 + i * 6} ${490 + i * 45} ${370 - i * 2} ${470 + i * 45}`, 2);
-    // hair back, body, arms, head
-    o += path('M240 200 Q230 110 320 105 Q410 110 400 200 Q430 300 420 380 Q395 395 385 360 L255 360 Q245 395 220 380 Q210 300 240 200 Z');
-    o += path('M280 300 Q320 290 360 300 L380 440 L260 440 Z');
-    o += ellipse(298, 315, 22, 18) + ellipse(342, 315, 22, 18) + line('M290 305 L298 330 M306 305 L298 330 M334 305 L342 330 M350 305 L342 330', 2);
-    o += path('M282 300 Q240 340 250 390 Q262 398 268 388 Q262 350 292 318 Z') + path('M358 300 Q400 340 390 390 Q378 398 372 388 Q378 350 348 318 Z');
-    o += rect(306, 255, 28, 30, 8) + circle(320, 200, 64);
-    o += path('M258 190 Q262 135 320 132 Q378 135 382 190 Q350 160 320 172 Q290 160 258 190 Z');
-    o += eye(298, 205) + eye(342, 205) + circle(282, 228, 8, 2) + circle(358, 228, 8, 2) + smile(320, 232, 11);
-    o += flower(372, 160, 0.7, 0) + line('M250 230 Q240 290 250 350 M390 230 Q400 290 390 350 M268 140 Q250 180 252 220', 2);
-    for (let i = 0; i < 4; i++) o += circle(278 + i * 28, 262, 5, 1.6);
-    o += scatter([[300, 520], [345, 560], [320, 620], [350, 670]], 'dot', 6);
-    return o; } },
+  { id: 'mermaid', title: 'Mermaid', emoji: '🧜‍♀️', draw: mermaidPicture },
 
   { id: 'fairy', title: 'Flower Fairy', emoji: '🧚', draw: () => {
     let o = sun(570, 85, 30, true) + cloud(140, 110, 1.3) + birds([[300, 80], [330, 60, 0.8]]) + scatter([[60, 220], [600, 250], [520, 170], [110, 330]], 'star', 13);

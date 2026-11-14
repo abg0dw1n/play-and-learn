@@ -96,3 +96,50 @@ export function bricks(x, y, w, h, bw = 34, bh = 18) {
   for (let r = 0; r * bh < h; r++) for (let c = (r % 2) * bw / 2; c < w; c += bw) if (c > 0) d += `M${x + c} ${y + r * bh} L${x + c} ${y + Math.min((r + 1) * bh, h)} `;
   return line(d, 1.6);
 }
+
+/* ---- organic shapes (soft, hand-drawn look) ---- */
+const crPoint = (p0, p1, p2, p3, t) => {
+  const t2 = t * t, t3 = t2 * t;
+  return [0, 1].map((k) => 0.5 * ((2 * p1[k]) + (-p0[k] + p2[k]) * t + (2 * p0[k] - 5 * p1[k] + 4 * p2[k] - p3[k]) * t2 + (-p0[k] + 3 * p1[k] - 3 * p2[k] + p3[k]) * t3));
+};
+/** Points along a smooth curve through the given points (Catmull-Rom). */
+export function spline(pts, per = 12) {
+  const out = [];
+  const P = [pts[0], ...pts, pts[pts.length - 1]];
+  for (let i = 1; i < P.length - 2; i++) for (let s = 0; s < per; s++) out.push(crPoint(P[i - 1], P[i], P[i + 1], P[i + 2], s / per));
+  out.push(pts[pts.length - 1]);
+  return out;
+}
+/** A smooth closed outline through the points, as SVG path data (cubic Béziers). */
+export function smoothClosed(pts) {
+  const n = pts.length; let d = `M${f(pts[0][0])} ${f(pts[0][1])}`;
+  for (let i = 0; i < n; i++) {
+    const p0 = pts[(i - 1 + n) % n], p1 = pts[i], p2 = pts[(i + 1) % n], p3 = pts[(i + 2) % n];
+    const c1 = [p1[0] + (p2[0] - p0[0]) / 6, p1[1] + (p2[1] - p0[1]) / 6], c2 = [p2[0] - (p3[0] - p1[0]) / 6, p2[1] - (p3[1] - p1[1]) / 6];
+    d += ` C${f(c1[0])} ${f(c1[1])} ${f(c2[0])} ${f(c2[1])} ${f(p2[0])} ${f(p2[1])}`;
+  }
+  return `${d} Z`;
+}
+export const blob = (pts, w) => path(smoothClosed(pts), w);
+/** A smooth open line through the points. */
+export function smoothLine(pts, w = 2.4) {
+  let d = `M${f(pts[0][0])} ${f(pts[0][1])}`;
+  for (let i = 0; i < pts.length - 1; i++) {
+    const p0 = pts[Math.max(0, i - 1)], p1 = pts[i], p2 = pts[i + 1], p3 = pts[Math.min(pts.length - 1, i + 2)];
+    d += ` C${f(p1[0] + (p2[0] - p0[0]) / 6)} ${f(p1[1] + (p2[1] - p0[1]) / 6)} ${f(p2[0] - (p3[0] - p1[0]) / 6)} ${f(p2[1] - (p3[1] - p1[1]) / 6)} ${f(p2[0])} ${f(p2[1])}`;
+  }
+  return line(d, w);
+}
+/** A tapered, flowing shape around a centre line (a lock of hair, a leaf of seaweed, a tail): w0 wide at the start, w1 at the end. */
+export function lockShape(spine, w0, w1 = 0) {
+  const s = spline(spine, 10), left = [], right = [];
+  for (let i = 0; i < s.length; i++) {
+    const a = s[Math.max(0, i - 1)], b = s[Math.min(s.length - 1, i + 1)];
+    let nx = -(b[1] - a[1]), ny = b[0] - a[0]; const len = Math.hypot(nx, ny) || 1; nx /= len; ny /= len;
+    const t = i / (s.length - 1), w = (w0 * (1 - t) + w1 * t) * (1 + 0.12 * Math.sin(t * Math.PI)) / 2;
+    left.push([s[i][0] + nx * w, s[i][1] + ny * w]); right.push([s[i][0] - nx * w, s[i][1] - ny * w]);
+  }
+  const ring = [...left, ...right.reverse()].filter((_, i) => i % 2 === 0);
+  return smoothClosed(ring);
+}
+export const lock = (spine, w0, w1, w) => path(lockShape(spine, w0, w1), w);
