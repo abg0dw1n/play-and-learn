@@ -46,9 +46,6 @@ button { font: inherit; color: inherit; cursor: pointer; touch-action: manipulat
   background: var(--paper); border-radius: 999px; padding: 8px 18px; font-size: 1.6rem; font-weight: 700;
   box-shadow: 0 5px 0 #f0c94d;
 }
-.difficulty-picker {
-  display: flex; gap: 8px; align-items: center; flex: none;
-}
 .diff-btn {
   border: 0; border-radius: 999px; background: var(--paper); color: var(--soft-ink);
   font-size: 1.05rem; font-weight: 700; padding: 8px 14px; box-shadow: 0 4px 0 rgba(0,0,0,.12);
@@ -181,7 +178,6 @@ button { font: inherit; color: inherit; cursor: pointer; touch-action: manipulat
 /* ---------- Sticker book ---------- */
 .book-title { margin: 0; font-size: clamp(1.6rem, 6vw, 2.4rem); color: #e08a00; }
 .stickers .star-count { font-size: 1.3rem; padding: 6px 14px; }
-.book-sub { text-align: center; }
 .sticker-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(96px, 1fr)); gap: 14px; }
 .sticker {
   aspect-ratio: 1 / 1; border: 4px dashed transparent; border-radius: 50%; background: var(--paper);
@@ -205,7 +201,6 @@ button { font: inherit; color: inherit; cursor: pointer; touch-action: manipulat
 
 /* ---------- Sound Check (grown-ups) ---------- */
 .sc-title { color: #7b3fc4; }
-.sc-spacer { width: 64px; flex: none; }
 .sc-card {
   background: var(--paper); border-radius: 20px; padding: 16px 18px; margin: 14px 0; box-shadow: 0 4px 0 rgba(0,0,0,.08);
   font-size: 1.05rem; color: var(--soft-ink); user-select: text; -webkit-user-select: text;
@@ -335,7 +330,6 @@ button { font: inherit; color: inherit; cursor: pointer; touch-action: manipulat
 .screen.ws > .topbar { flex: none; }
 .ws-top { gap: 12px; }
 .ws-title { color: var(--bg-ink, var(--ink)); flex: 1; text-align: center; font-size: clamp(1.4rem, 5vw, 2.2rem); margin: 0; }
-.ws-top-gap { width: 60px; }
 /* Short content (the sign-in gate) sits centered in the space below the topbar instead of
    floating near the top with a big gap below; long content (the worksheet list) just scrolls. */
 .ws-body { display: flex; flex-direction: column; gap: 14px; max-width: 760px; width: 100%; margin: 8px auto 24px; flex: 1; justify-content: center; }

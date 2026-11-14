@@ -44,6 +44,13 @@ const it = await page.$('.scene-item >> nth=1'); const bb = await it.boundingBox
 await page.mouse.move(bb.x + bb.width / 2, bb.y + bb.height / 2); await page.mouse.down(); await page.mouse.move(bb.x + 40, bb.y - 60, { steps: 5 }); await page.mouse.up();
 const saved = await page.evaluate(() => JSON.parse(localStorage.getItem('playlearn:v1')).world.items);
 ok(Object.keys(saved).length === 1, 'moved item saved ' + JSON.stringify(saved));
+const [mk, mv] = Object.entries(saved)[0];
+await page.waitForTimeout(500);
+const left = await page.$eval(`.scene-item[data-emoji="${mk}"]`, (n) => n.style.left);
+ok(left === `${mv.x}%`, `friend stays where it was dropped (${left})`);
+await page.reload(); await page.waitForSelector('.scene');
+ok(await page.$eval(`.scene-item[data-emoji="${mk}"]`, (n) => n.style.left) === `${mv.x}%`, 'still there after reload');
+await page.click(`.scene-item[data-emoji="${mk}"]`, { force: true }); // tap to pick it
 await page.click('.tool-btn[aria-label="Bigger"]');
 await page.click('.tool-btn[aria-label="Put away"]');
 ok((await page.$$('.tray .sticker')).length === 1, 'put away goes to tray');

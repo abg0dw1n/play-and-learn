@@ -52,5 +52,8 @@ store.set({ stickers: ['🐶', '🐱', '🐰', '🐢'] });
 r = afterFinish({ game, before: ['🐶', '🐱', '🐰'], after: ['🐶', '🐱', '🐰', '🐢'], now: t });
 ok(r.goalReached && store.get().goal.reached, 'goal reached is reported once');
 
+store.reset();
+ok(store.get().world && store.get().world.items && Array.isArray(store.get().decor) && store.get().gifts === 0, 'reset leaves a usable empty world');
+
 console.log(problems ? `\n${problems} problem(s)` : '\nall good');
 process.exit(problems ? 1 : 0);

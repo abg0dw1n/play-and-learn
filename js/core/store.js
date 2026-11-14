@@ -2,7 +2,8 @@
 
 const KEY = 'playlearn:v1';
 // Sound is never remembered: every time the page loads it starts silent, and a grown-up or child turns it on with the bell.
-const defaults = () => ({ name: '', sound: false, stars: 0, games: {}, ttsVoice: 'heart', character: 'bunny' });
+const defaults = () => ({ name: '', sound: false, stars: 0, games: {}, ttsVoice: 'heart', character: 'bunny',
+  shinies: [], decor: [], gifts: 0, giftTick: 0, world: { scene: 'meadow', items: {} } });
 const CHARACTER_IDS = ['bunny', 'fox', 'panda', 'dino', 'owl'];
 
 // Difficulty modes: 0 = First Steps, 1 = Growing Strong (default), 2 = Super Star
@@ -48,7 +49,7 @@ function load() {
   s.daily = d && typeof d === 'object' && /^\d{4}-\d\d-\d\d$/.test(d.day) ? { day: d.day, games: Array.isArray(d.games) ? d.games.filter((g) => typeof g === 'string').slice(0, 20) : [], claimed: d.claimed === true } : undefined;
   const g = s.goal;
   s.goal = g && typeof g === 'object' && Number.isInteger(g.need) && g.need > 0 && g.need <= 200 && Number.isInteger(g.base) && g.base >= 0
-    ? { label: String(g.label || '').slice(0, 40), icon: typeof g.icon === 'string' ? g.icon.slice(0, 8) : '🎁', need: g.need, base: g.base, reached: g.reached === true, celebrated: g.celebrated === true }
+    ? { label: String(g.label || '').slice(0, 40), icon: typeof g.icon === 'string' ? g.icon.slice(0, 8) : '🎁', need: g.need, base: g.base, reached: g.reached === true }
     : undefined;
   return s;
 }

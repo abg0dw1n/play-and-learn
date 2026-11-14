@@ -74,7 +74,7 @@ export async function renderFinish(root, game, nav, { alive = () => true, title,
       giftBtn.addEventListener('click', () => openGiftBox({ onClose: () => { if (!(store.get().gifts > 0)) giftBtn.remove(); } }));
       stage.append(banner('🎁', daily ? 'Daily hunt done! A gift box!' : 'You earned a gift box!', giftBtn));
       lines.push(daily ? 'You did the daily hunt! A gift box for you!' : 'You earned a gift box!');
-    } else if (extra.daily && extra.daily.count === 1) {
+    } else if (extra.daily?.started && !extra.daily.justDone) { // first game today: tell her about the hunt once
       stage.append(banner('🔎', 'Play 2 different games today for a surprise!'));
       lines.push('Play two different games today for a surprise!');
     }

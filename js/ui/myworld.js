@@ -8,14 +8,18 @@ import { guide } from '../core/guide.js';
 import { owned, ownedCommon, ownedRare, STICKERS, RARE } from '../core/stickers.js';
 import { RARE_EMOJIS, rarityOf } from '../core/rare.js';
 import { SETS, setCount, SCENES, sceneById, unlockedScenes, nextScene, decorName, DECOR, BONUS_DECOR } from '../world/data.js';
+import { isLocked } from '../core/lock.js';
 import { buildScene } from '../world/scene.js';
 import { openGiftBox } from '../world/gift.js';
 import { dailyToday, goalProgress, DAILY_NEED } from '../world/progress.js';
 
 const NAMES = Object.fromEntries([...STICKERS, ...RARE.map((r) => [r.emoji, r.name]), ...[...DECOR, ...BONUS_DECOR].map((d) => [d.emoji, d.name])]);
-export const NEW_FRIEND_LINE = 'Look! A new friend!';
+const NEW_FRIEND_LINE = 'Look! A new friend!';
 
-export function renderMyWorld(root, { onHome, onPrint }) {
+let activeStop = null;
+
+export function renderMyWorld(root, opts) {
+  const { onHome, onPrint } = opts;
   const have = owned();
   const st = () => store.get();
   const total = have.length;
@@ -48,9 +52,8 @@ export function renderMyWorld(root, { onHome, onPrint }) {
 
   const mountScene = () => {
     live?.stop();
-    const w = st().world;
     live = buildScene({
-      items: itemList(), world: w, sceneId, newest,
+      items: itemList(), layout: () => st().world.items, sceneId, newest,
       onTap: (it) => { speak(it.name); say(it.name); },
       onMove: (e, pos) => saveItem(e, pos),
       onSelect: () => drawEdit(),
@@ -75,8 +78,9 @@ export function renderMyWorld(root, { onHome, onPrint }) {
   const drawTools = () => {
     const gifts = st().gifts || 0;
     const gift = el('button', { class: `tool-btn gift-btn${gifts ? ' has' : ''}`, 'aria-label': `Gift boxes: ${gifts}`, disabled: gifts ? null : true }, '🎁', el('small', {}, gifts ? `${gifts} to open` : 'none yet'));
-    gift.addEventListener('click', () => openGiftBox({ onClose: () => { drawTools(); drawPlaces(); mountScene(); drawAll(); drawEdit(); } }));
-    const print = onPrint && el('button', { class: 'tool-btn', 'aria-label': 'Print my world poster', onclick: onPrint }, '🖨️', el('small', {}, 'Poster'));
+    // A gift can add a sticker, a decoration or a new place, so redraw the whole page afterwards.
+    gift.addEventListener('click', () => openGiftBox({ onClose: () => { live?.stop(); renderMyWorld(root, opts); } }));
+    const print = onPrint && !isLocked() && el('button', { class: 'tool-btn', 'aria-label': 'Print my world poster', onclick: onPrint }, '🖨️', el('small', {}, 'Poster'));
     const reset = el('button', { class: 'tool-btn', 'aria-label': 'Tidy up my world' }, '🧹', el('small', {}, 'Tidy up'));
     reset.addEventListener('click', () => { sfx.tap(); store.set({ world: { ...st().world, items: {} } }); mountScene(); drawEdit(); speak('All tidy!'); say('All tidy!'); });
     toolsHost.replaceChildren(gift, reset, print);
@@ -179,6 +183,8 @@ export function renderMyWorld(root, { onHome, onPrint }) {
     speak([NEW_FRIEND_LINE, name]);
     const item = sceneHost.querySelector('.newest');
     setTimeout(() => item && burstAt(item, 50), 1200);
+    newest = null; // only the first time: moving things around later shouldn't replay the arrival
   }
-  return () => live?.stop();
+  activeStop = () => live?.stop();
+  return () => activeStop?.();
 }

@@ -26,7 +26,7 @@ export const hasPin = () => !!store.get().pinHash;
 export const isLocked = () => !!store.get().locked && hasPin();
 export const screenAllowed = (page) => !isLocked() || ALLOWED.includes(page || '');
 
-export async function setPin(pin) {
+async function setPin(pin) {
   const salt = hex(crypto.getRandomValues(new Uint8Array(16)));
   store.set({ pinSalt: salt, pinHash: await hashPin(pin, salt), pinFails: 0, pinWaitUntil: 0 });
 }
@@ -44,7 +44,7 @@ async function checkPin(pin) {
 }
 
 /** A number pad in a dialog. Resolves with the digits, or null if cancelled. `check(pin)` may return an error message to keep it open. */
-export function askPin(title, { note = '', check } = {}) {
+function askPin(title, { note = '', check } = {}) {
   return new Promise((resolve) => {
     let digits = '';
     let busy = false;
@@ -78,7 +78,7 @@ export function askPin(title, { note = '', check } = {}) {
 }
 
 /** Ask for a new PIN twice. Resolves with it, or null if cancelled. */
-export async function chooseNewPin() {
+async function chooseNewPin() {
   for (;;) {
     const a = await askPin(`Choose a ${PIN_LEN}-number PIN`, { note: 'Only grown-ups should know it.' });
     if (!a) return null;

@@ -49,7 +49,7 @@ export function afterFinish({ game, before, after, now = new Date() }) {
   const games = daily.games.includes(game.id) ? daily.games : [...daily.games, game.id];
   let claimed = daily.claimed;
   if (games.length >= DAILY_NEED && !claimed) { claimed = true; gifts++; out.gifts++; out.giftFrom.push('daily'); }
-  out.daily = { count: Math.min(games.length, DAILY_NEED), need: DAILY_NEED, justDone: out.giftFrom.includes('daily') };
+  out.daily = { count: Math.min(games.length, DAILY_NEED), need: DAILY_NEED, justDone: out.giftFrom.includes('daily'), started: daily.games.length === 0 };
 
   const patch = { gifts: Math.min(gifts, 99), giftTick: tick, daily: { day: daily.day, games, claimed } };
   if (out.set) addDecor(out.set.bonus.emoji);
@@ -81,7 +81,7 @@ export function chooseGiftPrize({ commons, have, decor, shinies }, rng = Math.ra
 /** A grown-up's reward goal: "N more stickers for <label>". */
 export function setGoal({ label, icon, need }) {
   const total = (store.get().stickers || []).length;
-  store.set({ goal: { label: String(label).trim().slice(0, 40), icon: icon || '🎁', need: Math.max(1, Math.min(200, Math.round(need))), base: total, reached: false, celebrated: false } });
+  store.set({ goal: { label: String(label).trim().slice(0, 40), icon: icon || '🎁', need: Math.max(1, Math.min(200, Math.round(need))), base: total, reached: false } });
 }
 export const clearGoal = () => store.set({ goal: undefined });
 export function goalProgress() {

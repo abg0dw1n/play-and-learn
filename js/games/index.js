@@ -15,7 +15,6 @@ import sounds from './sounds.js';
 export const games = [spell, read, sight, story, addsub, compare, weight, tictactoe, memory, pop, sounds];
 
 // Shown greyed-out on the home screen until they're built. (My Worksheets is a real tile now.)
-export const comingSoon = [];
 
 // The home screen shows these "worlds"; each one opens a page with its games.
 export const worlds = [

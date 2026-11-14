@@ -35,7 +35,7 @@
 
 /* ---- friends: idle motion (on the inner emoji so position stays put) ---- */
 .scene-item .emo { display: block; scale: var(--flip, 1) 1; transform-origin: 50% 80%; }
-.scene-item { touch-action: none; }
+.scene-item { touch-action: none; -webkit-user-select: none; user-select: none; -webkit-touch-callout: none; }
 .idle-bob { animation: w-bob 3.2s ease-in-out infinite; }
 .idle-hop { animation: w-hop 2.6s ease-in-out infinite; }
 .idle-sway { animation: w-sway 3.6s ease-in-out infinite; }

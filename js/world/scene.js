@@ -19,16 +19,17 @@ export const defaultSpot = (emoji) => (SKY.has(emoji)
   : { x: 6 + hash(emoji, 3) * 88, y: 54 + hash(emoji, 4) * 38 });
 export const baseSize = (emoji, y) => (SKY.has(emoji) ? 9 : 7.5 + ((y - 52) / 40) * 6);
 
-/** items: [{ emoji, name, shiny, rarity }]. world: { scene, items }. opts.edit lets friends be dragged.
+/** items: [{ emoji, name, shiny, rarity }]. layout(): the saved { emoji: { x, y, s, f, away } }, read fresh each time
+    so a friend stays where she dropped it. Tap = react, drag = move.
     Returns { node, select(emoji|null), refresh(emoji), stop() }. */
-export function buildScene({ items, world, sceneId, newest = null, onTap, onMove, onSelect, onPip, now = new Date() }) {
+export function buildScene({ items, layout, sceneId, newest = null, onTap, onMove, onSelect, onPip, now = new Date() }) {
   const night = sceneId === 'space' ? 'night' : phaseOf(now);
   const nodes = new Map();
   let selected = null;
   const timers = [];
 
   const place = (it, node) => {
-    const saved = world.items[it.emoji] || {};
+    const saved = layout()[it.emoji] || {};
     const d = defaultSpot(it.emoji);
     const x = saved.x ?? d.x, y = saved.y ?? d.y, s = saved.s ?? 1;
     node.style.left = `${x}%`; node.style.top = `${y}%`;
@@ -56,27 +57,32 @@ export function buildScene({ items, world, sceneId, newest = null, onTap, onMove
       const x = Math.max(3, Math.min(97, ((e.clientX - drag.r.left) / drag.r.width) * 100));
       const y = Math.max(5, Math.min(95, ((e.clientY - drag.r.top) / drag.r.height) * 100));
       node.style.left = `${x}%`; node.style.top = `${y}%`; node.style.zIndex = '999';
-      node.firstChild.style.fontSize = '';
       drag.x = x; drag.y = y;
     });
+    const react = () => {
+      for (const c of ['jump', 'spin', 'grow', 'shake', 'zoom', 'wiggle']) emo.classList.remove(`tap-${c}`);
+      void emo.offsetWidth;
+      emo.classList.add(`tap-${beh.tap}`);
+      sfx.critter(beh.sound);
+      api.select(api.selected === it.emoji ? null : it.emoji);
+      onTap?.(it, node);
+    };
     const end = (cancel) => {
       if (!drag) return;
       const d = drag; drag = null;
       node.classList.remove('lifted');
-      if (d.moved) {
+      // Save even when the browser cancels the touch (iPhone can do that mid-drag), so the friend stays put.
+      if (d.moved && d.x != null) {
         onMove?.(it.emoji, { x: Math.round(d.x * 10) / 10, y: Math.round(d.y * 10) / 10 });
         place(it, node); node.classList.add('dropped'); setTimeout(() => node.classList.remove('dropped'), 400);
-      } else if (!cancel) {
-        for (const c of ['jump', 'spin', 'grow', 'shake', 'zoom', 'wiggle']) emo.classList.remove(`tap-${c}`);
-        void emo.offsetWidth;
-        emo.classList.add(`tap-${beh.tap}`);
-        sfx.critter(beh.sound);
-        api.select(api.selected === it.emoji ? null : it.emoji);
-        onTap?.(it, node);
-      }
+      } else if (!cancel) react();
     };
+    // Belt and braces for iPhone: never let a finger on a friend scroll the page or start a text selection.
+    node.addEventListener('touchmove', (e) => e.preventDefault(), { passive: false });
     node.addEventListener('pointerup', () => end(false));
     node.addEventListener('pointercancel', () => end(true));
+    node.addEventListener('lostpointercapture', () => end(true));
+    node.addEventListener('click', (e) => { if (e.detail === 0) react(); }); // keyboard (Enter / Space)
     return node;
   };
 
@@ -95,7 +101,7 @@ export function buildScene({ items, world, sceneId, newest = null, onTap, onMove
   const rainbow = el('div', { class: 'scene-rainbow' });
   const box = el('div', { class: `scene scene-${sceneId} phase-${night}`, role: 'group', 'aria-label': 'Your world' },
     sky, el('div', { class: 'scene-hill back' }), el('div', { class: 'scene-hill front' }), rainbow, rain,
-    items.filter((i) => !(world.items[i.emoji] || {}).away).map(makeItem), pip);
+    items.filter((i) => !(layout()[i.emoji] || {}).away).map(makeItem), pip);
   box.addEventListener('pointerdown', (e) => { if (e.target === box || e.target.classList.contains('scene-hill') || e.target.classList.contains('scene-sky')) api.select(null); });
 
   // Light rain, then a rainbow (never at night, in space, or when motion is reduced).
