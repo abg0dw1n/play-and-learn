@@ -5,7 +5,7 @@ import { store } from '../core/store.js';
 import { speak, soundToggle } from '../core/voice.js';
 import { sfx } from '../core/sfx.js';
 import { burstAt } from '../core/confetti.js';
-import { guide, applyHat } from '../core/guide.js';
+import { guide, applyHat, CHARACTERS } from '../core/guide.js';
 import { owned, ownedCommon, ownedRare, STICKERS, RARE } from '../core/stickers.js';
 import { RARE_EMOJIS, rarityOf } from '../core/rare.js';
 import { SETS, setCount, SCENES, unlockedScenes, nextScene, decorName, DECOR, BONUS_DECOR } from '../world/data.js';
@@ -162,7 +162,14 @@ export function renderMyWorld(root, opts) {
       speak(name); root.querySelectorAll('.wear-btn').forEach((b) => b.classList.toggle('on', b.dataset.hat === String(id)));
     };
     const btn = (id, emoji, name) => { const b = el('button', { class: `wear-btn${st().hat === id ? ' on' : ''}`, 'aria-label': name, 'data-hat': String(id) }, emoji); b.addEventListener('click', () => wear(id, name)); return b; };
-    return el('div', { class: 'panel' }, el('h3', {}, `👗 Pip's wardrobe  ${mine.length} / ${HATS.length}`),
+    // She picks which friend Pip is (also in Grown-ups).
+    const pick = (c) => {
+      const b = el('button', { class: `char-pick${st().character === c.id ? ' on' : ''}`, 'aria-label': c.name }, guide('happy', 52, '', c.id));
+      b.addEventListener('click', () => { if (st().character === c.id) return; store.set({ character: c.id }); sfx.yes(); speak(c.name); rerender(); });
+      return b;
+    };
+    return el('div', { class: 'panel' }, el('h3', {}, '🐾 Pick your Pip'), el('div', { class: 'char-row' }, CHARACTERS.map(pick)),
+      el('h3', {}, `👗 Pip's wardrobe  ${mine.length} / ${HATS.length}`),
       el('div', { class: 'wear-row' }, btn(null, '🙂', 'No hat'), mine.map((h) => btn(h.id, h.emoji, h.name)),
         HATS.filter((h) => !mine.includes(h)).map(() => {
           const b = el('button', { class: 'wear-btn locked', 'aria-label': 'Not found yet' }, '❓');

@@ -5,7 +5,7 @@ const KEY = 'playlearn:v1';
 const defaults = () => ({ name: '', sound: false, stars: 0, games: {}, ttsVoice: 'heart', character: 'bunny',
   shinies: [], decor: [], gifts: 0, giftTick: 0, world: { scene: 'meadow', items: {} },
   secrets: [], hatched: [], eggN: 0, giftsOpened: 0, visited: [], hat: null });
-const CHARACTER_IDS = ['bunny', 'fox', 'panda', 'dino', 'owl'];
+const CHARACTER_IDS = ['bunny', 'fox', 'panda', 'dino', 'owl', 'kitty', 'puppy', 'unicorn', 'penguin', 'bear', 'koala'];
 
 // Difficulty modes: 0 = First Steps, 1 = Growing Strong (default), 2 = Super Star
 export const DIFFICULTY_NAMES = ['First Steps', 'Growing Strong', 'Super Star'];

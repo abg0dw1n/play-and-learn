@@ -41,7 +41,7 @@ Everything that isn't for her (name, challenge level, look, Sound Check, My Work
 press and hold the button at the bottom of the home screen.
 
 ## Looks
-Pick a look in the Grown-ups corner. It switches the whole site's look (7 themes in `js/core/themes.js`: colors, a soft background pattern, Pip's color; default Rainbow Party). Saved per device. Add a theme by adding an entry to `THEMES`. New spoken lines (Pip's greetings, sticker names) are in `tools/ui-lines.json`; make their clips with `tools/tts.py` like the others.
+Pick a look in the Grown-ups corner. Pip can be one of 11 friends (bunny, fox, panda, dino, owl, kitty, puppy, unicorn, penguin, bear, koala), picked in Grown-ups or by her in My World. It switches the whole site's look (7 themes in `js/core/themes.js`: colors, a soft background pattern, Pip's color; default Rainbow Party). Saved per device. Add a theme by adding an entry to `THEMES`. New spoken lines (Pip's greetings, sticker names) are in `tools/ui-lines.json`; make their clips with `tools/tts.py` like the others.
 
 ## Print & Color
 Home → **Print & Color**: color by number / word / sum, mazes, word searches and dot-to-dots. Every page is random and sized for

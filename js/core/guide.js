@@ -18,6 +18,12 @@ export const CHARACTERS = [
   { id: 'panda', name: 'Panda', emoji: '🐼', colors: { pip: '#f7f7f9', light: '#ffffff', dark: '#d8d8de' } },
   { id: 'dino', name: 'Dino', emoji: '🦕', colors: { pip: '#5fd38d', light: '#bdf3d4', dark: '#3aa368' } },
   { id: 'owl', name: 'Owl', emoji: '🦉', colors: { pip: '#cf9f5f', light: '#f2ddb6', dark: '#a3773f' } },
+  { id: 'kitty', name: 'Kitty', emoji: '🐱', colors: { pip: '#ffb3d1', light: '#ffe6f0', dark: '#ee8bb4' } },
+  { id: 'puppy', name: 'Puppy', emoji: '🐶', colors: { pip: '#e3ad72', light: '#f8e2c4', dark: '#b8824a' } },
+  { id: 'unicorn', name: 'Unicorn', emoji: '🦄', colors: { pip: '#fbf6ff', light: '#ffffff', dark: '#ddd0f2' } },
+  { id: 'penguin', name: 'Penguin', emoji: '🐧', colors: { pip: '#3e4c70', light: '#ffffff', dark: '#2b3552' } },
+  { id: 'bear', name: 'Bear', emoji: '🐻', colors: { pip: '#b57d4c', light: '#ecd0ab', dark: '#8c5c33' } },
+  { id: 'koala', name: 'Koala', emoji: '🐨', colors: { pip: '#a9afba', light: '#eceef3', dark: '#7f8694' } },
 ];
 const byId = Object.fromEntries(CHARACTERS.map((c) => [c.id, c]));
 
@@ -63,6 +69,29 @@ function headDecor(id, pose) {
   if (id === 'owl') {
     return '<path d="M50 44 L38 8 L66 30 Z" fill="var(--pip)"/><path d="M110 44 L122 8 L94 30 Z" fill="var(--pip)"/>';
   }
+  if (id === 'kitty') {
+    return '<path d="M38 52 L32 8 L70 34 Z" fill="var(--pip)"/><path d="M42 46 L39 20 L60 34 Z" fill="#ff86b6"/>'
+      + '<path d="M122 52 L128 8 L90 34 Z" fill="var(--pip)"/><path d="M118 46 L121 20 L100 34 Z" fill="#ff86b6"/>';
+  }
+  if (id === 'puppy') { // floppy ears hanging at the sides
+    return '<ellipse cx="30" cy="80" rx="17" ry="36" transform="rotate(18 30 80)" fill="var(--pip-dark)"/>'
+      + '<ellipse cx="130" cy="80" rx="17" ry="36" transform="rotate(-18 130 80)" fill="var(--pip-dark)"/>';
+  }
+  if (id === 'unicorn') { // rainbow mane, little ears and a golden horn
+    return '<circle cx="34" cy="62" r="14" fill="#ff8fb1"/><circle cx="38" cy="40" r="14" fill="#ffd23f"/><circle cx="54" cy="24" r="14" fill="#7ed957"/><circle cx="74" cy="18" r="13" fill="#4d96ff"/><circle cx="126" cy="62" r="12" fill="#b388ff"/>'
+      + '<path d="M50 50 L46 20 L68 38 Z" fill="var(--pip)"/><path d="M110 50 L114 20 L92 38 Z" fill="var(--pip)"/>'
+      + '<path d="M80 -6 L70 40 L90 40 Z" fill="#ffd23f" stroke="#e0a800" stroke-width="2" stroke-linejoin="round"/>'
+      + '<path d="M74 26 L86 20 M72 34 L88 28 M77 14 L84 10" stroke="#e0a800" stroke-width="2"/>';
+  }
+  if (id === 'bear') {
+    return '<circle cx="40" cy="44" r="20" fill="var(--pip)"/><circle cx="40" cy="44" r="10" fill="var(--pip-light)"/>'
+      + '<circle cx="120" cy="44" r="20" fill="var(--pip)"/><circle cx="120" cy="44" r="10" fill="var(--pip-light)"/>';
+  }
+  if (id === 'koala') { // big fluffy ears
+    return '<circle cx="34" cy="56" r="28" fill="var(--pip)"/><circle cx="34" cy="58" r="16" fill="var(--pip-light)"/>'
+      + '<circle cx="126" cy="56" r="28" fill="var(--pip)"/><circle cx="126" cy="58" r="16" fill="var(--pip-light)"/>';
+  }
+  if (id === 'penguin') return '';
   // bunny: long floppy ears; one tilts back for the "think" pose.
   const leftEar = pose === 'think'
     ? '<ellipse cx="46" cy="34" rx="14" ry="38" transform="rotate(-34 46 34)" fill="var(--pip)"/><ellipse cx="46" cy="36" rx="7" ry="26" transform="rotate(-34 46 36)" fill="#ffc4dd"/>'
@@ -74,6 +103,12 @@ function headDecor(id, pose) {
 function faceDecor(id) {
   if (id === 'panda') return '<ellipse cx="62" cy="92" rx="15" ry="19" fill="#2b2b2b" opacity=".9"/><ellipse cx="98" cy="92" rx="15" ry="19" fill="#2b2b2b" opacity=".9"/>';
   if (id === 'fox') return '<ellipse cx="80" cy="104" rx="30" ry="22" fill="#fff6ec" opacity=".85"/>';
+  if (id === 'penguin') return '<path d="M80 52 C52 52 34 74 36 100 C38 122 58 132 80 132 C102 132 122 122 124 100 C126 74 108 52 80 52 Z" fill="#ffffff"/>';
+  if (id === 'kitty') {
+    return `<g stroke="${INK}" stroke-width="2.4" stroke-linecap="round" opacity=".7"><path d="M42 96 L20 90"/><path d="M42 102 L20 104"/><path d="M118 96 L140 90"/><path d="M118 102 L140 104"/></g>`;
+  }
+  if (id === 'puppy') return '<ellipse cx="100" cy="84" rx="17" ry="19" fill="var(--pip-dark)" opacity=".55"/>';
+  if (id === 'bear') return '<ellipse cx="80" cy="104" rx="24" ry="17" fill="var(--pip-light)"/>';
   return '';
 }
 
@@ -81,6 +116,11 @@ function noseFor(id) {
   if (id === 'owl') return '<path d="M71 90 L80 110 L89 90 Z" fill="#e8872a" stroke="#c96c18" stroke-width="1.5" stroke-linejoin="round"/>';
   if (id === 'fox' || id === 'panda') return '<ellipse cx="80" cy="98" rx="5" ry="3.6" fill="#2b2b2b"/>';
   if (id === 'dino') return '<ellipse cx="80" cy="98" rx="5.5" ry="4" fill="#2f6b4d"/>';
+  if (id === 'penguin') return '<path d="M70 96 L90 96 L80 110 Z" fill="#ff9f1c" stroke="#d97a00" stroke-width="1.5" stroke-linejoin="round"/>';
+  if (id === 'koala') return '<ellipse cx="80" cy="98" rx="10" ry="12" fill="#3a3a44"/>';
+  if (id === 'puppy' || id === 'bear') return '<ellipse cx="80" cy="97" rx="7" ry="5" fill="#2b2b2b"/>';
+  if (id === 'kitty') return '<path d="M75 95 L85 95 L80 101 Z" fill="#ff6fa3"/>';
+  if (id === 'unicorn') return '<ellipse cx="80" cy="99" rx="4.5" ry="3.2" fill="#ff8fb1"/>';
   return '<ellipse cx="80" cy="98" rx="5.5" ry="4" fill="#ff6fa3"/>'; // bunny
 }
 
