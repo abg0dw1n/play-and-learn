@@ -2,6 +2,7 @@
 // that prints on Letter or A4. Everything is random, so "New one" is always different.
 // Pure functions (no page access) so they can be tested in Node.
 import { WORDS3, WORDS4, WORDS5 } from '../data/reading.js';
+import { ART, rasterize } from './art.js';
 
 const rand = (n) => Math.floor(Math.random() * n);
 const pick = (a) => a[rand(a.length)];
@@ -26,7 +27,7 @@ ${body}
 
 export const COLORS = {
   red: '#e63946', pink: '#ff8fb1', yellow: '#ffd23f', orange: '#ff9f1c', green: '#43b05c', blue: '#4d96ff',
-  brown: '#8d5a35', purple: '#8e5bd9', black: '#333333', grey: '#9aa0ad', tan: '#e6c48f',
+  brown: '#8d5a35', purple: '#8e5bd9', black: '#333333', grey: '#9aa0ad', tan: '#e6c48f', 'light blue': '#9fd8ff',
 };
 
 // '.' = empty, digits = which colour of the picture's palette. All grids are 12 x 12.
@@ -57,6 +58,9 @@ export const PICTURES = [
     '111111111111', '.1111111111.', '.1111111111.', '..11111111..', '...111111...', '............'] },
 ].map((p) => ({ ...p, grid: p.grid.map((r) => r.slice(0, 12).padEnd(12, '.')) }));
 
+// Harder words for Super Star (still short enough to fit in a square).
+const SIGHT_HARD = ['every', 'after', 'again', 'could', 'would', 'their', 'which', 'about', 'many', 'some', 'very', 'from', 'were',
+  'your', 'them', 'then', 'when', 'once', 'goes', 'does', 'only', 'other'];
 const SIGHT = ['the', 'and', 'said', 'was', 'you', 'they', 'have', 'with', 'come', 'like', 'look', 'want', 'went', 'what', 'here',
   'where', 'there', 'when', 'good', 'help', 'jump', 'play', 'see', 'little'].filter((w) => w.length <= 5);
 
@@ -69,13 +73,17 @@ function sumFor(n, mix) {
 }
 
 /** mode: 'number' | 'word' | 'sum'.  diff: 0 | 1 | 2 (First Steps / Growing Strong / Super Star) */
-export function colorSheet(mode, diff = 1, pic = pick(PICTURES)) {
+export function colorSheet(mode, diff = 1, pic) {
+  // First Steps: the small 12 x 12 pictures. Growing Strong and up: detailed pictures where every square
+  // (background too) gets a color, with more colors; Super Star color-by-number uses an even finer grid.
+  if (!pic) pic = diff === 0 || mode === 'sum' ? pick(PICTURES) : rasterize(pick(ART), mode === 'number' && diff === 2 ? 20 : 16);
+  const n = pic.grid.length;
   const codes = Object.keys(pic.palette);
   // What each colour is called on the page.
   let tag; // code -> a function that makes a label for a cell
   let keyText;
   if (mode === 'word') {
-    const words = shuffle(SIGHT).slice(0, codes.length);
+    const words = shuffle(diff === 2 ? SIGHT_HARD : SIGHT).slice(0, codes.length);
     tag = Object.fromEntries(codes.map((c, i) => [c, () => words[i]]));
     keyText = Object.fromEntries(codes.map((c, i) => [c, words[i]]));
   } else if (mode === 'sum') {
@@ -88,23 +96,25 @@ export function colorSheet(mode, diff = 1, pic = pick(PICTURES)) {
     keyText = Object.fromEntries(codes.map((c) => [c, c]));
   }
 
-  const cell = 52, x0 = (W - 12 * cell) / 2, y0 = 135;
+  const cell = Math.min(52, Math.floor(640 / n)), x0 = (W - n * cell) / 2, y0 = 135;
+  const fit = cell / 52; // labels shrink with the squares
   let grid = '';
   pic.grid.forEach((row, r) => [...row].forEach((ch, c) => {
     if (ch === '.') return;
     const label = tag[ch]();
-    const size = mode === 'number' ? 26 : mode === 'sum' ? 16 : label.length <= 3 ? 18 : label.length === 4 ? 16 : 14;
+    const size = Math.round((mode === 'number' ? 26 : mode === 'sum' ? 16 : label.length <= 3 ? 18 : label.length === 4 ? 16 : 14) * Math.max(fit, 0.62));
     const x = x0 + c * cell, y = y0 + r * cell;
     grid += `<g data-code="${ch}"><rect class="cell" x="${x}" y="${y}" width="${cell}" height="${cell}" fill="#fff" stroke="#2b2d42" stroke-width="1.5"/>`
       + `<text x="${x + cell / 2}" y="${y + cell / 2 + size * 0.35}" text-anchor="middle" font-size="${size}" font-weight="700" fill="#2b2d42" pointer-events="none">${esc(label)}</text></g>`;
   }));
 
-  const n = codes.length, gap = 120, kx0 = (W - (n - 1) * gap) / 2;
+  const k = codes.length, gap = Math.min(120, Math.floor(690 / k)), kx0 = (W - (k - 1) * gap) / 2, ky = y0 + n * cell;
+  const r = Math.min(30, gap / 2 - 6);
   const key = codes.map((c, i) => {
     const cx = kx0 + i * gap, name = pic.palette[c];
-    return `<g class="key" data-key="${c}" data-color="${COLORS[name]}"><text x="${cx}" y="${y0 + 12 * cell + 62}" text-anchor="middle" font-size="${mode === 'number' ? 34 : 30}" font-weight="700" fill="#2b2d42">${esc(keyText[c])}</text>`
-      + `<circle class="swatch" cx="${cx}" cy="${y0 + 12 * cell + 112}" r="30" fill="${COLORS[name]}" stroke="#2b2d42" stroke-width="3"/>`
-      + `<text x="${cx}" y="${y0 + 12 * cell + 168}" text-anchor="middle" font-size="18" fill="#5c6078">${name}</text></g>`;
+    return `<g class="key" data-key="${c}" data-color="${COLORS[name]}"><text x="${cx}" y="${ky + 50}" text-anchor="middle" font-size="${k > 6 ? 24 : mode === 'number' ? 34 : 30}" font-weight="700" fill="#2b2d42">${esc(keyText[c])}</text>`
+      + `<circle class="swatch" cx="${cx}" cy="${ky + 50 + r + 14}" r="${r}" fill="${COLORS[name]}" stroke="#2b2d42" stroke-width="3"/>`
+      + `<text x="${cx}" y="${ky + 50 + 2 * r + 38}" text-anchor="middle" font-size="${k > 6 ? 14 : 18}" fill="#5c6078">${name}</text></g>`;
   }).join('');
 
   const titles = { number: ['Color by Number', 'Match the number to the color!'], word: ['Color by Word', 'Read the word. Color the box!'], sum: ['Color by Sum', 'Solve it. Color the box!'] };

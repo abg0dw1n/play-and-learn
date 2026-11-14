@@ -64,7 +64,7 @@ function headDecor(id, pose) {
     return '<circle cx="42" cy="34" r="22" fill="#2b2b2b"/><circle cx="118" cy="34" r="22" fill="#2b2b2b"/>';
   }
   if (id === 'dino') {
-    return '<path d="M52 14 L60 -4 L68 14 Z" fill="var(--pip-dark)"/><path d="M68 10 L76 -8 L84 10 Z" fill="var(--pip-dark)"/><path d="M84 14 L92 -4 L100 14 Z" fill="var(--pip-dark)"/>';
+    return '<path d="M50 52 L60 24 L70 50 Z" fill="var(--pip-dark)"/><path d="M68 48 L80 18 L92 48 Z" fill="var(--pip-dark)"/><path d="M90 50 L100 24 L110 52 Z" fill="var(--pip-dark)"/>';
   }
   if (id === 'owl') {
     return '<path d="M50 44 L38 8 L66 30 Z" fill="var(--pip)"/><path d="M110 44 L122 8 L94 30 Z" fill="var(--pip)"/>';

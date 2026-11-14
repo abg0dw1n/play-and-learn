@@ -47,7 +47,10 @@ Pick a look in the Grown-ups corner. Pip can be one of 11 friends (bunny, fox, p
 Home → **Print & Color**: color by number / word / sum, mazes, word searches and dot-to-dots. Every page is random and sized for
 one Letter or A4 sheet (Print button → phone's print menu). The color-by pages can also be colored on screen. Difficulty follows
 the home-screen setting. Code: `js/print/sheets.js` (page makers, pure functions) and `js/print/shop.js` (screens).
-Add a picture by adding a 12×12 grid to `PICTURES`.
+First Steps uses the small 12×12 pictures in `PICTURES`. Growing Strong and up use the detailed pictures in `js/print/art.js`
+(drawn from shapes, every square colored including the background, 5–9 colors): 16×16, and 20×20 for Super Star color by number;
+Super Star color by word uses harder words. **Coloring pages** (`js/print/pip-pages.js`): each Pip friend as an outline in a meadow,
+beach, space or snow scene ("New one" changes the scene); color on screen with crayons, or print.
 
 ## My Worksheets (grown-ups)
 Parents add photos, scans or PDFs of her school sheets and see them on any device. Home → **My Worksheets** (🔒) →

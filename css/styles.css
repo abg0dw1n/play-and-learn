@@ -662,3 +662,7 @@ body.locked { overscroll-behavior: none; -webkit-user-select: none; user-select:
   border: 6px solid #a56bff; box-shadow: 0 0 30px rgba(165,107,255,.8); }
 .rare-sticker.legendary .rare-emoji { border-color: #ffb400; box-shadow: 0 0 40px rgba(255,190,0,1); animation: shimmer 1.6s ease-in-out infinite; }
 .rare-name { font-size: 1.6rem; font-weight: 700; text-transform: capitalize; }
+/* free coloring crayons */
+.crayons { display: flex; flex-wrap: wrap; gap: 8px; justify-content: center; margin: 6px auto 10px; max-width: 640px; }
+.crayon { width: 44px; height: 44px; border-radius: 50%; border: 3px solid #2b2d42; background: var(--c); box-shadow: 0 3px 0 rgba(0,0,0,.18); }
+.crayon.on { transform: scale(1.18); box-shadow: 0 0 0 4px #ffd93d, 0 3px 0 rgba(0,0,0,.18); }

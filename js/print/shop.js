@@ -5,8 +5,9 @@ import { store } from '../core/store.js';
 import { sfx } from '../core/sfx.js';
 import { soundToggle } from '../core/voice.js';
 import { burst } from '../core/confetti.js';
-import { SHEETS } from './sheets.js';
+import { SHEETS, COLORS } from './sheets.js';
 import { PRACTICE } from './practice.js';
+import { PIP_PAGES } from './pip-pages.js';
 
 const isStandalone = () => window.navigator.standalone === true || window.matchMedia?.('(display-mode: standalone)').matches;
 
@@ -70,17 +71,20 @@ export function renderPrintShop(root, { onHome }) {
       grid(PRACTICE, '#4d96ff'),
       el('h3', { class: 'pr-group pr-ui' }, '🎨 Fun pages'),
       grid(SHEETS, '#ff7aa8'),
+      el('h3', { class: 'pr-group pr-ui' }, '🖍️ Coloring pages'),
+      grid(PIP_PAGES, '#ffb400'),
       el('h3', { class: 'pr-group pr-ui' }, '🌈 My World'),
       grid(WORLD_SHEETS, '#43b05c'));
   }
 
   function show(sheet) {
     const made = sheet.make(diff);
+    const crayons = el('div', { class: 'crayons pr-ui' });
     root.innerHTML = '';
     const holder = el('div', { class: 'pr-sheet' });
     holder.innerHTML = made.svg;
     const svg = holder.querySelector('svg');
-    const defaultNote = made.interactive ? 'Tap a color, then tap the boxes to color them!' : 'Tap Print to send it to a printer.';
+    const defaultNote = made.interactive ? 'Tap a color, then tap the boxes to color them!' : made.free ? 'Pick a crayon, then tap a part of the picture. Or print it!' : 'Tap Print to send it to a printer.';
     const note = el('p', { class: 'pr-note pr-ui' }, defaultNote);
     let showingKey = false;
     const keyBtn = made.answerSvg && el('button', { class: 'big-btn home', onclick: () => {
@@ -92,12 +96,13 @@ export function renderPrintShop(root, { onHome }) {
         el('button', { class: 'icon-btn', 'aria-label': 'Back', onclick: menu }, '⬅️'),
         el('h2', { class: 'ws-title' }, sheet.title),
         soundToggle()),
-      note, holder,
+      note, ...(made.free ? [crayons] : []), holder,
       el('div', { class: 'pr-actions pr-ui' },
         el('button', { class: 'big-btn', onclick: () => printSheet(holder.querySelector('svg'), sheet.title, (t) => { note.textContent = t || defaultNote; }) }, '🖨️ Print'),
         el('button', { class: 'big-btn home', onclick: () => { sfx.tap(); show(sheet); } }, '🔄 New one'),
         keyBtn));
     if (made.interactive) colorOnScreen(svg, note);
+    if (made.free) freeColor(svg, crayons);
   }
 
   menu();
@@ -105,6 +110,23 @@ export function renderPrintShop(root, { onHome }) {
 }
 
 /* Color-by sheets: pick a crayon (the circles at the bottom), then tap boxes with that number/word/sum. */
+/** Free coloring: pick any crayon, tap any part of the picture (tap again with white to erase). */
+function freeColor(svg, crayons) {
+  const list = [...Object.entries(COLORS), ['white', '#ffffff']];
+  let color = list[0][1];
+  const btns = list.map(([name, hex]) => {
+    const b = el('button', { class: 'crayon', 'aria-label': name, style: { '--c': hex } });
+    b.addEventListener('click', () => { color = hex; sfx.tap(); btns.forEach((x) => x.classList.toggle('on', x === b)); });
+    return b;
+  });
+  btns[0].classList.add('on');
+  crayons.replaceChildren(...btns);
+  svg.querySelectorAll('.region').forEach((r) => {
+    r.style.cursor = 'pointer';
+    r.addEventListener('click', () => { r.setAttribute('fill', color); sfx.tap(); });
+  });
+}
+
 function colorOnScreen(svg, note) {
   const keys = [...svg.querySelectorAll('.key')];
   const cells = [...svg.querySelectorAll('g[data-code]')];
