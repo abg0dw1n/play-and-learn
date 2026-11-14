@@ -128,9 +128,9 @@
 .bar-note { margin-top: 6px; font-weight: 600; display: flex; justify-content: space-between; gap: 8px; }
 .trail { display: flex; align-items: center; gap: 6px; font-size: 1.8rem; }
 .trail .bar { flex: 1; }
-.pips { display: flex; gap: 8px; font-size: 2rem; }
-.pips span { opacity: .3; filter: grayscale(1); }
-.pips span.on { opacity: 1; filter: none; }
+.hunt-pips { display: flex; gap: 8px; font-size: 2rem; }
+.hunt-pips span { opacity: .3; filter: grayscale(1); }
+.hunt-pips span.on { opacity: 1; filter: none; }
 
 /* collections */
 .set { background: rgba(255,255,255,.82); border-radius: 22px; padding: 12px 14px; margin: 12px 0; color: var(--ink); }
@@ -149,7 +149,7 @@
 @keyframes pack-wobble { 0%, 100% { transform: rotate(-4deg); } 50% { transform: rotate(4deg) scale(1.05); } }
 .pack.opening { animation: pack-open .6s ease-in forwards; }
 @keyframes pack-open { 50% { transform: scale(1.25) rotate(8deg); } 100% { transform: scale(0); opacity: 0; } }
-.reveal { animation: pop .7s cubic-bezier(.2,1.5,.4,1) both; }
+.sticker-reveal { animation: pop .7s cubic-bezier(.2,1.5,.4,1) both; }
 .new-sticker.shiny-reveal .sticker-big { border: 5px solid #ffd54a; box-shadow: 0 0 40px rgba(255, 190, 40, 1); animation: shimmer 1.6s ease-in-out infinite; }
 .shiny-badge { font-size: 1.5rem; font-weight: 800; color: #d98a00; }
 .banner { display: flex; align-items: center; gap: 12px; margin: 10px auto; padding: 10px 18px; max-width: 460px; border-radius: 22px; background: #fff; box-shadow: 0 5px 0 rgba(0,0,0,.14); font-size: 1.25rem; font-weight: 800; color: var(--ink); animation: pop .6s cubic-bezier(.2,1.5,.4,1) both; }
@@ -169,3 +169,12 @@
 @media (prefers-reduced-motion: reduce) {
   .scene-item .emo, .scene-pip, .scene-cloud, .scene-stars, .pack, .gift-box { animation: none !important; }
 }
+
+/* always-movable friends */
+.scene-item { cursor: grab; }
+.scene-item.lifted { cursor: grabbing; filter: drop-shadow(0 14px 10px rgba(0,0,0,.35)); transform: translate(-50%, -58%) scale(1.15); transition: none; }
+.scene-item.lifted .emo { animation: none !important; }
+.scene-item.dropped .emo { animation: t-jump .4s ease-out !important; }
+.tray { display: flex; flex-wrap: wrap; gap: 8px; justify-content: center; padding: 8px; border-radius: 22px; background: rgba(255,255,255,.7); margin: 8px 0; }
+.tray .sticker { width: 64px; height: 64px; font-size: 2.2rem; }
+.tray-title { text-align: center; font-weight: 700; margin: 4px 0; }

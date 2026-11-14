@@ -40,7 +40,7 @@ function load() {
     for (const [k, v] of Object.entries(w.items).slice(0, 200)) {
       if (!v || typeof v !== 'object' || k.length > 12) continue;
       const num = (n, lo, hi) => (Number.isFinite(n) ? Math.max(lo, Math.min(hi, n)) : undefined);
-      items[k] = { x: num(v.x, 0, 100), y: num(v.y, 0, 100), s: num(v.s, 0.5, 2.5), f: v.f === true };
+      items[k] = { x: num(v.x, 0, 100), y: num(v.y, 0, 100), s: num(v.s, 0.5, 2.5), f: v.f === true, away: v.away === true };
     }
   }
   s.world = { scene: typeof w.scene === 'string' ? w.scene.slice(0, 20) : 'meadow', items };

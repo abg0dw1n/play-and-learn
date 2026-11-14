@@ -55,7 +55,7 @@ export async function renderFinish(root, game, nav, { alive = () => true, title,
         el('div', { class: 'rare-name' }, r.name)));
     }
     stage.append(sticker
-      ? el('div', { class: `new-sticker reveal${shiny ? ' shiny-reveal' : ''}` },
+      ? el('div', { class: `new-sticker sticker-reveal${shiny ? ' shiny-reveal' : ''}` },
         shiny && el('div', { class: 'shiny-badge' }, '✨ SHINY! ✨'),
         el('div', { class: 'sticker-big' }, sticker[0]),
         el('div', { class: 'sticker-label' }, 'New sticker!'))

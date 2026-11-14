@@ -40,12 +40,15 @@ const n = await page.$$eval('.scene-item', (x) => x.length); ok(n >= 8, 'items i
 await page.click('.scene-item >> nth=0', { force: true });
 ok(await page.$eval('.scene-item .emo', (e) => /tap-/.test(e.className) || true), 'tap');
 // decorate
-await page.click('.tool-btn[aria-label="Decorate"]');
 const it = await page.$('.scene-item >> nth=1'); const bb = await it.boundingBox();
 await page.mouse.move(bb.x + bb.width / 2, bb.y + bb.height / 2); await page.mouse.down(); await page.mouse.move(bb.x + 40, bb.y - 60, { steps: 5 }); await page.mouse.up();
 const saved = await page.evaluate(() => JSON.parse(localStorage.getItem('playlearn:v1')).world.items);
 ok(Object.keys(saved).length === 1, 'moved item saved ' + JSON.stringify(saved));
 await page.click('.tool-btn[aria-label="Bigger"]');
+await page.click('.tool-btn[aria-label="Put away"]');
+ok((await page.$$('.tray .sticker')).length === 1, 'put away goes to tray');
+await page.click('.tray .sticker');
+ok((await page.$$('.tray .sticker')).length === 0, 'tray item brought back');
 ok(Object.values(await page.evaluate(() => JSON.parse(localStorage.getItem('playlearn:v1')).world.items))[0].s > 1, 'bigger saved');
 await page.screenshot({ path: process.argv[2] + '/edit.png' });
 // reload keeps layout

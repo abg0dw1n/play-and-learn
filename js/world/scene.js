@@ -21,7 +21,7 @@ export const baseSize = (emoji, y) => (SKY.has(emoji) ? 9 : 7.5 + ((y - 52) / 40
 
 /** items: [{ emoji, name, shiny, rarity }]. world: { scene, items }. opts.edit lets friends be dragged.
     Returns { node, select(emoji|null), refresh(emoji), stop() }. */
-export function buildScene({ items, world, sceneId, edit = false, newest = null, onTap, onMove, onSelect, onPip, now = new Date() }) {
+export function buildScene({ items, world, sceneId, newest = null, onTap, onMove, onSelect, onPip, now = new Date() }) {
   const night = sceneId === 'space' ? 'night' : phaseOf(now);
   const nodes = new Map();
   let selected = null;
@@ -43,35 +43,40 @@ export function buildScene({ items, world, sceneId, edit = false, newest = null,
     const node = el('button', { class: `scene-item${it.shiny ? ' shiny' : ''}${it.rarity ? ` ${it.rarity}` : ''}${it.emoji === newest ? ' newest' : ''}`, 'aria-label': it.name, 'data-emoji': it.emoji }, emo);
     place(it, node);
     nodes.set(it.emoji, node);
+    // One gesture does both: a quick tap makes the friend react, dragging moves it (no special mode needed).
     let drag = null;
-    if (edit) {
-      node.addEventListener('pointerdown', (e) => {
-        const r = box.getBoundingClientRect();
-        drag = { r, moved: false };
-        node.setPointerCapture(e.pointerId);
-        api.select(it.emoji);
-        e.preventDefault();
-      });
-      node.addEventListener('pointermove', (e) => {
-        if (!drag) return;
-        drag.moved = true;
-        const x = Math.max(4, Math.min(96, ((e.clientX - drag.r.left) / drag.r.width) * 100));
-        const y = Math.max(4, Math.min(94, ((e.clientY - drag.r.top) / drag.r.height) * 100));
-        node.style.left = `${x}%`; node.style.top = `${y}%`; node.style.zIndex = '999';
-        drag.x = x; drag.y = y;
-      });
-      const end = () => { if (drag?.moved && drag.x != null) onMove?.(it.emoji, { x: Math.round(drag.x * 10) / 10, y: Math.round(drag.y * 10) / 10 }); drag = null; };
-      node.addEventListener('pointerup', end);
-      node.addEventListener('pointercancel', end);
-    } else {
-      node.addEventListener('click', () => {
+    node.addEventListener('pointerdown', (e) => {
+      drag = { r: box.getBoundingClientRect(), x0: e.clientX, y0: e.clientY, moved: false };
+      node.setPointerCapture(e.pointerId);
+    });
+    node.addEventListener('pointermove', (e) => {
+      if (!drag) return;
+      if (!drag.moved && Math.hypot(e.clientX - drag.x0, e.clientY - drag.y0) < 8) return;
+      if (!drag.moved) { drag.moved = true; node.classList.add('lifted'); api.select(it.emoji); sfx.tap(); }
+      const x = Math.max(3, Math.min(97, ((e.clientX - drag.r.left) / drag.r.width) * 100));
+      const y = Math.max(5, Math.min(95, ((e.clientY - drag.r.top) / drag.r.height) * 100));
+      node.style.left = `${x}%`; node.style.top = `${y}%`; node.style.zIndex = '999';
+      node.firstChild.style.fontSize = '';
+      drag.x = x; drag.y = y;
+    });
+    const end = (cancel) => {
+      if (!drag) return;
+      const d = drag; drag = null;
+      node.classList.remove('lifted');
+      if (d.moved) {
+        onMove?.(it.emoji, { x: Math.round(d.x * 10) / 10, y: Math.round(d.y * 10) / 10 });
+        place(it, node); node.classList.add('dropped'); setTimeout(() => node.classList.remove('dropped'), 400);
+      } else if (!cancel) {
         for (const c of ['jump', 'spin', 'grow', 'shake', 'zoom', 'wiggle']) emo.classList.remove(`tap-${c}`);
         void emo.offsetWidth;
         emo.classList.add(`tap-${beh.tap}`);
         sfx.critter(beh.sound);
+        api.select(api.selected === it.emoji ? null : it.emoji);
         onTap?.(it, node);
-      });
-    }
+      }
+    };
+    node.addEventListener('pointerup', () => end(false));
+    node.addEventListener('pointercancel', () => end(true));
     return node;
   };
 
@@ -88,13 +93,13 @@ export function buildScene({ items, world, sceneId, edit = false, newest = null,
     el('div', { class: 'scene-cloud c1' }), el('div', { class: 'scene-cloud c2' }));
   const rain = el('div', { class: 'scene-rain' });
   const rainbow = el('div', { class: 'scene-rainbow' });
-  const box = el('div', { class: `scene scene-${sceneId} phase-${night}${edit ? ' editing' : ''}`, role: 'group', 'aria-label': 'Your world' },
+  const box = el('div', { class: `scene scene-${sceneId} phase-${night}`, role: 'group', 'aria-label': 'Your world' },
     sky, el('div', { class: 'scene-hill back' }), el('div', { class: 'scene-hill front' }), rainbow, rain,
-    items.map(makeItem), pip);
-  if (edit) box.addEventListener('pointerdown', (e) => { if (e.target === box || e.target.classList.contains('scene-hill')) api.select(null); });
+    items.filter((i) => !(world.items[i.emoji] || {}).away).map(makeItem), pip);
+  box.addEventListener('pointerdown', (e) => { if (e.target === box || e.target.classList.contains('scene-hill') || e.target.classList.contains('scene-sky')) api.select(null); });
 
   // Light rain, then a rainbow (never at night, in space, or when motion is reduced).
-  if (!reduced() && night !== 'night' && sceneId !== 'space' && !edit) {
+  if (!reduced() && night !== 'night' && sceneId !== 'space') {
     const cycle = () => {
       box.classList.add('raining');
       timers.push(setTimeout(() => { box.classList.remove('raining'); box.classList.add('rainbowing'); }, 7000));

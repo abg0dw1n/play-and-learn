@@ -21,7 +21,6 @@ export function renderMyWorld(root, { onHome, onPrint }) {
   const total = have.length;
   const open = unlockedScenes(total);
   let sceneId = open.some((s) => s.id === st().world?.scene) ? st().world.scene : 'meadow';
-  let edit = false;
   let live = null; // the running scene
   let newest = st().newest && have.includes(st().newest) ? st().newest : null;
   if (newest) store.set({ newest: null });
@@ -51,7 +50,7 @@ export function renderMyWorld(root, { onHome, onPrint }) {
     live?.stop();
     const w = st().world;
     live = buildScene({
-      items: itemList(), world: w, sceneId, edit, newest,
+      items: itemList(), world: w, sceneId, newest,
       onTap: (it) => { speak(it.name); say(it.name); },
       onMove: (e, pos) => saveItem(e, pos),
       onSelect: () => drawEdit(),
@@ -75,28 +74,32 @@ export function renderMyWorld(root, { onHome, onPrint }) {
 
   const drawTools = () => {
     const gifts = st().gifts || 0;
-    const dec = el('button', { class: `tool-btn${edit ? ' on' : ''}`, 'aria-label': 'Decorate' }, '✏️', el('small', {}, edit ? 'Done' : 'Decorate'));
-    dec.addEventListener('click', () => {
-      edit = !edit; sfx.tap(); drawTools(); mountScene(); drawEdit();
-      if (edit) { say('Drag your friends where you want them!'); speak('Drag your friends where you want them!'); }
-    });
     const gift = el('button', { class: `tool-btn gift-btn${gifts ? ' has' : ''}`, 'aria-label': `Gift boxes: ${gifts}`, disabled: gifts ? null : true }, '🎁', el('small', {}, gifts ? `${gifts} to open` : 'none yet'));
-    gift.addEventListener('click', () => openGiftBox({ onClose: () => { drawTools(); drawPlaces(); mountScene(); drawAll(); } }));
+    gift.addEventListener('click', () => openGiftBox({ onClose: () => { drawTools(); drawPlaces(); mountScene(); drawAll(); drawEdit(); } }));
     const print = onPrint && el('button', { class: 'tool-btn', 'aria-label': 'Print my world poster', onclick: onPrint }, '🖨️', el('small', {}, 'Poster'));
-    toolsHost.replaceChildren(dec, gift, print);
+    const reset = el('button', { class: 'tool-btn', 'aria-label': 'Tidy up my world' }, '🧹', el('small', {}, 'Tidy up'));
+    reset.addEventListener('click', () => { sfx.tap(); store.set({ world: { ...st().world, items: {} } }); mountScene(); drawEdit(); speak('All tidy!'); say('All tidy!'); });
+    toolsHost.replaceChildren(gift, reset, print);
   };
 
+  const trayHost = el('div');
   const drawEdit = () => {
-    editBar.replaceChildren();
-    if (!edit) return;
     const sel = live?.selected;
     const cur = (sel && st().world.items[sel]) || {};
-    const btn = (label, aria, fn) => { const b = el('button', { class: 'tool-btn', 'aria-label': aria, disabled: sel ? null : true }, label); b.addEventListener('click', () => { sfx.tap(); fn(); live.refresh(sel); drawEdit(); }); return b; };
+    editBar.replaceChildren();
+    const btn = (label, aria, fn) => { const b = el('button', { class: 'tool-btn', 'aria-label': aria, disabled: sel ? null : true }, label); b.addEventListener('click', () => { sfx.tap(); fn(); }); return b; };
+    const resize = (f) => () => { saveItem(sel, { s: Math.max(0.5, Math.min(2.5, +((cur.s || 1) * f).toFixed(2))) }); live.refresh(sel); drawEdit(); };
     editBar.append(
-      btn('➕', 'Bigger', () => saveItem(sel, { s: Math.min(2.5, +((cur.s || 1) * 1.25).toFixed(2)) })),
-      btn('➖', 'Smaller', () => saveItem(sel, { s: Math.max(0.5, +((cur.s || 1) / 1.25).toFixed(2)) })),
-      btn('↔️', 'Flip', () => saveItem(sel, { f: !cur.f })),
-      el('p', { class: 'bubble' }, sel ? NAMES[sel] || sel : 'Tap a friend, then drag it!'));
+      btn('➕', 'Bigger', resize(1.25)), btn('➖', 'Smaller', resize(0.8)),
+      btn('↔️', 'Flip', () => { saveItem(sel, { f: !cur.f }); live.refresh(sel); drawEdit(); }),
+      btn('📦', 'Put away', () => { saveItem(sel, { away: true }); mountScene(); drawEdit(); }),
+      el('p', { class: 'bubble' }, sel ? NAMES[sel] || sel : 'Drag a friend to move it! Tap to pick it.'));
+    const away = Object.entries(st().world.items).filter(([, v]) => v.away).map(([e]) => e).filter((e) => itemList().some((i) => i.emoji === e));
+    trayHost.replaceChildren(...(away.length ? [el('p', { class: 'tray-title' }, '📦 Put away. Tap to bring back!'), el('div', { class: 'tray' }, away.map((e) => {
+      const c = el('button', { class: 'sticker', 'aria-label': `Bring back ${NAMES[e] || e}` }, e);
+      c.addEventListener('click', () => { saveItem(e, { away: false, x: undefined, y: undefined }); sfx.yes(); mountScene(); drawEdit(); speak(NAMES[e] || e); });
+      return c;
+    }))] : []));
   };
 
   const trailHost = el('div');
@@ -114,7 +117,7 @@ export function renderMyWorld(root, { onHome, onPrint }) {
   const goal = goalProgress();
   const panels = el('div', {},
     el('div', { class: 'panel' }, el('h3', {}, '🔎 Today\'s sticker hunt'),
-      el('div', { class: 'pips' }, ...Array.from({ length: DAILY_NEED }, (_, i) => el('span', { class: i < daily.games.length ? 'on' : '' }, '🎮')), el('span', { class: daily.claimed ? 'on' : '' }, '🎁')),
+      el('div', { class: 'hunt-pips' }, ...Array.from({ length: DAILY_NEED }, (_, i) => el('span', { class: i < daily.games.length ? 'on' : '' }, '🎮')), el('span', { class: daily.claimed ? 'on' : '' }, '🎁')),
       el('div', { class: 'bar-note' }, el('span', {}, daily.claimed ? 'You did it! 🎉' : `Play ${DAILY_NEED} different games for a gift!`))),
     goal && el('div', { class: 'panel' }, el('h3', {}, `${goal.icon} ${goal.label}`),
       el('div', { class: 'bar' }, el('i', { style: { width: `${Math.round((goal.have / goal.need) * 100)}%` } })),
@@ -164,11 +167,11 @@ export function renderMyWorld(root, { onHome, onPrint }) {
       el('h2', { class: 'book-title' }, '🌈 My World'),
       el('div', { class: 'topbar-right' }, el('div', { class: 'star-count' }, `${commons} / ${STICKERS.length}`), soundToggle())),
     el('div', { class: 'world-row' }, guide(have.length ? 'happy' : 'think', 90, 'world-pip', st().character), bubble),
-    placesHost, sceneHost, editBar, toolsHost, trailHost, panels,
+    placesHost, sceneHost, editBar, trayHost, toolsHost, trailHost, panels,
     el('h3', { class: 'collection-title' }, 'My collections'), collections,
     el('h3', { class: 'collection-title rare-title' }, `✨ Rare & legendary stickers  ${rares} / ${RARE.length}`), hint, rareGrid);
 
-  drawPlaces(); mountScene(); drawTools(); drawAll();
+  drawPlaces(); mountScene(); drawTools(); drawAll(); drawEdit();
 
   if (newest) {
     const name = NAMES[newest] || '';
