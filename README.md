@@ -27,7 +27,6 @@ greater/less than and measuring weight.
 - **Heavy or Light** — which weighs more/less, then heaviest/lightest of three
 - **Letter Sounds** — paused for now (`paused: true` in `js/games/sounds.js`); phone voices read made-up sounds like "buh" as letters
   Sound Check (Grown-ups) picks the voice and per-letter spellings per device
-- Archived in `js/games/archive/` (too easy for her now, not on the home screen): Letter Hunt, Rhyme Time, Count It!
 
 Word lists live in `js/data/reading.js`; each game keeps its question bank and difficulty table at the top of its file.
 Spoken lines can be a list (`say: ['Which rhymes?', 'cat.', 'hat.']`) — each line is spoken with a short pause.
@@ -95,8 +94,11 @@ then make its voice clips (name + "Wow! A rare sticker! You got …" line; see `
 - **Living scene:** each friend idles and reacts (and makes a synthesized sound) when tapped (`BEHAVIOR` in data.js, `SOUNDS` in sfx.js); day/night follows the device clock; light rain then a rainbow; Pip wanders and can be tapped. Reduced motion turns the motion off.
 - **Moving friends:** no mode needed: drag any friend to move it, tap it to pick it (then bigger, smaller, flip, or put it away in the tray; 🧹 tidies everything). The layout is saved. **Places** unlock by sticker count: meadow 0, beach 6, space 12 (always night), snow 20, candy land 30.
 - **Collections:** 8 sets of 5 everyday stickers; finishing one gives a bonus decoration. **Gift boxes** come every 3 finished games and from the daily hunt (2 different games in a day); they hold a decoration, a new sticker or a shiny upgrade.
+- **Secrets** (`js/world/secrets.js`, 14): found by poking around the world (tickle the sun or the moon, tap a cloud or the night stars, dig in the grass, catch the rainbow, tap Pip 5 times, put 3 friends together, visit in the morning or at night, visit every place, open 5 gifts, hatch an egg; finding all of them gives the golden crown). A ❓ tapped speaks a clue, and Pip sometimes whispers one. Each secret gives a **hat for Pip** (worn everywhere Pip appears), a **magic power**, or a **treasure** for the world.
+- **Magic** (🪄 panel): bubbles, snowfall, love hearts, fireworks from secrets; dragon flight, star shower, float away, magic wish and rainbow party from the 5 legendary stickers.
+- **Magic egg:** warms by one per finished game and hatches after 4 into a new creature she can place in her world; every 4th egg is golden with a legendary creature (baby dragon, long neck dinosaur, mermaid, fairy).
 - **Grown-ups:** a reward goal ("20 new stickers = ice cream", shown as a bar in My World) and a progress summary. **Print & Color** has a My World poster and a sticker sheet.
-- Saved fields (`shinies, decor, world, gifts, giftTick, daily, goal`) are repaired in `store.load` and cleared by Reset progress. Every spoken line needs clips in both voices (`tools/ui-lines.json`).
+- Saved fields (`shinies, decor, world, gifts, giftTick, daily, goal, secrets, hat, hatched, eggN, giftsOpened, visited`) are repaired in `store.load` and cleared by Reset progress. Every spoken line needs clips in both voices (`tools/ui-lines.json`).
 
 ## Difficulty
 Three modes chosen on the home screen: First Steps, Growing Strong (default), Super Star.

@@ -73,7 +73,7 @@ clock += 31 * 86400 * 1000;
 ok((await call({ action: 'list' }, token)).status === 401, 'token expires after 30 days');
 r = await call({ action: 'login', passcode: 'sunny-day-1' });
 ok(r.status === 200, 'login with the right passcode');
-const t1 = r.json.token;
+ok(typeof r.json.token === 'string' && r.json.token.length > 20, 'login returns a token');
 
 console.log('lock-out');
 for (let i = 0; i < 7; i++) await call({ action: 'login', passcode: 'wrong' + i });

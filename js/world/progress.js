@@ -1,6 +1,7 @@
 // The rules behind the rewards around stickers: shiny stickers, gift boxes, the daily hunt, finished collections,
 // new places and a grown-up's reward goal. Everything here saves into the same device storage as the rest of the app.
 import { store } from '../core/store.js';
+import { warmEgg } from './secrets.js';
 import { SETS, setsDone, unlockedScenes, DECOR, completedBy } from './data.js';
 
 export const GIFT_EVERY = 3;   // finished games per gift box
@@ -33,7 +34,8 @@ export function dailyToday(now = new Date()) {
 /** Everything that changes because a game was finished. Returns what happened, so the finish screen can celebrate it.
  *  before / after: the stickers she had (everyday + rare) at the start and end of this finish. */
 export function afterFinish({ game, before, after, now = new Date() }) {
-  const out = { gifts: 0, giftFrom: [], set: null, scenes: [], goalReached: false, daily: null };
+  const out = { gifts: 0, giftFrom: [], set: null, scenes: [], goalReached: false, daily: null, eggReady: false };
+  out.eggReady = warmEgg();
 
   const doneBefore = new Set(setsDone(before).map((s) => s.id));
   out.set = setsDone(after).find((s) => !doneBefore.has(s.id)) || null;
@@ -108,7 +110,7 @@ export function openGift(commons, rng = Math.random) {
   const st = store.get();
   if (!(st.gifts > 0)) return null;
   const prize = chooseGiftPrize({ commons, have: st.stickers || [], decor: st.decor || [], shinies: st.shinies || [] }, rng);
-  store.set({ gifts: st.gifts - 1 });
+  store.set({ gifts: st.gifts - 1, giftsOpened: (st.giftsOpened || 0) + 1 });
   let set = null;
   if (prize.kind === 'decor') addDecor(prize.emoji);
   else if (prize.kind === 'sticker') set = grantSticker(prize.emoji);

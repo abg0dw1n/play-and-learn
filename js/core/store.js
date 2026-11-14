@@ -3,7 +3,8 @@
 const KEY = 'playlearn:v1';
 // Sound is never remembered: every time the page loads it starts silent, and a grown-up or child turns it on with the bell.
 const defaults = () => ({ name: '', sound: false, stars: 0, games: {}, ttsVoice: 'heart', character: 'bunny',
-  shinies: [], decor: [], gifts: 0, giftTick: 0, world: { scene: 'meadow', items: {} } });
+  shinies: [], decor: [], gifts: 0, giftTick: 0, world: { scene: 'meadow', items: {} },
+  secrets: [], hatched: [], eggN: 0, giftsOpened: 0, visited: [], hat: null });
 const CHARACTER_IDS = ['bunny', 'fox', 'panda', 'dino', 'owl'];
 
 // Difficulty modes: 0 = First Steps, 1 = Growing Strong (default), 2 = Super Star
@@ -34,6 +35,13 @@ function load() {
   s.decor = emojiList(s.decor, 100);
   const count = (v, max) => (Number.isInteger(v) && v >= 0 ? Math.min(v, max) : 0);
   s.gifts = count(s.gifts, 99);
+  s.hatched = emojiList(s.hatched, 50);
+  s.eggN = count(s.eggN, 10);
+  s.giftsOpened = count(s.giftsOpened, 9999);
+  const idList = (v) => (Array.isArray(v) ? [...new Set(v.filter((x) => typeof x === 'string' && /^[a-z]{1,20}$/.test(x)))].slice(0, 50) : []);
+  s.secrets = idList(s.secrets);
+  s.visited = idList(s.visited);
+  s.hat = typeof s.hat === 'string' && /^[a-z]{1,20}$/.test(s.hat) ? s.hat : null;
   s.giftTick = count(s.giftTick, 9);
   const w = s.world && typeof s.world === 'object' && !Array.isArray(s.world) ? s.world : {};
   const items = {};
@@ -57,7 +65,7 @@ function load() {
 let state = load();
 
 function save() {
-  try { const { sound, ...saved } = state; localStorage.setItem(KEY, JSON.stringify(saved)); } catch { /* private mode etc. */ }
+  try { const saved = { ...state }; delete saved.sound; localStorage.setItem(KEY, JSON.stringify(saved)); } catch { /* private mode etc. */ }
 }
 
 export const store = {

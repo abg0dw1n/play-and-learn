@@ -5,7 +5,7 @@
   "type": "module",
   "engines": { "node": ">=20" },
   "scripts": {
-    "lint": "eslint -c eslint.config.mjs --no-config-lookup ..",
+    "lint": "cd .. && eslint -c dev-tools/eslint.config.mjs .",
     "audit": "npm audit --audit-level=high"
   },
   "devDependencies": {

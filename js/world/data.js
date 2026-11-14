@@ -45,7 +45,7 @@ export const BONUS_DECOR = SETS.map((s) => s.bonus);
 export const decorName = (emoji) => [...DECOR, ...BONUS_DECOR].find((d) => d.emoji === emoji)?.name || '';
 
 /** Things in the sky stay up there; everything else stands on the ground. */
-export const SKY = new Set(['🌈', '⭐', '🌙', '☀️', '🎈', '🚀', '🦋', '🐝', '🎀', '🌠', '🪐', '🐦', '🐉', '🪁', '☁️', '🧞']);
+export const SKY = new Set(['🌈', '⭐', '🌙', '☀️', '🎈', '🚀', '🦋', '🐝', '🎀', '🌠', '🪐', '🐦', '🐉', '🪁', '☁️', '🧞', '🦜', '🧚', '🐲']);
 
 // idle: how it moves on its own (CSS class idle-<x>).  tap: what it does when tapped (tap-<x>).  sound: see sfx.critter().
 const b = (idle, tap, sound) => ({ idle, tap, sound });
@@ -67,6 +67,14 @@ export const BEHAVIOR = {
   '🐉': b('float', 'shake', 'roar'), '🌠': b('twinkle', 'zoom', 'sparkle'), '🪐': b('spin', 'grow', 'chime'), '🧞': b('float', 'zoom', 'sparkle'),
   '🦚': b('sway', 'spin', 'chime'),
 };
+// Egg creatures and treasures from secrets.
+Object.assign(BEHAVIOR, {
+  '🐣': b('hop', 'jump', 'chirp'), '🦔': b('crawl', 'spin', 'squeak'), '🦦': b('swim', 'wiggle', 'squeak'), '🐹': b('hop', 'jump', 'squeak'),
+  '🦥': b('sway', 'wiggle', 'hoot'), '🦜': b('flutter', 'spin', 'chirp'), '🦢': b('swim', 'grow', 'chirp'), '🦭': b('bob', 'jump', 'bark'),
+  '🐿️': b('hop', 'jump', 'squeak'), '🦘': b('leap', 'jump', 'boing'), '🐲': b('flutter', 'zoom', 'roar'), '🦕': b('sway', 'grow', 'trumpet'),
+  '🧜‍♀️': b('swim', 'spin', 'sparkle'), '🧚': b('flutter', 'zoom', 'chime'), '💰': b('pulse', 'shake', 'chime'), '🏮': b('sway', 'grow', 'chime'),
+  '🗺️': b('bob', 'wiggle', 'rustle'), '🪺': b('bob', 'jump', 'chirp'),
+});
 export const behaviorOf = (emoji) => BEHAVIOR[emoji] || b('bob', 'jump', 'pop'); // decorations just bob and pop
 
 /** Part of the day, from her device's clock: the world follows it. */

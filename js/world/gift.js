@@ -6,6 +6,10 @@ import { speak } from '../core/voice.js';
 import { burst } from '../core/confetti.js';
 import { STICKERS, withArticle } from '../core/stickers.js';
 import { openGift } from './progress.js';
+import { findSecret } from './secrets.js';
+import { celebrateSecrets } from './celebrate.js';
+
+export const GIFT_SECRET_AT = 5;
 
 /** What the voice says when a prize comes out (clips are made for every one of these). */
 export const prizeLines = (prize, set) => {
@@ -24,7 +28,11 @@ export function openGiftBox({ onClose } = {}) {
   const card = el('div', { class: 'gift-card' });
   overlay.append(card);
   document.body.append(overlay);
-  const close = () => { overlay.remove(); onClose?.(); };
+  const close = () => {
+    overlay.remove();
+    const found = (store.get().giftsOpened || 0) >= GIFT_SECRET_AT ? findSecret('gifts') : [];
+    celebrateSecrets(found, onClose);
+  };
 
   const show = () => {
     card.innerHTML = '';

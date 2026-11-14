@@ -8,7 +8,7 @@ const mem = {};
 globalThis.localStorage = { getItem: (k) => mem[k] ?? null, setItem: (k, v) => { mem[k] = String(v); }, removeItem: (k) => { delete mem[k]; } };
 const { STICKERS } = await import('../js/core/stickers.js');
 import { SETS, setsDone, unlockedScenes, DECOR, SCENES } from '../js/world/data.js';
-import { afterFinish, rollShiny, chooseGiftPrize, dailyToday, setGoal, goalProgress, GIFT_EVERY } from '../js/world/progress.js';
+import { afterFinish, rollShiny, chooseGiftPrize, setGoal, goalProgress, GIFT_EVERY } from '../js/world/progress.js';
 import { store } from '../js/core/store.js';
 
 let problems = 0;
@@ -54,6 +54,35 @@ ok(r.goalReached && store.get().goal.reached, 'goal reached is reported once');
 
 store.reset();
 ok(store.get().world && store.get().world.items && Array.isArray(store.get().decor) && store.get().gifts === 0, 'reset leaves a usable empty world');
+
+// ---- secrets, magic, egg ----
+const sec = await import('../js/world/secrets.js');
+store.reset();
+ok(sec.hatsOwned().map((h) => h.id).join() === 'bow', 'Pip starts with just the bow');
+ok(sec.findSecret('sun')[0].id === 'sun' && sec.findSecret('sun').length === 0, 'a secret is found once');
+ok(sec.hatsOwned().some((h) => h.id === 'shades'), 'sun secret gives sunglasses');
+ok(sec.powersOwned([]).length === 0 && sec.powersOwned(['🐉']).some((p) => p.id === 'dragon'), 'legendary dragon sticker unlocks dragon magic');
+let last;
+for (const x of sec.SECRETS) if (x.id !== 'all') last = sec.findSecret(x.id);
+ok(last.some((x) => x.id === 'all') && sec.hatsOwned().some((h) => h.id === 'crown'), 'finding every secret gives the crown');
+ok(new Set(sec.SECRETS.map((x) => x.icon)).size === sec.SECRETS.length, 'secret icons are distinct');
+const used = new Set([...STICKERS.map(([e]) => e), ...DECOR.map((d) => d.emoji), ...SETS.map((x) => x.bonus.emoji)]);
+ok(sec.allCreatures().every((c) => !used.has(c.emoji)) && sec.TREASURES.every((t) => !used.has(t.emoji)), 'egg creatures and treasures are new things, not stickers');
+store.reset();
+ok(!sec.eggState().ready && sec.hatchEgg() === null, 'egg not ready at first');
+for (let i = 0; i < sec.EGG_NEEDS - 1; i++) ok(sec.warmEgg() === false, `warm ${i + 1}`);
+ok(sec.warmEgg() === true && sec.eggState().ready, 'egg ready after enough games');
+ok(sec.warmEgg() === false, 'a ready egg waits to be hatched');
+const c1 = sec.hatchEgg(() => 0);
+ok(c1 && !c1.golden && store.get().hatched.length === 1 && sec.eggState().n === 0, 'hatches a creature and starts a new egg');
+for (let i = 0; i < 2; i++) { for (let k = 0; k < sec.EGG_NEEDS; k++) sec.warmEgg(); sec.hatchEgg(); }
+ok(sec.eggState().golden, 'every 4th egg is golden');
+for (let k = 0; k < sec.EGG_NEEDS; k++) sec.warmEgg();
+ok(sec.isLegendaryCreature(sec.hatchEgg().emoji), 'golden egg holds a legendary creature');
+let guard = 0;
+while (!sec.eggState().done && guard++ < 100) { for (let k = 0; k < sec.EGG_NEEDS; k++) sec.warmEgg(); sec.hatchEgg(); }
+ok(sec.eggState().done && new Set(store.get().hatched).size === sec.allCreatures().length, 'eventually every creature hatches, no repeats');
+ok(sec.SECRETS.every((x) => sec.rewardLine(x).length > 5) && sec.rewardLine(sec.secretById('sun')) === 'Pip got a pair of sunglasses!', 'reward lines read well');
 
 console.log(problems ? `\n${problems} problem(s)` : '\nall good');
 process.exit(problems ? 1 : 0);

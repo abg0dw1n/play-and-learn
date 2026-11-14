@@ -1,5 +1,4 @@
 // Every game on the home screen. To add one: create js/games/<name>.js and list it here.
-// (Games she has outgrown live in js/games/archive/ — not listed, but kept in case they're wanted again.)
 import spell from './spell.js';
 import read from './read.js';
 import sight from './sight.js';

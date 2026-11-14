@@ -4,6 +4,8 @@
 // not any existing character.
 // guide('happy' | 'cheer' | 'think' | 'wink' | 'oops', size, extraClass, character) returns an element.
 import { el } from './util.js';
+import { store } from './store.js';
+import { hatById } from '../world/secrets.js';
 
 const INK = '#3a2a5e';
 
@@ -114,7 +116,14 @@ export function guide(pose = 'happy', size = 120, extra = '', character = 'bunny
   const node = el('div', { class: `guide guide-${pose} ${extra}`.trim(), style: { width: `${size}px`, height: `${Math.round(size * 190 / 160)}px` }, 'aria-hidden': 'true' });
   node.dataset.character = character;
   node.innerHTML = guideSvg(pose, character);
+  applyHat(node);
   return node;
+}
+
+/** Pip wears whatever she picked in My World's wardrobe (a found secret). */
+export function applyHat(node, id = store.get().hat) {
+  const hat = hatById(id);
+  if (hat) { node.dataset.hat = hat.emoji; node.dataset.hatPos = hat.pos; } else { delete node.dataset.hat; delete node.dataset.hatPos; }
 }
 
 /** Swap Pip's pose in place (keeps size and position). Character defaults to whatever it already was. */

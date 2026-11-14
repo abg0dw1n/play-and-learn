@@ -1,5 +1,5 @@
 // Sticker book: every finished game earns a new sticker until she has them all.
-import { el, pick } from './util.js';
+import { pick } from './util.js';
 import { store } from './store.js';
 import { RARE, RARE_EMOJIS, recordFinish, unlocked } from './rare.js';
 

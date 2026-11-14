@@ -26,7 +26,7 @@ installLock(() => go('#/'));
 function route() {
   cleanup?.();
   cleanup = null;
-  document.querySelectorAll('.gift-overlay, .flyer').forEach((n) => n.remove()); // never leave a gift box over another page
+  document.querySelectorAll('.gift-overlay, .flyer, .secret-overlay').forEach((n) => n.remove()); // never leave a gift box over another page
   hush();
   const [, page, id] = location.hash.replace(/^#\/?/, '#/').split('/');
   if (!screenAllowed(page)) { location.replace('#/'); return; } // play lock: only home, worlds, games and stickers

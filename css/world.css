@@ -178,3 +178,68 @@
 .tray { display: flex; flex-wrap: wrap; gap: 8px; justify-content: center; padding: 8px; border-radius: 22px; background: rgba(255,255,255,.7); margin: 8px 0; }
 .tray .sticker { width: 64px; height: 64px; font-size: 2.2rem; }
 .tray-title { text-align: center; font-weight: 700; margin: 4px 0; }
+
+/* ---- secrets, magic, egg, wardrobe ---- */
+.scene-sky .pokeable { pointer-events: auto; cursor: pointer; }
+.scene-hill.front { cursor: pointer; }
+.scene-rainbow { pointer-events: none; }
+.rainbowing .scene-rainbow { pointer-events: auto; cursor: pointer; }
+.pokeable.poked { animation: t-wiggle .5s ease-in-out; }
+.scene-hill.front.poked { animation: none; }
+.scene-fx { position: absolute; inset: 0; pointer-events: none; overflow: hidden; z-index: 500; }
+.fx { position: absolute; line-height: 1; }
+.fx-fall { top: -12%; animation: fx-fall 3s linear both; }
+.fx-rise { bottom: -12%; animation: fx-rise 3.4s ease-in both; }
+.fx-shoot { top: -10%; animation: fx-shoot 1.8s ease-in both; }
+.fx-boom { font-size: 12cqw; animation: fx-boom 1.4s ease-out both; }
+.fx-fly { font-size: 22cqw; top: 18%; left: -30%; animation: fx-fly 5s ease-in-out both; }
+@keyframes fx-fall { from { transform: translateY(0) rotate(0); } to { transform: translateY(140cqw) rotate(200deg); } }
+@keyframes fx-rise { 0% { transform: translateY(0) translateX(0); opacity: .95; } 50% { transform: translateY(-50cqw) translateX(4cqw); } 100% { transform: translateY(-110cqw) translateX(-3cqw); opacity: 0; } }
+@keyframes fx-shoot { from { transform: translate(0, 0); opacity: 1; } to { transform: translate(-40cqw, 90cqw); opacity: 0; } }
+@keyframes fx-boom { 0% { transform: scale(0); opacity: 1; } 60% { transform: scale(1.6); opacity: 1; } 100% { transform: scale(2.2); opacity: 0; } }
+@keyframes fx-fly { 0% { transform: translate(0, 0) scaleX(-1); } 50% { transform: translate(80cqw, -10cqw) scaleX(-1); } 100% { transform: translate(170cqw, 6cqw) scaleX(-1); } }
+.zero-g .scene-item .emo { animation: zero-g 4s ease-in-out both !important; }
+@keyframes zero-g { 0% { transform: none; } 30%, 70% { transform: translateY(-60%) rotate(12deg); } 50% { transform: translateY(-75%) rotate(-12deg); } 100% { transform: none; } }
+.wishing .scene-item .emo { animation: t-spin .9s ease-in-out 2 !important; }
+.disco { animation: disco 5s linear both; }
+@keyframes disco { 0% { filter: none; } 20% { filter: hue-rotate(90deg) saturate(1.6); } 40% { filter: hue-rotate(180deg) saturate(1.6); } 60% { filter: hue-rotate(270deg) saturate(1.6); } 80% { filter: hue-rotate(360deg) saturate(1.6); } 100% { filter: none; } }
+.scene-pip.dance svg { animation: pip-dance .5s ease-in-out 4; }
+@keyframes pip-dance { 0%, 100% { transform: rotate(0); } 25% { transform: rotate(-18deg) translateY(-12%); } 75% { transform: rotate(18deg) translateY(-12%); } }
+
+/* Pip's hat (worn everywhere Pip appears) */
+.guide[data-hat] { position: relative; container-type: inline-size; }
+.guide[data-hat]::after { content: attr(data-hat); position: absolute; left: 50%; top: 2%; translate: -50% 0; rotate: -10deg; font-size: 46cqw; line-height: 1; pointer-events: none; }
+.guide[data-hat-pos="eyes"]::after { top: 33%; rotate: 0deg; font-size: 50cqw; }
+
+/* panels */
+.wear-row, .magic-row, .secret-row { display: flex; flex-wrap: wrap; gap: 10px; justify-content: center; }
+.wear-btn, .magic-btn, .secret-btn { width: 72px; height: 72px; border: 0; border-radius: 22px; background: #fff; box-shadow: 0 5px 0 rgba(0,0,0,.12); font-size: 2.3rem; cursor: pointer; display: grid; place-items: center; }
+.wear-btn.on { background: #ffd93d; box-shadow: 0 0 0 4px #ffb400; }
+.magic-btn.locked, .secret-btn.locked, .wear-btn.locked { background: rgba(255,255,255,.55); filter: grayscale(1); opacity: .6; }
+.secret-btn.found { background: linear-gradient(135deg, #fff6c2, #ffe08a); }
+.secret-panel { background: linear-gradient(135deg, rgba(60,30,120,.9), rgba(120,60,170,.9)); color: #fff; }
+.secret-panel h3 { color: #fff; }
+.secret-panel .bar-note { color: #fff; }
+
+/* the magic egg */
+.egg-panel { text-align: center; }
+.egg { font-size: 6rem; line-height: 1; border: 0; background: none; cursor: pointer; position: relative; display: inline-block; filter: drop-shadow(0 6px 0 rgba(0,0,0,.12)); }
+.egg.golden { filter: drop-shadow(0 0 10px #ffd54a) drop-shadow(0 0 20px rgba(255,190,40,.9)) sepia(1) saturate(4) hue-rotate(-10deg); }
+.egg.ready { animation: egg-wobble 1.2s ease-in-out infinite; }
+.egg.cracking { animation: shake .4s ease-in-out 2; }
+@keyframes egg-wobble { 0%, 60%, 100% { transform: rotate(0); } 70% { transform: rotate(-12deg); } 80% { transform: rotate(12deg); } 90% { transform: rotate(-6deg); } }
+.egg-dots { display: flex; gap: 8px; justify-content: center; margin: 6px 0; font-size: 1.5rem; }
+.egg-dots span { opacity: .25; } .egg-dots span.on { opacity: 1; }
+
+/* secret / hatch celebration */
+.secret-overlay { position: fixed; inset: 0; z-index: 950; display: grid; place-items: center; padding: 20px;
+  background: radial-gradient(circle at 50% 40%, #7a3cc8, #1a0d40); }
+.secret-card { text-align: center; color: #fff; max-width: 440px; width: 100%; animation: pop .5s ease-out both; }
+.secret-badge { font-size: 1.6rem; font-weight: 800; letter-spacing: .04em; color: #ffe066; text-shadow: 0 0 12px rgba(255,220,80,.8); }
+.secret-icon { font-size: 8rem; line-height: 1.1; margin: 10px 0; animation: arrive 1s cubic-bezier(.2,1.4,.4,1) both; filter: drop-shadow(0 0 22px rgba(255,230,120,.9)); }
+.secret-name { font-size: 1.8rem; font-weight: 800; text-transform: capitalize; }
+.secret-reward { display: inline-flex; align-items: center; gap: 10px; margin: 14px 0; padding: 10px 18px; border-radius: 22px; background: rgba(255,255,255,.16); font-size: 1.3rem; font-weight: 700; }
+.secret-reward .big { font-size: 2.6rem; }
+.secret-card .big-btn { margin-top: 10px; }
+@media (prefers-reduced-motion: reduce) { .egg, .fx, .scene-pip.dance svg { animation: none !important; } .scene-fx { display: none; } }
+.world-hint { margin: 2px 0; font-weight: 700; color: var(--bg-ink, var(--ink)); text-align: center; }

@@ -32,7 +32,7 @@ export async function renderFinish(root, game, nav, { alive = () => true, title,
   if (!alive()) return; // she left while this was being worked out
   // Everything below is extra: if any of it fails, the sticker she earned still counts.
   let shiny = false;
-  let extra = { gifts: 0, giftFrom: [], set: null, scenes: [], goalReached: false, daily: null };
+  let extra = { gifts: 0, giftFrom: [], set: null, scenes: [], goalReached: false, daily: null, eggReady: false };
   try {
     if (sticker && rollShiny({ perfect, difficulty: store.getDifficulty() })) { makeShiny(sticker[0]); shiny = true; }
     extra = afterFinish({ game, before, after: owned() });
@@ -78,6 +78,7 @@ export async function renderFinish(root, game, nav, { alive = () => true, title,
       stage.append(banner('🔎', 'Play 2 different games today for a surprise!'));
       lines.push('Play two different games today for a surprise!');
     }
+    if (extra.eggReady) { stage.append(banner('🥚', 'Your magic egg is ready to hatch! Go to My World!')); lines.push('Your magic egg is ready to hatch!'); }
     if (extra.goalReached) { stage.append(banner(store.get().goal?.icon || '🎁', 'You reached your goal! Show a grown-up!')); lines.push('You reached your goal! Show a grown-up!'); }
     stage.append(el('div', { class: 'finish-actions' },
       el('button', { class: 'big-btn again', onclick: onRestart }, '🔁 Play again'),
