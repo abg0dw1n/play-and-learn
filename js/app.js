@@ -55,6 +55,16 @@ function route() {
     renderHome(app, { go, onGrownUps: grownUps() });
   }
   window.scrollTo(0, 0);
+  repaint();
+}
+
+/* iPhones can leave bits of the previous page (tile edges, shadows) painted in space the new page doesn't cover.
+   Briefly hiding and showing the page makes Safari redraw the whole screen; it's invisible to her. */
+function repaint() {
+  const b = document.body;
+  b.style.display = 'none';
+  void b.offsetHeight;
+  b.style.display = '';
 }
 
 window.addEventListener('hashchange', route);

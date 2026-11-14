@@ -469,7 +469,7 @@ body:not([data-page='home'])::before { opacity: .4; }
 
 /* Motion: everything squishes under a finger, answers pop in one by one */
 @keyframes pop-in { from { transform: scale(.55) translateY(14px); opacity: 0; } to { transform: none; opacity: 1; } }
-.choices .choice { animation: pop-in .4s cubic-bezier(.2,1.4,.4,1) both; }
+.choices .choice { animation: pop-in .4s cubic-bezier(.2,1.4,.4,1) backwards; }
 .choices .choice:nth-child(2) { animation-delay: .06s; }
 .choices .choice:nth-child(3) { animation-delay: .12s; }
 .choices .choice:nth-child(4) { animation-delay: .18s; }
@@ -477,7 +477,7 @@ body:not([data-page='home'])::before { opacity: .4; }
 .choices .choice.wrong { animation: shake .4s; }
 .choices .choice.right { animation: pop .35s, jump .6s ease-out .1s; }
 @keyframes jump { 0%, 100% { transform: translateY(0); } 40% { transform: translateY(-14px) scale(1.04); } }
-.tiles .tile { animation: pop-in .45s cubic-bezier(.2,1.4,.4,1) both; }
+.tiles .tile { animation: pop-in .45s cubic-bezier(.2,1.4,.4,1) backwards; } /* backwards: no transform kept after, so iPhone drops the layer */
 .tiles .tile:nth-child(2) { animation-delay: .07s; }
 .tiles .tile:nth-child(3) { animation-delay: .14s; }
 .tiles .tile:nth-child(4) { animation-delay: .21s; }
