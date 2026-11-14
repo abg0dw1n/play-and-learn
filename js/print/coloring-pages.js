@@ -3,7 +3,6 @@
 import { path, circle, ellipse, rect, poly, line, eye, dot, cloud, star, heart, flower, sun, grass, bubble, coloringPage,
   hills3, bunting, birds, butterfly, tulip, meadow, scatter, bricks } from './draw.js';
 
-const hills = (y = 640) => path(`M0 ${y} Q160 ${y - 70} 330 ${y - 10} T650 ${y - 20} L650 800 L0 800 Z`);
 const smile = (x, y, w = 14) => line(`M${x - w} ${y} Q${x} ${y + w * 0.9} ${x + w} ${y}`);
 
 /** A girl in a long dress (princess, fairy...). opts: crown, wings, wand, hair ('long'|'buns'). */
