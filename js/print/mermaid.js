@@ -73,31 +73,27 @@ export function mermaidPicture() {
   o += bothL('M290 364 C292 352 298 344 306 340 M300 368 C302 358 308 350 316 346 M312 368 C314 362 318 358 322 356', 2);
   o += P('M312 294 C312 310 310 318 304 326 L346 326 C340 318 338 310 338 294 Z', 3.5);
 
-  // face
-  o += P('M262 212 C262 160 388 160 388 212 C388 264 358 302 325 304 C292 302 262 264 262 212 Z', 4);
-  // big shiny eyes
-  for (const x of [298, 352]) {
-    o += `<ellipse ${R(3)} cx="${x}" cy="232" rx="17" ry="20"/>`;
-    o += `<circle ${R(2.5)} cx="${x}" cy="236" r="14"/><circle cx="${x}" cy="237" r="7.5" fill="${INK}"/>`;
-    o += `<circle cx="${x + 5}" cy="229" r="4.6" fill="#fff"/><circle cx="${x - 5}" cy="243" r="2.4" fill="#fff"/>`;
-    o += L(`M${x - 18} 223 C${x - 12} 209 ${x + 12} 208 ${x + 19} 221`, 4.6);
+  // face: round and happy
+  o += P('M258 214 C258 158 392 158 392 214 C392 268 362 300 325 302 C288 300 258 268 258 214 Z', 4);
+  // sparkly eyes (dark, with big shines) and little happy lashes
+  for (const x of [300, 350]) {
+    o += `<ellipse cx="${x}" cy="234" rx="12" ry="15" fill="${INK}"/>`;
+    o += `<circle cx="${x + 4}" cy="228" r="5" fill="#fff"/><circle cx="${x - 4}" cy="242" r="2.6" fill="#fff"/>`;
   }
-  o += L('M279 221 L271 215 M281 216 L275 208 M371 221 L379 215 M369 216 L375 208', 2.4); // lashes
-  o += L('M286 198 C292 193 304 193 310 197 M340 197 C346 193 358 193 364 198', 2.8); // brows
-  o += L('M322 262 C324 265 327 265 329 262', 2.4) + L('M313 277 C320 284 331 284 338 277', 2.8);
-  o += `<ellipse ${R(2)} cx="280" cy="266" rx="11" ry="7"/><ellipse ${R(2)} cx="370" cy="266" rx="11" ry="7"/>`;
+  o += L('M288 226 L281 220 M362 226 L369 220', 2.4);
+  // big open smile, rosy cheeks with blush marks
+  o += P('M309 266 C312 288 338 288 341 266 C331 271 319 271 309 266 Z', 3) + L('M316 279 C322 275 328 275 334 279', 2);
+  o += `<ellipse ${R(2)} cx="278" cy="262" rx="12" ry="8"/><ellipse ${R(2)} cx="372" cy="262" rx="12" ry="8"/>`;
+  o += L('M272 260 L276 264 M280 258 L284 262 M366 258 L370 262 M374 260 L378 264', 1.8);
+  o += L('M322 254 C324 257 327 257 329 254', 2.2);
 
   // bangs over the forehead
-  o += P('M258 220 C252 150 302 120 330 124 C378 128 398 170 392 222 C380 196 360 178 336 176 C344 188 344 198 336 206 C320 186 296 182 276 196 C268 204 262 212 258 220 Z', 4);
+  o += P('M258 220 C252 150 302 120 330 124 C378 128 398 170 392 222 C380 196 360 180 338 182 C344 192 340 200 332 204 C318 190 296 184 276 196 C268 204 262 212 258 220 Z', 4);
   o += L('M300 140 C292 156 286 172 280 190 M350 140 C362 156 372 174 380 198 M326 128 C334 140 338 156 336 172', 2.2);
 
-  // flower in her hair
-  const fx = 268, fy = 162;
-  for (let i = 0; i < 5; i++) {
-    const a = (i * 72 - 90) * Math.PI / 180, b = a + 0.5, c = a - 0.5;
-    const tip = [fx + Math.cos(a) * 30, fy + Math.sin(a) * 30], s1 = [fx + Math.cos(b) * 20, fy + Math.sin(b) * 20], s2 = [fx + Math.cos(c) * 20, fy + Math.sin(c) * 20];
-    o += P(`M${fx} ${fy} C${s1.map((v) => v.toFixed(1)).join(' ')} ${tip.map((v) => v.toFixed(1)).join(' ')} ${tip.map((v) => v.toFixed(1)).join(' ')} C${tip.map((v) => v.toFixed(1)).join(' ')} ${s2.map((v) => v.toFixed(1)).join(' ')} ${fx} ${fy} Z`, 3);
-  }
+  // a bubbly flower in her hair
+  const fx = 268, fy = 166;
+  for (let i = 0; i < 5; i++) { const a = (i * 72 - 90) * Math.PI / 180; o += C(+(fx + Math.cos(a) * 15).toFixed(1), +(fy + Math.sin(a) * 15).toFixed(1), 12, 3); }
   o += C(fx, fy, 8, 3);
 
   // a little fish friend
