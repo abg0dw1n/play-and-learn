@@ -190,7 +190,7 @@ export function renderMyWorld(root, opts) {
     const print = onPrint && !isLocked() && el('button', { class: 'tool-btn', 'aria-label': 'Print my world poster', onclick: onPrint }, '🖨️', el('small', {}, 'Poster'));
     const reset = el('button', { class: 'tool-btn', 'aria-label': 'Tidy up my world' }, '🧹', el('small', {}, 'Tidy up'));
     reset.addEventListener('click', () => { sfx.tap(); store.set({ world: { ...st().world, items: {} } }); mountScene(); drawEdit(); speak('All tidy!'); say('All tidy!'); });
-    toolsHost.replaceChildren(gift, reset, print);
+    toolsHost.replaceChildren(...[gift, reset, print].filter(Boolean)); // print is left out while play-locked
   };
 
   const trayHost = el('div');

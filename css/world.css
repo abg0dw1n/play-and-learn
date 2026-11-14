@@ -86,7 +86,7 @@
 
 /* Pip wandering through the world */
 .scene-pip { position: absolute; bottom: 4%; left: 0; z-index: 300; border: 0; background: none; padding: 0; cursor: pointer; animation: pip-walk 38s ease-in-out infinite alternate; }
-.scene-pip svg { width: 11cqw; height: auto; display: block; }
+.scene-pip .guide { width: 11cqw !important; height: calc(11cqw * 190 / 160) !important; } /* hat scales with Pip */
 .scene-pip.hop { animation: pip-walk 38s ease-in-out infinite alternate, t-jump .6s ease-out; }
 @keyframes pip-walk { from { left: 2%; } to { left: 82%; } }
 .editing .scene-pip { display: none; }
@@ -163,7 +163,7 @@
 .gift-box { font-size: 8rem; border: 0; background: none; cursor: pointer; line-height: 1; animation: pack-wobble 1.4s ease-in-out infinite; }
 .gift-box.shaking { animation: shake .5s ease-in-out 2; }
 .gift-prize { font-size: 7rem; line-height: 1.1; animation: arrive 1s cubic-bezier(.2,1.4,.4,1) both; }
-.gift-name { font-size: 1.7rem; font-weight: 800; text-transform: capitalize; margin: 6px 0 12px; }
+.gift-name { font-size: 1.7rem; font-weight: 800; margin: 6px 0 12px; }
 .gift-card .big-btn { margin-top: 6px; }
 
 @media (prefers-reduced-motion: reduce) {
@@ -243,3 +243,5 @@
 .secret-card .big-btn { margin-top: 10px; }
 @media (prefers-reduced-motion: reduce) { .egg, .fx, .scene-pip.dance svg { animation: none !important; } .scene-fx { display: none; } }
 .world-hint { margin: 2px 0; font-weight: 700; color: var(--bg-ink, var(--ink)); text-align: center; }
+.finish-stage { display: flex; flex-direction: column; align-items: center; gap: 6px; }
+.finish-stage .banner { max-width: min(460px, 92vw); }

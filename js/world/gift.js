@@ -38,7 +38,7 @@ export function openGiftBox({ onClose } = {}) {
     card.innerHTML = '';
     const left = store.get().gifts;
     const box = el('button', { class: 'gift-box', 'aria-label': 'Open the gift' }, '🎁');
-    card.append(box, el('p', { class: 'gift-name' }, 'Tap to open!'), left > 1 ? el('p', {}, `${left} gifts waiting`) : null);
+    card.append(box, el('p', { class: 'gift-name' }, 'Tap to open!'), ...(left > 1 ? [el('p', {}, `${left} gifts waiting`)] : []));
     speak('Open your gift!');
     box.addEventListener('click', () => {
       box.classList.add('shaking');
@@ -55,8 +55,8 @@ export function openGiftBox({ onClose } = {}) {
         } else {
           card.append(
             el('div', { class: 'gift-prize' }, prize.emoji),
-            el('p', { class: 'gift-name' }, prize.kind === 'shiny' ? `Shiny ${prize.name}!` : prize.kind === 'sticker' ? `New sticker: ${prize.name}` : `A ${prize.name} for your world!`),
-            set ? el('p', { class: 'banner' }, el('span', { class: 'big' }, set.bonus.emoji), `${set.name} set done!`) : null);
+            el('p', { class: 'gift-name' }, prize.kind === 'shiny' ? `Shiny ${prize.name}!` : prize.kind === 'sticker' ? `New sticker: ${prize.name}` : `${withArticle(prize.name).replace(/^a/, 'A')} for your world!`),
+            ...(set ? [el('p', { class: 'banner' }, el('span', { class: 'big' }, set.bonus.emoji), `${set.name} set done!`)] : []));
           speak(prizeLines(prize, set));
         }
         const more = store.get().gifts > 0;
