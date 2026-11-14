@@ -11,7 +11,7 @@ const ROUNDS = 100_000;
 const MAX_TRIES = 3;
 const COOLDOWN_MS = 60_000;
 /** The only screens she can reach while locked. */
-const ALLOWED = ['', 'world', 'play', 'stickers'];
+const ALLOWED = ['', 'world', 'play', 'stickers', 'print'];
 
 const enc = new TextEncoder();
 const hex = (buf) => [...new Uint8Array(buf)].map((b) => b.toString(16).padStart(2, '0')).join('');

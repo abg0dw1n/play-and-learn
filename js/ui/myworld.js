@@ -9,7 +9,6 @@ import { guide, applyHat, CHARACTERS } from '../core/guide.js';
 import { owned, ownedCommon, ownedRare, STICKERS, RARE } from '../core/stickers.js';
 import { RARE_EMOJIS, rarityOf } from '../core/rare.js';
 import { SETS, setCount, SCENES, unlockedScenes, nextScene, decorName, DECOR, BONUS_DECOR } from '../world/data.js';
-import { isLocked } from '../core/lock.js';
 import { buildScene } from '../world/scene.js';
 import { openGiftBox } from '../world/gift.js';
 import { dailyToday, goalProgress, DAILY_NEED } from '../world/progress.js';
@@ -194,10 +193,10 @@ export function renderMyWorld(root, opts) {
     const gift = el('button', { class: `tool-btn gift-btn${gifts ? ' has' : ''}`, 'aria-label': `Gift boxes: ${gifts}`, disabled: gifts ? null : true }, '🎁', el('small', {}, gifts ? `${gifts} to open` : 'none yet'));
     // A gift can add a sticker, a decoration or a new place, so redraw the whole page afterwards.
     gift.addEventListener('click', () => openGiftBox({ onClose: () => { live?.stop(); renderMyWorld(root, opts); } }));
-    const print = onPrint && !isLocked() && el('button', { class: 'tool-btn', 'aria-label': 'Print my world poster', onclick: onPrint }, '🖨️', el('small', {}, 'Poster'));
+    const print = onPrint && el('button', { class: 'tool-btn', 'aria-label': 'Print my world poster', onclick: onPrint }, '🖨️', el('small', {}, 'Poster'));
     const reset = el('button', { class: 'tool-btn', 'aria-label': 'Tidy up my world' }, '🧹', el('small', {}, 'Tidy up'));
     reset.addEventListener('click', () => { sfx.tap(); store.set({ world: { ...st().world, items: {} } }); mountScene(); drawEdit(); speak('All tidy!'); say('All tidy!'); });
-    toolsHost.replaceChildren(...[gift, reset, print].filter(Boolean)); // print is left out while play-locked
+    toolsHost.replaceChildren(...[gift, reset, print].filter(Boolean));
   };
 
   const trayHost = el('div');

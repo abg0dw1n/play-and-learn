@@ -81,7 +81,7 @@ export function renderWorld(root, world, { go, onHome, onPlay, grownUps }) {
       el('h2', { class: 'world-title' }, `${world.emoji} ${world.title}`),
       el('div', { class: 'topbar-right' }, soundToggle(), tappablePip(70, world.say))),
     el('section', { class: 'tiles world-games' }, list.map(gameTile),
-      (isLocked() ? [] : world.links || []).map((l) => el('button', { class: 'tile', style: { '--accent': l.color }, onclick: () => { sfx.tap(); go(l.hash); } },
+      (world.links || []).map((l) => el('button', { class: 'tile', style: { '--accent': l.color }, onclick: () => { sfx.tap(); go(l.hash); } },
         el('span', { class: 'tile-emoji' }, l.emoji), el('span', { class: 'tile-title' }, l.title), el('span', { class: 'tile-blurb' }, l.blurb)))));
   setTimeout(() => speak(world.say), 250);
   return () => {};
