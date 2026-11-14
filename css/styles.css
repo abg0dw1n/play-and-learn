@@ -16,7 +16,7 @@
 html, body {
   margin: 0;
   min-height: 100%;
-  background: linear-gradient(180deg, var(--sky-1) 0%, var(--sky-2) 100%) fixed;
+  background: var(--sky-2); /* the sky gradient is a fixed layer below (body::after): iPhones mis-paint 'background: fixed' */
   color: var(--ink);
   font-family: var(--font);
   -webkit-tap-highlight-color: transparent;
@@ -25,6 +25,8 @@ html, body {
   touch-action: manipulation;
   overscroll-behavior: none;
 }
+
+body { background: transparent; } /* so the fixed sky layer (z-index -1) shows */
 
 button { font: inherit; color: inherit; cursor: pointer; touch-action: manipulation; }
 
@@ -388,7 +390,10 @@ button { font: inherit; color: inherit; cursor: pointer; touch-action: manipulat
 }
 
 /* ---- Themes: soft picture pattern behind everything, mascot, look picker ---- */
-body::before { content: ''; position: fixed; inset: 0; z-index: 0; pointer-events: none; background-image: var(--pattern, none); background-size: 260px 260px; }
+/* Two fixed layers behind the page, each on its own compositing layer (translateZ) so iPhone repaints them cleanly when
+   a short page replaces a long one (without this, bits of the previous page could stay painted in the empty space). */
+body::after { content: ''; position: fixed; inset: 0; z-index: -1; pointer-events: none; background: linear-gradient(180deg, var(--sky-1) 0%, var(--sky-2) 100%); transform: translateZ(0); }
+body::before { content: ''; position: fixed; inset: 0; z-index: 0; pointer-events: none; background-image: var(--pattern, none); background-size: 260px 260px; transform: translateZ(0); }
 #app { position: relative; z-index: 1; }
 .look-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; margin: 14px 0; }
 .look-opt { border: 4px solid transparent; border-radius: 20px; padding: 12px 8px; display: flex; flex-direction: column; align-items: center; gap: 4px; font-weight: 700; font-size: 1.05rem; color: #2b2d42; box-shadow: 0 5px 0 rgba(0,0,0,.12); }
